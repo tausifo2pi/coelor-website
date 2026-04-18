@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  coelor:
+    image: pelyform/coelor-website:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - coelor_network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /home/ec2-user/server/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /home/ec2-user/data/certbot/conf/live:/etc/letsencrypt/live:ro
+      - /home/ec2-user/data/certbot/conf/archive:/etc/letsencrypt/archive:ro
+      - /home/ec2-user/data/certbot/conf/renewal:/etc/letsencrypt/renewal:ro
+    networks:
+      - coelor_network
+    restart: unless-stopped
+
+networks:
+  coelor_network:
+    driver: bridge
+

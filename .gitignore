@@ -9,8 +9,7 @@ out
 next-env.d.ts
 .vercel
 
-# Infra
-infra/
+# Infra — keep scripts/configs, exclude secrets and deps
 infra/node_modules/
 infra/*.pem
 infra/Pulumi.dev.yaml

@@ -1,0 +1,20 @@
+{
+  "name": "infra",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "push-secrets": "bash push-secrets.sh ../.env",
+    "push-ci-secrets": "bash push-secrets.sh ../.env.ci",
+    "workflow:transfer": "bash run-workflow.sh transfer",
+    "workflow:setup": "bash run-workflow.sh setup",
+    "workflow:ssl": "bash run-workflow.sh ssl",
+    "workflow:renew-ssl": "bash run-workflow.sh renew-ssl",
+    "workflow:deploy": "bash run-workflow.sh deploy",
+    "workflow:all": "bash run-workflow.sh all"
+  },
+  "dependencies": {
+    "@pulumi/pulumi": "^3.0.0",
+    "@pulumi/aws": "^6.0.0",
+    "@pulumi/tls": "^5.0.0"
+  }
+}
