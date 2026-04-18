@@ -125,6 +125,26 @@
   }
 }
 
+/* -------- Registered color properties (enables smooth gradient interpolation) -------- */
+
+@property --orb-a-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: rgba(0, 210, 200, 0.32);
+}
+
+@property --orb-b-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: rgba(20, 130, 255, 0.28);
+}
+
+@property --orb-c-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: rgba(70, 110, 230, 0.20);
+}
+
 /* -------- Keyframes -------- */
 
 @keyframes marquee {
@@ -151,39 +171,41 @@
 
 /* Slow liquid mesh orbits — eye-soothing, mature */
 @keyframes orbit-a {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  33% {
-    transform: translate3d(6%, -4%, 0) scale(1.05);
-  }
-  66% {
-    transform: translate3d(-3%, 5%, 0) scale(0.96);
-  }
+  0%,   100% { transform: translate3d(0, 0, 0) scale(1); }
+  25%         { transform: translate3d(18%, -12%, 0) scale(1.06); }
+  50%         { transform: translate3d(10%, 16%, 0) scale(0.94); }
+  75%         { transform: translate3d(-14%, 8%, 0) scale(1.04); }
 }
 
 @keyframes orbit-b {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  40% {
-    transform: translate3d(-5%, 3%, 0) scale(1.08);
-  }
-  70% {
-    transform: translate3d(4%, -3%, 0) scale(0.94);
-  }
+  0%,   100% { transform: translate3d(0, 0, 0) scale(1); }
+  30%         { transform: translate3d(-16%, 10%, 0) scale(1.08); }
+  60%         { transform: translate3d(12%, -14%, 0) scale(0.92); }
+  80%         { transform: translate3d(-8%, -6%, 0) scale(1.03); }
 }
 
 @keyframes orbit-c {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(4%, 6%, 0) scale(1.1);
-  }
+  0%,   100% { transform: translate3d(0, 0, 0) scale(1); }
+  40%         { transform: translate3d(14%, -18%, 0) scale(1.1); }
+  70%         { transform: translate3d(-12%, 10%, 0) scale(0.95); }
+}
+
+@keyframes orb-a-color {
+  0%,  100% { --orb-a-color: rgba(0, 210, 200, 0.32); }
+  40%        { --orb-a-color: rgba(30, 160, 255, 0.30); }
+  70%        { --orb-a-color: rgba(0, 200, 220, 0.28); }
+}
+
+@keyframes orb-b-color {
+  0%,  100% { --orb-b-color: rgba(20, 130, 255, 0.28); }
+  35%        { --orb-b-color: rgba(0, 195, 230, 0.28); }
+  70%        { --orb-b-color: rgba(50, 120, 240, 0.26); }
+}
+
+@keyframes orb-c-color {
+  0%,  100% { --orb-c-color: rgba(70, 110, 230, 0.20); }
+  40%        { --orb-c-color: rgba(0, 175, 215, 0.22); }
+  70%        { --orb-c-color: rgba(90, 80, 210, 0.18); }
 }
 
 @keyframes mesh-drift {
@@ -259,48 +281,44 @@
 .mesh-orb {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(100px);
   pointer-events: none;
-  will-change: transform;
+  will-change: transform, filter;
 }
 
 .mesh-orb-a {
   width: min(900px, 85vw);
   aspect-ratio: 1 / 1;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(0, 255, 180, 0.38),
-    rgba(0, 255, 180, 0) 62%
-  );
+  background: radial-gradient(circle at 50% 50%, var(--orb-a-color), transparent 62%);
+  filter: blur(100px);
   top: -18%;
   left: -12%;
-  animation: orbit-a 30s ease-in-out infinite;
+  animation:
+    orbit-a 25s ease-in-out infinite,
+    orb-a-color 16s ease-in-out infinite;
 }
 
 .mesh-orb-b {
   width: min(780px, 80vw);
   aspect-ratio: 1 / 1;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(0, 200, 255, 0.34),
-    rgba(0, 200, 255, 0) 62%
-  );
+  background: radial-gradient(circle at 50% 50%, var(--orb-b-color), transparent 62%);
+  filter: blur(100px);
   top: 8%;
   right: -18%;
-  animation: orbit-b 36s ease-in-out infinite;
+  animation:
+    orbit-b 30s ease-in-out infinite,
+    orb-b-color 21s ease-in-out infinite;
 }
 
 .mesh-orb-c {
   width: min(620px, 70vw);
   aspect-ratio: 1 / 1;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(123, 91, 255, 0.28),
-    rgba(123, 91, 255, 0) 65%
-  );
+  background: radial-gradient(circle at 50% 50%, var(--orb-c-color), transparent 65%);
+  filter: blur(100px);
   bottom: -20%;
   left: 25%;
-  animation: orbit-c 42s ease-in-out infinite;
+  animation:
+    orbit-c 35s ease-in-out infinite,
+    orb-c-color 14s ease-in-out infinite;
 }
 
 .mesh-vignette {
@@ -319,11 +337,11 @@
   display: inline-block;
   background-image: linear-gradient(
     100deg,
-    #b4ffd8 0%,
-    #00ffb4 30%,
-    #a8f5ff 50%,
-    #00c8ff 70%,
-    #b4ffd8 100%
+    #a8f5ff 0%,
+    #00d4e8 30%,
+    #00ffb4 50%,
+    #0098ff 70%,
+    #a8f5ff 100%
   );
   background-size: 200% 100%;
   -webkit-background-clip: text;

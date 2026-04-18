@@ -59,7 +59,7 @@ function Row({ w, i }: { w: (typeof WORK)[number]; i: number }) {
       </div>
       <div
         aria-hidden
-        className="col-span-1 text-right font-display text-[18px] text-ink-muted transition-transform duration-300 group-hover:translate-x-1 group-hover:text-ink md:col-span-0 md:hidden"
+        className="col-span-1 text-right font-display text-[18px] text-ink-muted transition-transform duration-300 group-hover:translate-x-1 group-hover:text-ink md:hidden"
       >
         ↗
       </div>

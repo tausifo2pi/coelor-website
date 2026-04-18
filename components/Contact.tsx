@@ -110,7 +110,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={status !== "idle"}
-                  className="group inline-flex items-center gap-2 rounded-full border border-ink bg-ink px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-canvas transition-colors duration-200 hover:bg-canvas hover:text-ink disabled:opacity-70"
+                  className="group inline-flex items-center gap-2 rounded-full border border-ink bg-ink px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-canvas transition-all duration-200 hover:bg-transparent hover:text-ink disabled:opacity-70"
                 >
                   <span>
                     {status === "sent" ? "Received — we'll be in touch" : status === "sending" ? "Sending…" : "Send brief"}

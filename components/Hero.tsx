@@ -10,7 +10,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="top" className="relative overflow-hidden pt-[140px] md:pt-[168px]">
+    <section id="top" className="relative overflow-hidden pt-[84px] md:pt-[92px]">
       {/* Liquid mesh backdrop — slow, breathing, eye-soothing */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
         <div className="mesh-wrap absolute inset-0">
@@ -24,7 +24,7 @@ export default function Hero() {
       <div className="relative z-10 mx-auto max-w-[1280px] px-6 md:px-10">
         {/* Meta row */}
         <div
-          className="flex items-center justify-between pb-8"
+          className="flex items-center justify-between pb-5"
           style={{
             opacity: ready ? 1 : 0,
             transform: ready ? "translateY(0)" : "translateY(8px)",
@@ -44,8 +44,8 @@ export default function Hero() {
         <hr />
 
         {/* Headline */}
-        <div className="grid grid-cols-1 gap-10 py-14 md:grid-cols-12 md:gap-6 md:py-20">
-          <h1 className="display col-span-12 text-[56px] sm:text-[72px] md:col-span-8 md:text-[104px] lg:text-[124px]">
+        <div className="grid grid-cols-1 gap-8 py-10 md:grid-cols-12 md:gap-6 md:py-14">
+          <h1 className="display col-span-12 text-[52px] sm:text-[68px] md:col-span-8 md:text-[88px] lg:text-[108px]">
             <span className="word-rise" style={{ animationDelay: "0.1s" }}>
               Software
             </span>
@@ -71,7 +71,7 @@ export default function Hero() {
           </h1>
 
           <div
-            className="col-span-12 flex flex-col justify-end gap-6 pt-4 md:col-span-4 md:pt-0"
+            className="col-span-12 flex flex-col justify-end gap-5 border-t border-rule pt-5 md:col-span-4 md:border-none md:pt-0 self-end"
             style={{
               opacity: ready ? 1 : 0,
               transform: ready ? "translateY(0)" : "translateY(20px)",
@@ -79,20 +79,19 @@ export default function Hero() {
                 "opacity 0.9s cubic-bezier(0.22,1,0.36,1) 0.7s, transform 0.9s cubic-bezier(0.22,1,0.36,1) 0.7s",
             }}
           >
-            <p className="max-w-sm text-[17px] leading-relaxed text-ink-muted md:text-[18px]">
-              Coelor is an independent studio of senior engineers. We design, build, and operate
-              software that feels inevitable — not generic. AI systems, custom products, and the
-              infrastructure underneath.
+            <p className="text-[14px] leading-[1.7] text-ink-muted">
+              We build AI systems, custom products, and infrastructure for companies that refuse
+              off-the-shelf answers.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-col items-start gap-3">
               <a
                 href="#contact"
                 onClick={(e) => {
                   e.preventDefault();
                   document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="group inline-flex items-center gap-2 rounded-full bg-mint-2 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-mint-ink shadow-[0_0_24px_2px_rgba(0,255,180,0.2)] transition-all duration-300 hover:shadow-[0_0_40px_6px_rgba(0,255,180,0.5)]"
+                className="group inline-flex items-center gap-2 rounded-full bg-mint-2 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-mint-ink shadow-[0_0_20px_2px_rgba(0,255,180,0.18)] transition-all duration-300 hover:shadow-[0_0_36px_6px_rgba(0,255,180,0.4)]"
               >
                 <span>Start a project</span>
                 <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -103,9 +102,9 @@ export default function Hero() {
                   e.preventDefault();
                   document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted underline-offset-[6px] transition-colors duration-200 hover:text-mint-2 hover:underline"
+                className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-soft transition-colors duration-200 hover:text-ink-muted"
               >
-                See selected work
+                See selected work →
               </a>
             </div>
           </div>
@@ -115,7 +114,7 @@ export default function Hero() {
       </div>
 
       {/* Marquee band */}
-      <div className="relative z-10 overflow-hidden py-8">
+      <div className="relative z-10 overflow-hidden py-5">
         <div
           className="flex whitespace-nowrap"
           style={{ animation: "marquee 55s linear infinite" }}

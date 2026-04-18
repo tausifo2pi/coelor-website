@@ -60,7 +60,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrains.variable} ${playfair.variable}`}
     >
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
