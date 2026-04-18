@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.github
+infra
+*.pem
+*.log
+.DS_Store
+README.md

@@ -1,0 +1,150 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 3 1 * *'   # 1st of every month at 3am UTC
+  workflow_dispatch:
+    inputs:
+      update_ec2:
+        description: "Run update EC2 step"
+        required: false
+        default: "false"
+      transfer_file:
+        description: "Run transfer file step"
+        required: false
+        default: "false"
+      generate_ssl:
+        description: "Run generate SSL step"
+        required: false
+        default: "false"
+      build:
+        description: "Run build step"
+        required: false
+        default: "true"
+      deploy:
+        description: "Run deploy step"
+        required: false
+        default: "true"
+      cleanup:
+        description: "Run cleanup step"
+        required: false
+        default: "true"
+
+jobs:
+  transfer_file:
+    if: ${{ github.event.inputs.transfer_file == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Create server directories on EC2
+        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} 'mkdir -p /home/ec2-user/server/nginx'
+      - name: Transfer docker-compose.yml
+        run: scp -o StrictHostKeyChecking=no ./infra/server/docker-compose.yml ec2-user@${{ secrets.API_SERVER }}:/home/ec2-user/server/docker-compose.yml
+      - name: Transfer nginx.conf
+        run: scp -o StrictHostKeyChecking=no ./infra/server/nginx.conf ec2-user@${{ secrets.API_SERVER }}:/home/ec2-user/server/nginx/nginx.conf
+      - name: Transfer update_ec2.sh
+        run: scp -o StrictHostKeyChecking=no ./infra/server/update_ec2.sh ec2-user@${{ secrets.API_SERVER }}:/home/ec2-user/server/update_ec2.sh
+      - name: Transfer ssl.sh
+        run: scp -o StrictHostKeyChecking=no ./infra/server/ssl.sh ec2-user@${{ secrets.API_SERVER }}:/home/ec2-user/server/ssl.sh
+      - name: Transfer renew_ssl.sh
+        run: scp -o StrictHostKeyChecking=no ./infra/server/renew_ssl.sh ec2-user@${{ secrets.API_SERVER }}:/home/ec2-user/server/renew_ssl.sh
+
+  update-ec2:
+    if: ${{ github.event.inputs.update_ec2 == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Update EC2
+        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} 'bash /home/ec2-user/server/update_ec2.sh'
+
+  renew-ssl:
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.generate_ssl == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Renew SSL
+        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} 'bash /home/ec2-user/server/renew_ssl.sh'
+
+  generate-ssl:
+    if: ${{ github.event.inputs.generate_ssl == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Generate SSL
+        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} 'bash /home/ec2-user/server/ssl.sh'
+
+
+  build:
+    if: ${{ github.event_name == 'push' || github.event.inputs.build == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create .env
+        run: echo "${{ secrets.APP_ENV }}" > .env
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
+
+      - name: Create Docker Hub repo if not exists
+        run: |
+          TOKEN=$(curl -s -X POST "https://hub.docker.com/v2/users/login" \
+            -H "Content-Type: application/json" \
+            -d '{"username":"${{ secrets.DOCKER_HUB_USER }}","password":"${{ secrets.DOCKER_HUB_PASSWORD }}"}' \
+            | jq -r '.token')
+          curl -s -X POST "https://hub.docker.com/v2/repositories/" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"${{ secrets.DOCKER_HUB_REPO }}","namespace":"${{ secrets.DOCKER_HUB_USER }}","is_private":false}' || true
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USER }}/${{ secrets.DOCKER_HUB_REPO }}:${{ secrets.CI_COMMIT_REF_NAME }} .
+          docker push ${{ secrets.DOCKER_HUB_USER }}/${{ secrets.DOCKER_HUB_REPO }}:${{ secrets.CI_COMMIT_REF_NAME }}
+
+  deploy:
+    if: ${{ github.event_name == 'push' || github.event.inputs.deploy == 'true' }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} << 'EOF'
+            cd /home/ec2-user/server
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
+          EOF
+
+  cleanup:
+    if: ${{ github.event_name == 'push' || github.event.inputs.cleanup == 'true' }}
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Cleanup Docker
+        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} "docker system prune -a -f"

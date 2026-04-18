@@ -1,0 +1,64 @@
+<svg width="100%" viewBox="0 0 680 743.23" role="img" style="" xmlns="http://www.w3.org/2000/svg">
+<title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Coelor final logo system — Version A</title>
+<desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Final coelor wordmark in mint-to-emerald gradient shown across dark, light, monochrome, navbar, and favicon contexts.</desc>
+
+<defs>
+  <linearGradient id="gr" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#b4ffd8"/>
+    <stop offset="50%" stop-color="#00ffb4"/>
+    <stop offset="100%" stop-color="#00b87a"/>
+  </linearGradient>
+</defs>
+
+<!-- 1: Primary — on dark -->
+<text x="40" y="28" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">Primary — dark background</text>
+<rect x="40" y="40" width="600" height="100" rx="12" fill="#07070d" stroke="var(--b)" stroke-width="0.5" style="fill:rgb(7, 7, 13);stroke:rgba(222, 220, 209, 0.3);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<text x="340" y="106" text-anchor="middle" style="font-family:'Playfair Display','Georgia',serif;font-size:58px;font-weight:400;letter-spacing:0.05em;fill:url(#gr);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Playfair Display&quot;, Georgia, serif;font-size:58px;font-weight:400;text-anchor:middle;dominant-baseline:auto">coelor</text>
+
+<!-- 2: On light -->
+<text x="40" y="172" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">On light background</text>
+<rect x="40" y="184" width="600" height="100" rx="12" fill="#f5f5f0" stroke="var(--b)" stroke-width="0.5" style="fill:rgb(245, 245, 240);stroke:rgba(222, 220, 209, 0.3);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<text x="340" y="250" text-anchor="middle" style="font-family:'Playfair Display','Georgia',serif;font-size:58px;font-weight:400;letter-spacing:0.05em;fill:#0a0a0f;fill:rgb(10, 10, 15);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Playfair Display&quot;, Georgia, serif;font-size:58px;font-weight:400;text-anchor:middle;dominant-baseline:auto">coelor</text>
+
+<!-- 3: Monochrome white -->
+<text x="40" y="316" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">Monochrome — white</text>
+<rect x="40" y="328" width="600" height="100" rx="12" fill="#07070d" stroke="var(--b)" stroke-width="0.5" style="fill:rgb(7, 7, 13);stroke:rgba(222, 220, 209, 0.3);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<text x="340" y="394" text-anchor="middle" style="font-family:'Playfair Display','Georgia',serif;font-size:58px;font-weight:400;letter-spacing:0.05em;fill:#e8e8e8;fill:rgb(232, 232, 232);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Playfair Display&quot;, Georgia, serif;font-size:58px;font-weight:400;text-anchor:middle;dominant-baseline:auto">coelor</text>
+
+<!-- 4: Navbar simulation -->
+<text x="40" y="460" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">Navbar context</text>
+<rect x="40" y="472" width="600" height="56" rx="8" fill="rgba(7,7,13,0.85)" style="fill:rgba(7, 7, 13, 0.85);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<!-- Logo at navbar scale -->
+<text x="72" y="508" style="font-family:'Playfair Display','Georgia',serif;font-size:24px;font-weight:400;letter-spacing:0.05em;fill:url(#gr);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Playfair Display&quot;, Georgia, serif;font-size:24px;font-weight:400;text-anchor:start;dominant-baseline:auto">coelor</text>
+<!-- Nav links -->
+<text x="580" y="505" text-anchor="end" style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:400;letter-spacing:0.1em;fill:#7a7a8a;fill:rgb(122, 122, 138);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;JetBrains Mono&quot;, monospace;font-size:11px;font-weight:400;text-anchor:end;dominant-baseline:auto">HOME    SERVICES    ABOUT    CONTACT</text>
+
+<!-- 5: Favicon scales -->
+<text x="40" y="564" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">Favicon and app icon</text>
+
+<!-- 64px -->
+<rect x="50" y="580" width="64" height="64" rx="12" fill="#07070d" stroke="var(--b)" stroke-width="0.5" style="fill:rgb(7, 7, 13);stroke:rgba(222, 220, 209, 0.3);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<text x="82" y="622" text-anchor="middle" style="font-family:'Playfair Display','Georgia',serif;font-size:32px;font-weight:400;fill:url(#gr);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Playfair Display&quot;, Georgia, serif;font-size:32px;font-weight:400;text-anchor:middle;dominant-baseline:auto">c</text>
+
+<!-- 48px -->
+<rect x="140" y="588" width="48" height="48" rx="10" fill="#07070d" stroke="var(--b)" stroke-width="0.5" style="fill:rgb(7, 7, 13);stroke:rgba(222, 220, 209, 0.3);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<text x="164" y="622" text-anchor="middle" style="font-family:'Playfair Display','Georgia',serif;font-size:26px;font-weight:400;fill:url(#gr);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Playfair Display&quot;, Georgia, serif;font-size:26px;font-weight:400;text-anchor:middle;dominant-baseline:auto">c</text>
+
+<!-- 32px -->
+<rect x="214" y="596" width="32" height="32" rx="6" fill="#07070d" stroke="var(--b)" stroke-width="0.5" style="fill:rgb(7, 7, 13);stroke:rgba(222, 220, 209, 0.3);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<text x="230" y="620" text-anchor="middle" style="font-family:'Playfair Display','Georgia',serif;font-size:18px;font-weight:400;fill:#00ffb4;fill:rgb(0, 255, 180);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Playfair Display&quot;, Georgia, serif;font-size:18px;font-weight:400;text-anchor:middle;dominant-baseline:auto">c</text>
+
+<!-- 16px -->
+<rect x="272" y="604" width="16" height="16" rx="3" fill="#07070d" stroke="var(--b)" stroke-width="0.5" style="fill:rgb(7, 7, 13);stroke:rgba(222, 220, 209, 0.3);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<text x="280" y="617" text-anchor="middle" style="font-family:'Playfair Display','Georgia',serif;font-size:11px;font-weight:400;fill:#00ffb4;fill:rgb(0, 255, 180);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Playfair Display&quot;, Georgia, serif;font-size:11px;font-weight:400;text-anchor:middle;dominant-baseline:auto">c</text>
+
+<text x="54" y="664" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">64px</text>
+<text x="148" y="664" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">48px</text>
+<text x="218" y="664" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">32px</text>
+<text x="268" y="664" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">16px</text>
+
+<!-- Spec summary -->
+<text x="40" y="710" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">Typeface: Playfair Display · Weight: 400 · Tracking: 0.05em · Gradient: #b4ffd8 → #00ffb4 → #00b87a</text>
+<text x="40" y="730" style="fill:rgb(194, 192, 182);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">Favicon: lowercase "c" with gradient at large sizes, solid #00ffb4 at small sizes</text>
+
+</svg>

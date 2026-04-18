@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+.DS_Store
+*.log
+.env
+.env.ci
+.env*.local
+next-env.d.ts
+.vercel
+
+# Infra
+infra/
+infra/node_modules/
+infra/*.pem
+infra/Pulumi.dev.yaml
