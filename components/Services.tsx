@@ -42,7 +42,7 @@ function Item({ item, i }: { item: (typeof CAPABILITIES)[number]; i: number }) {
   return (
     <div
       ref={ref}
-      className="reveal group relative grid grid-cols-12 gap-6 border-t border-rule py-10 transition-colors duration-500 hover:bg-canvasElev md:py-14"
+      className="reveal group relative grid grid-cols-12 gap-6 border-t border-rule py-10 transition-colors duration-300 hover:border-rule-strong md:py-14"
       style={{ transitionDelay: `${i * 40}ms` }}
     >
       <div className="col-span-2 md:col-span-1">
@@ -52,7 +52,9 @@ function Item({ item, i }: { item: (typeof CAPABILITIES)[number]; i: number }) {
         <span className="eyebrow">{item.kicker}</span>
       </div>
       <div className="col-span-12 md:col-span-5">
-        <h3 className="display text-[28px] md:text-[40px]">{item.title}</h3>
+        <h3 className="display text-[28px] transition-colors duration-300 group-hover:text-mint-1 md:text-[40px]">
+          {item.title}
+        </h3>
         <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-muted md:text-base">
           {item.body}
         </p>
@@ -61,7 +63,7 @@ function Item({ item, i }: { item: (typeof CAPABILITIES)[number]; i: number }) {
         {item.tags.map((t) => (
           <span
             key={t}
-            className="rounded-full border border-rule px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted transition-colors duration-200 group-hover:border-rule-strong group-hover:text-ink"
+            className="rounded-full border border-rule px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted"
           >
             {t}
           </span>
@@ -73,7 +75,7 @@ function Item({ item, i }: { item: (typeof CAPABILITIES)[number]; i: number }) {
 
 export default function Capabilities() {
   return (
-    <section id="capabilities" className="py-24 md:py-36">
+    <section id="capabilities" className="py-16 md:py-24">
       <div className="mx-auto max-w-[1280px] px-6 md:px-10">
         <div className="mb-12 flex items-end justify-between gap-8 md:mb-16">
           <div>

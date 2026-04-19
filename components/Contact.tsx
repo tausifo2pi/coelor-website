@@ -23,7 +23,7 @@ export default function Contact() {
     }`;
 
   return (
-    <section id="contact" className="relative py-24 md:py-36">
+    <section id="contact" className="relative py-16 md:py-24">
       <div className="mx-auto max-w-[1280px] px-6 md:px-10">
         <div
           ref={headRef}

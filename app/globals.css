@@ -1,5 +1,3 @@
-@import url("https://api.fontshare.com/v2/css?f[]=switzer@600,500,400&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -55,7 +53,7 @@
   }
 
   ::selection {
-    background: #00ffb4;
+    background: #00b87a;
     color: #0a3d2a;
   }
 
@@ -116,147 +114,50 @@
     line-height: 0.98;
   }
 
-  .rule-dotted {
-    background-image: radial-gradient(circle, var(--rule-strong) 1px, transparent 1.2px);
-    background-size: 8px 1px;
-    background-repeat: repeat-x;
-    background-position: left center;
-    height: 1px;
+}
+
+/* -------- Effects -------- */
+
+@keyframes term-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
   }
 }
 
-/* -------- Registered color properties (enables smooth gradient interpolation) -------- */
-
-@property --orb-a-color {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: rgba(0, 210, 200, 0.32);
-}
-
-@property --orb-b-color {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: rgba(20, 130, 255, 0.28);
-}
-
-@property --orb-c-color {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: rgba(70, 110, 230, 0.20);
-}
-
-/* -------- Keyframes -------- */
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes word-rise {
+@keyframes log-in {
   from {
     opacity: 0;
-    transform: translateY(32px);
-    filter: blur(12px);
+    transform: translateY(2px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
-/* Slow liquid mesh orbits — eye-soothing, mature */
-@keyframes orbit-a {
-  0%,   100% { transform: translate3d(0, 0, 0) scale(1); }
-  25%         { transform: translate3d(18%, -12%, 0) scale(1.06); }
-  50%         { transform: translate3d(10%, 16%, 0) scale(0.94); }
-  75%         { transform: translate3d(-14%, 8%, 0) scale(1.04); }
+.log-line {
+  animation: log-in 140ms ease-out both;
 }
 
-@keyframes orbit-b {
-  0%,   100% { transform: translate3d(0, 0, 0) scale(1); }
-  30%         { transform: translate3d(-16%, 10%, 0) scale(1.08); }
-  60%         { transform: translate3d(12%, -14%, 0) scale(0.92); }
-  80%         { transform: translate3d(-8%, -6%, 0) scale(1.03); }
+.term-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  vertical-align: baseline;
+  transform: translateY(2px);
+  background-color: var(--mint-2);
+  animation: term-blink 1s step-end infinite;
 }
 
-@keyframes orbit-c {
-  0%,   100% { transform: translate3d(0, 0, 0) scale(1); }
-  40%         { transform: translate3d(14%, -18%, 0) scale(1.1); }
-  70%         { transform: translate3d(-12%, 10%, 0) scale(0.95); }
+.term-spinner {
+  display: inline-block;
+  animation: term-blink 0.6s step-end infinite;
 }
-
-@keyframes orb-a-color {
-  0%,  100% { --orb-a-color: rgba(0, 210, 200, 0.32); }
-  40%        { --orb-a-color: rgba(30, 160, 255, 0.30); }
-  70%        { --orb-a-color: rgba(0, 200, 220, 0.28); }
-}
-
-@keyframes orb-b-color {
-  0%,  100% { --orb-b-color: rgba(20, 130, 255, 0.28); }
-  35%        { --orb-b-color: rgba(0, 195, 230, 0.28); }
-  70%        { --orb-b-color: rgba(50, 120, 240, 0.26); }
-}
-
-@keyframes orb-c-color {
-  0%,  100% { --orb-c-color: rgba(70, 110, 230, 0.20); }
-  40%        { --orb-c-color: rgba(0, 175, 215, 0.22); }
-  70%        { --orb-c-color: rgba(90, 80, 210, 0.18); }
-}
-
-@keyframes mesh-drift {
-  0%,
-  100% {
-    opacity: 0.9;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* Neon flicker with glow gradient for the "shape" word */
-@keyframes neon-flicker {
-  0%,
-  19.9%,
-  22%,
-  62.9%,
-  64%,
-  64.9%,
-  70%,
-  100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 6px rgba(0, 255, 180, 0.55))
-      drop-shadow(0 0 22px rgba(0, 200, 255, 0.38))
-      drop-shadow(0 0 42px rgba(0, 255, 180, 0.22));
-  }
-  20%,
-  21.9%,
-  63%,
-  63.9%,
-  65%,
-  69.9% {
-    opacity: 0.45;
-    filter: drop-shadow(0 0 2px rgba(0, 255, 180, 0.2));
-  }
-}
-
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* -------- Effects -------- */
 
 .reveal {
   opacity: 0;
@@ -269,87 +170,37 @@
   transform: translateY(0);
 }
 
-.word-rise {
-  display: inline-block;
-  animation: word-rise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+/* -------- Studio section — inverted cream palette -------- */
+#studio {
+  background-color: #f3eee1;
+  color: #1a1a1f;
 }
-
-.mesh-wrap {
-  animation: mesh-drift 14s ease-in-out infinite;
+#studio h1,
+#studio h2,
+#studio h3,
+#studio h4,
+#studio .text-ink {
+  color: #1a1a1f;
 }
-
-.mesh-orb {
-  position: absolute;
-  border-radius: 9999px;
-  pointer-events: none;
-  will-change: transform, filter;
+#studio .text-ink-muted,
+#studio .eyebrow {
+  color: #5a5a62;
 }
-
-.mesh-orb-a {
-  width: min(900px, 85vw);
-  aspect-ratio: 1 / 1;
-  background: radial-gradient(circle at 50% 50%, var(--orb-a-color), transparent 62%);
-  filter: blur(100px);
-  top: -18%;
-  left: -12%;
-  animation:
-    orbit-a 25s ease-in-out infinite,
-    orb-a-color 16s ease-in-out infinite;
+#studio .text-ink-soft {
+  color: #8a8a90;
 }
-
-.mesh-orb-b {
-  width: min(780px, 80vw);
-  aspect-ratio: 1 / 1;
-  background: radial-gradient(circle at 50% 50%, var(--orb-b-color), transparent 62%);
-  filter: blur(100px);
-  top: 8%;
-  right: -18%;
-  animation:
-    orbit-b 30s ease-in-out infinite,
-    orb-b-color 21s ease-in-out infinite;
+#studio .border-rule {
+  border-color: rgba(10, 10, 20, 0.14);
 }
-
-.mesh-orb-c {
-  width: min(620px, 70vw);
-  aspect-ratio: 1 / 1;
-  background: radial-gradient(circle at 50% 50%, var(--orb-c-color), transparent 65%);
-  filter: blur(100px);
-  bottom: -20%;
-  left: 25%;
-  animation:
-    orbit-c 35s ease-in-out infinite,
-    orb-c-color 14s ease-in-out infinite;
+#studio .border-rule-strong {
+  border-color: rgba(10, 10, 20, 0.28);
 }
-
-.mesh-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at 50% 45%,
-    transparent 35%,
-    rgba(7, 7, 13, 0.55) 75%,
-    rgba(7, 7, 13, 0.9) 100%
-  );
-  pointer-events: none;
+#studio .bg-rule {
+  background-color: rgba(10, 10, 20, 0.14);
 }
-
-.shape-neon {
-  display: inline-block;
-  background-image: linear-gradient(
-    100deg,
-    #a8f5ff 0%,
-    #00d4e8 30%,
-    #00ffb4 50%,
-    #0098ff 70%,
-    #a8f5ff 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation:
-    gradient-shift 9s ease-in-out infinite,
-    neon-flicker 6s infinite;
+#studio ::selection {
+  background: #0a3d2a;
+  color: #f3eee1;
 }
 
 @media (prefers-reduced-motion: reduce) {

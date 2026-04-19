@@ -38,19 +38,9 @@ function Principle({ p, i }: { p: (typeof PRINCIPLES)[number]; i: number }) {
 export default function Studio() {
   const quoteRef = useReveal<HTMLDivElement>();
   return (
-    <section id="studio" className="relative py-24 md:py-36">
-      {/* Subtle textured backdrop */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-full"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse at 50% 0%, rgba(0,184,122,0.06), transparent 55%)",
-        }}
-      />
-
+    <section id="studio" className="relative overflow-hidden py-20 md:py-28">
       <div className="relative mx-auto max-w-[1280px] px-6 md:px-10">
-        <div className="mb-14 flex items-baseline gap-4 md:mb-20">
+        <div className="mb-10 flex items-baseline gap-4 md:mb-14">
           <span className="eyebrow">§ 03 — Studio</span>
           <span className="h-px flex-1 bg-rule" />
         </div>
@@ -61,7 +51,8 @@ export default function Studio() {
         >
           <span
             aria-hidden
-            className="absolute -left-4 -top-6 font-display text-[160px] leading-none text-ink/10 md:-left-10 md:-top-12 md:text-[240px]"
+            className="absolute -left-2 -top-4 font-display text-[100px] leading-none md:-left-10 md:-top-12 md:text-[240px]"
+            style={{ color: "rgba(10, 61, 42, 0.12)" }}
           >
             &ldquo;
           </span>
@@ -69,15 +60,7 @@ export default function Studio() {
             We don&rsquo;t build software.
             <br />
             We engineer{" "}
-            <span
-              className="italic"
-              style={{
-                backgroundImage: "var(--gradient-logo)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-              }}
-            >
+            <span className="italic" style={{ color: "#0a3d2a" }}>
               unfair advantages
             </span>
             .
@@ -89,7 +72,7 @@ export default function Studio() {
           </p>
         </div>
 
-        <div className="mt-20 grid grid-cols-1 gap-8 md:mt-28 md:grid-cols-3 md:gap-10">
+        <div className="mt-16 grid grid-cols-1 gap-8 md:mt-20 md:grid-cols-3 md:gap-10">
           {PRINCIPLES.map((p, i) => (
             <Principle key={p.k} p={p} i={i} />
           ))}

@@ -64,7 +64,7 @@ npm run workflow:setup
 Point domain DNS A record to the EC2 IP, then:
 
 ```bash
-npm run workflow:ssl
+    npm run workflow:ssl
 ```
 
 ---

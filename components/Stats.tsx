@@ -40,7 +40,7 @@ function Row({ w, i }: { w: (typeof WORK)[number]; i: number }) {
   return (
     <div
       ref={ref}
-      className="reveal group grid cursor-default grid-cols-12 items-baseline gap-4 border-t border-rule py-6 transition-colors duration-300 hover:bg-canvasElev md:py-8"
+      className="reveal group relative grid cursor-default grid-cols-12 items-baseline gap-4 border-t border-rule py-6 transition-colors duration-300 hover:border-rule-strong md:py-8"
       style={{ transitionDelay: `${i * 40}ms` }}
     >
       <div className="col-span-2 font-mono text-[12px] tracking-[0.18em] text-ink-muted md:col-span-1">
@@ -50,18 +50,14 @@ function Row({ w, i }: { w: (typeof WORK)[number]; i: number }) {
         {w.client}
       </div>
       <div className="col-span-12 md:col-span-6">
-        <h3 className="display text-[22px] leading-tight md:text-[30px]">{w.title}</h3>
+        <h3 className="display text-[22px] leading-tight text-ink transition-colors duration-300 group-hover:text-mint-1 md:text-[30px]">
+          {w.title}
+        </h3>
       </div>
       <div className="col-span-11 flex items-center justify-start gap-2 md:col-span-2 md:justify-end">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
           {w.role}
         </span>
-      </div>
-      <div
-        aria-hidden
-        className="col-span-1 text-right font-display text-[18px] text-ink-muted transition-transform duration-300 group-hover:translate-x-1 group-hover:text-ink md:hidden"
-      >
-        ↗
       </div>
     </div>
   );
@@ -70,7 +66,7 @@ function Row({ w, i }: { w: (typeof WORK)[number]; i: number }) {
 export default function Work() {
   const headRef = useReveal<HTMLDivElement>();
   return (
-    <section id="work" className="py-24 md:py-36">
+    <section id="work" className="py-16 md:py-24">
       <div className="mx-auto max-w-[1280px] px-6 md:px-10">
         <div ref={headRef} className="reveal mb-12 flex items-end justify-between gap-8 md:mb-16">
           <div>
@@ -93,17 +89,18 @@ export default function Work() {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center gap-8 text-[15px] text-ink-muted">
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em]">Proof</span>
+        <div className="mt-10 flex flex-wrap items-baseline gap-x-8 gap-y-3 font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted md:mt-14">
+          <span className="text-ink-soft">Proof —</span>
           <span>
-            <strong className="font-display text-[22px] text-ink">100+</strong> projects shipped
+            <span className="text-ink">100+</span> projects shipped
           </span>
+          <span className="opacity-40">·</span>
           <span>
-            <strong className="font-display text-[22px] text-ink">20</strong> countries
+            <span className="text-ink">20</span> countries
           </span>
+          <span className="opacity-40">·</span>
           <span>
-            <strong className="font-display text-[22px] text-ink">95%</strong> retained beyond the
-            first engagement
+            <span className="text-ink">95%</span> retained past first engagement
           </span>
         </div>
       </div>

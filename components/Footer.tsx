@@ -18,14 +18,14 @@ const SOCIAL = [
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-rule bg-canvasElev">
+    <footer className="relative overflow-hidden border-t border-rule bg-canvasElev">
       <div className="mx-auto max-w-[1280px] px-6 py-14 md:px-10 md:py-20">
         {/* Giant wordmark */}
         <div
           aria-hidden
           className="wordmark select-none whitespace-nowrap leading-none"
           style={{
-            fontSize: "clamp(84px, 18vw, 260px)",
+            fontSize: "clamp(64px, 18vw, 260px)",
             letterSpacing: "-0.02em",
           }}
         >
@@ -67,7 +67,7 @@ export default function Footer() {
             </div>
           </div>
           <div className="flex flex-col items-start gap-2 md:items-end">
-            <span className="eyebrow">© {new Date().getFullYear()}</span>
+            <span className="eyebrow">© 2026</span>
             <p className="text-ink-muted">Coelor. All rights reserved.</p>
             <p className="text-ink-soft">Agile by nature.</p>
           </div>

@@ -74,24 +74,25 @@ export default function Navbar() {
           <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
         </a>
 
-        {/* Hamburger — z-[60] so it stays above the overlay (z-50) within header's stacking context */}
+        {/* Hamburger / X — z-[70] keeps it above the overlay in every scenario */}
         <button
           type="button"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((v) => !v)}
-          className="relative z-[60] h-10 w-10 md:hidden"
+          className="relative z-[70] -mr-2 flex h-10 w-10 items-center justify-center text-ink md:hidden"
         >
-          <span
-            className={`absolute left-2 right-2 top-[19px] h-px bg-ink transition-all duration-200 ${
-              menuOpen ? "translate-y-[3px] rotate-45" : ""
-            }`}
-          />
-          <span
-            className={`absolute left-2 right-2 top-[25px] h-px bg-ink transition-all duration-200 ${
-              menuOpen ? "-translate-y-[3px] -rotate-45" : ""
-            }`}
-          />
+          {menuOpen ? (
+            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
+              <line x1="4" y1="4" x2="18" y2="18" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              <line x1="18" y1="4" x2="4" y2="18" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
+              <line x1="3" y1="8" x2="19" y2="8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              <line x1="3" y1="14" x2="19" y2="14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+            </svg>
+          )}
         </button>
       </div>
 

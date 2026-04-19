@@ -2,153 +2,223 @@
 
 import { useEffect, useState } from "react";
 
+const CMD = "coelor ship --production --quiet";
+
+type StatusStep =
+  | { kind: "ok"; label: string; value: string }
+  | { kind: "bar"; label: string };
+
+const STEPS: StatusStep[] = [
+  { kind: "ok", label: "migrations", value: "48 applied" },
+  { kind: "ok", label: "contract tests", value: "284 / 284 pass" },
+  { kind: "ok", label: "infra", value: "reconciled" },
+  { kind: "bar", label: "rollout · v4.812" },
+  { kind: "ok", label: "health", value: "0 alerts · 14 ms p99" },
+];
+
+type LineState = "hidden" | "pending" | "resolved";
+
 export default function Hero() {
-  const [ready, setReady] = useState(false);
+  const [cmdChars, setCmdChars] = useState(0);
+  const [cmdDone, setCmdDone] = useState(false);
+  const [lineStates, setLineStates] = useState<LineState[]>(() =>
+    STEPS.map(() => "hidden"),
+  );
+  const [pct, setPct] = useState(0);
+  const [finalCursor, setFinalCursor] = useState(false);
+
   useEffect(() => {
-    const t = setTimeout(() => setReady(true), 80);
-    return () => clearTimeout(t);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const at = (ms: number, fn: () => void) =>
+      timers.push(setTimeout(fn, ms));
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCmdChars(CMD.length);
+      setCmdDone(true);
+      setLineStates(STEPS.map(() => "resolved"));
+      setPct(100);
+      setFinalCursor(true);
+      return;
+    }
+
+    let t = 520;
+
+    // 1. Type the command character-by-character with mild jitter
+    for (let i = 1; i <= CMD.length; i++) {
+      const j = 18 + Math.random() * 22;
+      at(t, () => setCmdChars(i));
+      t += 26 + j;
+    }
+    at(t + 180, () => setCmdDone(true));
+    t += 340;
+
+    // 2. Stream the status lines
+    STEPS.forEach((step, idx) => {
+      at(t, () =>
+        setLineStates((prev) => {
+          const next = [...prev];
+          next[idx] = "pending";
+          return next;
+        }),
+      );
+
+      if (step.kind === "bar") {
+        const total = 1150;
+        const start = t + 160;
+        for (let p = 0; p <= 100; p += 2) {
+          at(
+            start + (p / 100) * total,
+            () => setPct(p),
+          );
+        }
+        t = start + total + 160;
+        at(t, () =>
+          setLineStates((prev) => {
+            const next = [...prev];
+            next[idx] = "resolved";
+            return next;
+          }),
+        );
+        t += 220;
+      } else {
+        const resolve = 320 + Math.random() * 220;
+        t += resolve;
+        at(t, () =>
+          setLineStates((prev) => {
+            const next = [...prev];
+            next[idx] = "resolved";
+            return next;
+          }),
+        );
+        t += 160 + Math.random() * 80;
+      }
+    });
+
+    at(t + 260, () => setFinalCursor(true));
+
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   return (
-    <section id="top" className="relative overflow-hidden pt-[84px] md:pt-[92px]">
-      {/* Liquid mesh backdrop — slow, breathing, eye-soothing */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
-        <div className="mesh-wrap absolute inset-0">
-          <div className="mesh-orb mesh-orb-a" />
-          <div className="mesh-orb mesh-orb-b" />
-          <div className="mesh-orb mesh-orb-c" />
-        </div>
-        <div className="mesh-vignette" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-[1280px] px-6 md:px-10">
-        {/* Meta row */}
-        <div
-          className="flex items-center justify-between pb-5"
-          style={{
-            opacity: ready ? 1 : 0,
-            transform: ready ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.6s ease, transform 0.6s ease",
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-2 opacity-70" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-mint-2 shadow-[0_0_12px_rgba(0,255,180,0.8)]" />
-            </span>
-            <span className="eyebrow">Accepting new work · Q2</span>
-          </div>
-          <span className="hidden eyebrow md:inline">Est. 2026 · Remote-first</span>
+    <section
+      id="top"
+      className="relative overflow-hidden px-6 pb-28 pt-[120px] md:px-10 md:pb-40 md:pt-[160px]"
+    >
+      <div className="mx-auto max-w-[1040px]">
+        <div className="mb-8 flex items-center justify-between md:mb-12">
+          <span className="eyebrow">§ 00 — Signal</span>
+          <span className="eyebrow hidden md:inline">Coelor · Software Studio</span>
         </div>
 
-        <hr />
-
-        {/* Headline */}
-        <div className="grid grid-cols-1 gap-8 py-10 md:grid-cols-12 md:gap-6 md:py-14">
-          <h1 className="display col-span-12 text-[52px] sm:text-[68px] md:col-span-8 md:text-[88px] lg:text-[108px]">
-            <span className="word-rise" style={{ animationDelay: "0.1s" }}>
-              Software
+        <div className="relative overflow-hidden rounded-lg border border-rule bg-canvasElev shadow-[0_40px_140px_-50px_rgba(0,255,180,0.22)]">
+          <div className="flex items-center justify-between border-b border-rule px-5 py-3 md:px-7 md:py-4">
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted">
+              coelor.deploy.live
             </span>
-            <br />
-            <span className="word-rise" style={{ animationDelay: "0.25s" }}>
-              with the{" "}
-            </span>
-            <span className="word-rise" style={{ animationDelay: "0.4s" }}>
-              <span
-                className="shape-neon"
-                style={{
-                  fontStyle: "italic",
-                  fontFamily: "var(--font-display)",
-                }}
-              >
-                shape
+            <span className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-mint-2 shadow-[0_0_10px_rgba(0,255,180,0.5)]" />
+              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted">
+                live
               </span>
             </span>
-            <br />
-            <span className="word-rise" style={{ animationDelay: "0.55s" }}>
-              of your ambition.
-            </span>
-          </h1>
+          </div>
 
-          <div
-            className="col-span-12 flex flex-col justify-end gap-5 border-t border-rule pt-5 md:col-span-4 md:border-none md:pt-0 self-end"
-            style={{
-              opacity: ready ? 1 : 0,
-              transform: ready ? "translateY(0)" : "translateY(20px)",
-              transition:
-                "opacity 0.9s cubic-bezier(0.22,1,0.36,1) 0.7s, transform 0.9s cubic-bezier(0.22,1,0.36,1) 0.7s",
-            }}
-          >
-            <p className="text-[14px] leading-[1.7] text-ink-muted">
-              We build AI systems, custom products, and infrastructure for companies that refuse
-              off-the-shelf answers.
-            </p>
+          <div className="px-5 py-7 font-mono text-[13px] leading-[1.9] md:px-8 md:py-10 md:text-[14px]">
+            {/* Command line — typewritten */}
+            <div className="flex items-baseline gap-4">
+              <span className="select-none text-ink-soft">$</span>
+              <span className="text-ink">
+                {CMD.slice(0, cmdChars)}
+                {!cmdDone && <span className="term-cursor" />}
+              </span>
+            </div>
 
-            <div className="flex flex-col items-start gap-3">
-              <a
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="group inline-flex items-center gap-2 rounded-full bg-mint-2 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-mint-ink shadow-[0_0_20px_2px_rgba(0,255,180,0.18)] transition-all duration-300 hover:shadow-[0_0_36px_6px_rgba(0,255,180,0.4)]"
-              >
-                <span>Start a project</span>
-                <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-              </a>
-              <a
-                href="#work"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-soft transition-colors duration-200 hover:text-ink-muted"
-              >
-                See selected work →
-              </a>
+            {/* Status lines */}
+            {STEPS.map((s, idx) => {
+              const state = lineStates[idx];
+              const visible = state !== "hidden";
+              return (
+                <div
+                  key={idx}
+                  className="flex items-baseline gap-4"
+                  style={{
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(4px)",
+                    transition: "opacity 0.35s ease, transform 0.35s ease",
+                  }}
+                >
+                  <span className="select-none text-ink-soft">·</span>
+                  <span className="whitespace-nowrap text-ink-muted">{s.label}</span>
+                  <span
+                    aria-hidden
+                    className="flex-1 -translate-y-[3px] border-b border-dotted"
+                    style={{ borderColor: "rgba(255,255,255,0.14)" }}
+                  />
+                  {s.kind === "ok" ? (
+                    <span className="whitespace-nowrap">
+                      {state === "resolved" ? (
+                        <span className="text-mint-2">{s.value}</span>
+                      ) : (
+                        <span className="term-spinner text-ink-soft">…</span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-3 whitespace-nowrap">
+                      <span className="block h-[6px] w-[80px] overflow-hidden rounded-full bg-rule md:w-[160px]">
+                        <span
+                          className="block h-full bg-mint-2"
+                          style={{
+                            width: `${pct}%`,
+                            transition: "width 120ms linear",
+                          }}
+                        />
+                      </span>
+                      <span
+                        className={
+                          pct === 100
+                            ? "text-mint-2 tabular-nums"
+                            : "text-ink tabular-nums"
+                        }
+                      >
+                        {pct.toString().padStart(3, " ")}%
+                      </span>
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Final cursor */}
+            <div
+              className="mt-4 flex items-baseline gap-4"
+              style={{
+                opacity: finalCursor ? 1 : 0,
+                transition: "opacity 0.5s ease",
+              }}
+            >
+              <span className="select-none text-ink-soft">$</span>
+              <span className="term-cursor" />
             </div>
           </div>
         </div>
 
-        <hr />
-      </div>
-
-      {/* Marquee band */}
-      <div className="relative z-10 overflow-hidden py-5">
-        <div
-          className="flex whitespace-nowrap"
-          style={{ animation: "marquee 55s linear infinite" }}
-        >
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="flex shrink-0 items-center gap-12 pr-12 font-mono text-[12px] uppercase tracking-[0.24em] text-ink-muted">
-              {[
-                "AI Agents",
-                "·",
-                "LLM Pipelines",
-                "·",
-                "Product Engineering",
-                "·",
-                "Platform & Infra",
-                "·",
-                "Data Systems",
-                "·",
-                "Integrations",
-                "·",
-                "Realtime",
-                "·",
-                "TypeScript · Go · Python",
-                "·",
-                "Postgres · Kafka · Redis",
-                "·",
-              ].map((w, j) => (
-                <span key={j}>{w}</span>
-              ))}
-            </div>
-          ))}
+        <div className="mt-16 flex flex-col gap-8 md:mt-24 md:flex-row md:items-end md:justify-between md:gap-16">
+          <h1 className="display text-[40px] leading-[1.05] md:text-[64px] lg:text-[76px]">
+            Coelor builds software
+            <br />
+            like it has to work.
+          </h1>
+          <a
+            href="mailto:hello@coelor.com"
+            className="group inline-flex items-center gap-3 self-start font-mono text-[13px] uppercase tracking-[0.22em] text-ink transition-colors duration-200 hover:text-mint-2 md:self-end"
+          >
+            <span>hello@coelor.com</span>
+            <span className="transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
+          </a>
         </div>
       </div>
-
-      <hr />
     </section>
   );
 }
