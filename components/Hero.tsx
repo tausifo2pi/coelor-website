@@ -2,28 +2,59 @@
 
 import { useEffect, useState } from "react";
 
-const CMD = "coelor ship --production --quiet";
+type LogKind = "run" | "ok" | "info" | "warn" | "bar";
 
-type StatusStep =
-  | { kind: "ok"; label: string; value: string }
-  | { kind: "bar"; label: string };
+type LogLine = {
+  t: string;
+  tag: string;
+  kind: LogKind;
+  msg: string;
+  /** For kind: "bar" — label shown before the progress bar. */
+  barLabel?: string;
+  /** Optional sequential replacements for the tail of the message (in-place update). */
+  updates?: { at: number; msg: string }[];
+  /** ms from scheduler start when this line first appears. */
+  delay: number;
+};
 
-const STEPS: StatusStep[] = [
-  { kind: "ok", label: "migrations", value: "48 applied" },
-  { kind: "ok", label: "contract tests", value: "284 / 284 pass" },
-  { kind: "ok", label: "infra", value: "reconciled" },
-  { kind: "bar", label: "rollout · v4.812" },
-  { kind: "ok", label: "health", value: "0 alerts · 14 ms p99" },
+const CMD = "coelor ship --production";
+
+const LOG: LogLine[] = [
+  { delay: 0,    t: "14:02:17.421", tag: "ci",    kind: "run",  msg: "pipeline started · commit 4f2a91c · main" },
+  { delay: 120,  t: "14:02:17.612", tag: "build", kind: "run",  msg: "bundling · turbopack · 18 entries" },
+  { delay: 520,  t: "14:02:18.103", tag: "build", kind: "ok",   msg: "compiled in 482ms · 0 warnings" },
+  { delay: 640,  t: "14:02:18.221", tag: "db",    kind: "run",  msg: "applying migrations · shard 0" },
+  { delay: 960,  t: "14:02:18.544", tag: "db",    kind: "ok",   msg: "48 applied · 0 skipped · 312ms" },
+  { delay: 1060, t: "14:02:18.669", tag: "test",  kind: "run",  msg: "contract suite · 284 specs" },
+  { delay: 1680, t: "14:02:19.301", tag: "test",  kind: "ok",   msg: "284 passed · 0 failed · 2.61s" },
+  { delay: 1780, t: "14:02:19.418", tag: "infra", kind: "ok",   msg: "pulumi reconciled · 0 diffs" },
+  { delay: 1880, t: "14:02:19.527", tag: "k8s",   kind: "bar",  msg: "", barLabel: "rollout · v4.812" },
+  { delay: 2640, t: "14:02:20.289", tag: "k8s",   kind: "ok",   msg: "rollout complete · 14/14 replicas · healthy" },
+  { delay: 2760, t: "14:02:20.412", tag: "obs",   kind: "ok",   msg: "p99 14ms · error rate 0.00% · 0 alerts" },
+  { delay: 2880, t: "14:02:20.531", tag: "ci",    kind: "ok",   msg: "deploy succeeded · 3.11s" },
 ];
 
-type LineState = "hidden" | "pending" | "resolved";
+const BAR_DURATION = 720;
+const TAG_WIDTH_CH = 5;
+
+function marker(kind: LogKind) {
+  switch (kind) {
+    case "ok":
+      return { glyph: "✓", cls: "text-mint-2" };
+    case "run":
+      return { glyph: "▸", cls: "text-ink" };
+    case "bar":
+      return { glyph: "▸", cls: "text-ink" };
+    case "warn":
+      return { glyph: "!", cls: "text-[#ffb347]" };
+    default:
+      return { glyph: "·", cls: "text-ink-soft" };
+  }
+}
 
 export default function Hero() {
-  const [cmdChars, setCmdChars] = useState(0);
-  const [cmdDone, setCmdDone] = useState(false);
-  const [lineStates, setLineStates] = useState<LineState[]>(() =>
-    STEPS.map(() => "hidden"),
-  );
+  const [visible, setVisible] = useState<number>(0);
+  const [msgs, setMsgs] = useState<string[]>(() => LOG.map((l) => l.msg));
   const [pct, setPct] = useState(0);
   const [finalCursor, setFinalCursor] = useState(false);
 
@@ -33,68 +64,39 @@ export default function Hero() {
       timers.push(setTimeout(fn, ms));
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setCmdChars(CMD.length);
-      setCmdDone(true);
-      setLineStates(STEPS.map(() => "resolved"));
+      setVisible(LOG.length);
+      setMsgs(LOG.map((l) => (l.updates ? l.updates[l.updates.length - 1].msg : l.msg)));
       setPct(100);
       setFinalCursor(true);
       return;
     }
 
-    let t = 520;
+    LOG.forEach((line, idx) => {
+      at(line.delay, () => setVisible((v) => Math.max(v, idx + 1)));
 
-    // 1. Type the command character-by-character with mild jitter
-    for (let i = 1; i <= CMD.length; i++) {
-      const j = 18 + Math.random() * 22;
-      at(t, () => setCmdChars(i));
-      t += 26 + j;
-    }
-    at(t + 180, () => setCmdDone(true));
-    t += 340;
-
-    // 2. Stream the status lines
-    STEPS.forEach((step, idx) => {
-      at(t, () =>
-        setLineStates((prev) => {
-          const next = [...prev];
-          next[idx] = "pending";
-          return next;
-        }),
-      );
-
-      if (step.kind === "bar") {
-        const total = 1150;
-        const start = t + 160;
-        for (let p = 0; p <= 100; p += 2) {
-          at(
-            start + (p / 100) * total,
-            () => setPct(p),
+      if (line.kind === "bar") {
+        const steps = 50;
+        for (let s = 0; s <= steps; s++) {
+          at(line.delay + (s / steps) * BAR_DURATION, () =>
+            setPct(Math.round((s / steps) * 100)),
           );
         }
-        t = start + total + 160;
-        at(t, () =>
-          setLineStates((prev) => {
-            const next = [...prev];
-            next[idx] = "resolved";
-            return next;
-          }),
-        );
-        t += 220;
-      } else {
-        const resolve = 320 + Math.random() * 220;
-        t += resolve;
-        at(t, () =>
-          setLineStates((prev) => {
-            const next = [...prev];
-            next[idx] = "resolved";
-            return next;
-          }),
-        );
-        t += 160 + Math.random() * 80;
       }
+
+      line.updates?.forEach((u) => {
+        at(line.delay + u.at, () =>
+          setMsgs((prev) => {
+            if (prev[idx] === u.msg) return prev;
+            const next = prev.slice();
+            next[idx] = u.msg;
+            return next;
+          }),
+        );
+      });
     });
 
-    at(t + 260, () => setFinalCursor(true));
+    const last = LOG[LOG.length - 1];
+    at(last.delay + 320, () => setFinalCursor(true));
 
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -102,9 +104,9 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="relative overflow-hidden px-6 pb-28 pt-[120px] md:px-10 md:pb-40 md:pt-[160px]"
+      className="relative overflow-hidden pb-28 pt-[120px] md:pb-40 md:pt-[160px]"
     >
-      <div className="mx-auto max-w-[1040px]">
+      <div className="mx-auto max-w-[1280px] px-6 md:px-10">
         <div className="mb-8 flex items-center justify-between md:mb-12">
           <span className="eyebrow">§ 00 — Signal</span>
           <span className="eyebrow hidden md:inline">Coelor · Software Studio</span>
@@ -123,77 +125,87 @@ export default function Hero() {
             </span>
           </div>
 
-          <div className="px-5 py-7 font-mono text-[13px] leading-[1.9] md:px-8 md:py-10 md:text-[14px]">
-            {/* Command line — typewritten */}
-            <div className="flex items-baseline gap-4">
+          <div className="px-5 py-6 font-mono text-[12px] leading-[1.85] md:px-8 md:py-8 md:text-[13px]">
+            {/* Command line — shown immediately, no character typing */}
+            <div className="flex items-baseline gap-3">
               <span className="select-none text-ink-soft">$</span>
-              <span className="text-ink">
-                {CMD.slice(0, cmdChars)}
-                {!cmdDone && <span className="term-cursor" />}
-              </span>
+              <span className="text-ink">{CMD}</span>
             </div>
 
-            {/* Status lines */}
-            {STEPS.map((s, idx) => {
-              const state = lineStates[idx];
-              const visible = state !== "hidden";
-              return (
-                <div
-                  key={idx}
-                  className="flex items-baseline gap-4"
-                  style={{
-                    opacity: visible ? 1 : 0,
-                    transform: visible ? "translateY(0)" : "translateY(4px)",
-                    transition: "opacity 0.35s ease, transform 0.35s ease",
-                  }}
-                >
-                  <span className="select-none text-ink-soft">·</span>
-                  <span className="whitespace-nowrap text-ink-muted">{s.label}</span>
-                  <span
-                    aria-hidden
-                    className="flex-1 -translate-y-[3px] border-b border-dotted"
-                    style={{ borderColor: "rgba(255,255,255,0.14)" }}
-                  />
-                  {s.kind === "ok" ? (
-                    <span className="whitespace-nowrap">
-                      {state === "resolved" ? (
-                        <span className="text-mint-2">{s.value}</span>
-                      ) : (
-                        <span className="term-spinner text-ink-soft">…</span>
-                      )}
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-3 whitespace-nowrap">
-                      <span className="block h-[6px] w-[80px] overflow-hidden rounded-full bg-rule md:w-[160px]">
-                        <span
-                          className="block h-full bg-mint-2"
-                          style={{
-                            width: `${pct}%`,
-                            transition: "width 120ms linear",
-                          }}
-                        />
-                      </span>
-                      <span
-                        className={
-                          pct === 100
-                            ? "text-mint-2 tabular-nums"
-                            : "text-ink tabular-nums"
-                        }
-                      >
-                        {pct.toString().padStart(3, " ")}%
-                      </span>
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-
-            {/* Final cursor */}
+            {/* Reserved-height log area so the container doesn't jump as lines stream in */}
             <div
-              className="mt-4 flex items-baseline gap-4"
+              className="relative mt-2"
+              style={{
+                minHeight: `calc(${LOG.length} * 1.85em + 0.5em)`,
+              }}
+            >
+              {LOG.map((line, idx) => {
+                if (idx >= visible) return null;
+                const m = marker(line.kind);
+                if (line.kind === "bar") {
+                  const cells = 20;
+                  const filled = Math.round((pct / 100) * cells);
+                  const bar = "█".repeat(filled) + "░".repeat(cells - filled);
+                  return (
+                    <div
+                      key={idx}
+                      className="log-line flex items-baseline gap-3 whitespace-pre"
+                    >
+                      <span className="text-ink-soft">{line.t}</span>
+                      <span
+                        className="text-ink-muted"
+                        style={{ width: `${TAG_WIDTH_CH}ch`, display: "inline-block" }}
+                      >
+                        {line.tag}
+                      </span>
+                      <span className={m.cls}>{m.glyph}</span>
+                      <span className="text-ink-muted">{line.barLabel}</span>
+                      <span className="whitespace-pre">
+                        <span className="text-ink-soft">[</span>
+                        <span className={pct === 100 ? "text-mint-2" : "text-ink"}>{bar}</span>
+                        <span className="text-ink-soft">] </span>
+                        <span
+                          className={
+                            pct === 100
+                              ? "tabular-nums text-mint-2"
+                              : "tabular-nums text-ink"
+                          }
+                        >
+                          {pct.toString().padStart(3, " ")}%
+                        </span>
+                      </span>
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={idx}
+                    className="log-line flex items-baseline gap-3 whitespace-pre"
+                  >
+                    <span className="text-ink-soft">{line.t}</span>
+                    <span
+                      className="text-ink-muted"
+                      style={{ width: `${TAG_WIDTH_CH}ch`, display: "inline-block" }}
+                    >
+                      {line.tag}
+                    </span>
+                    <span className={m.cls}>{m.glyph}</span>
+                    <span
+                      className={line.kind === "ok" ? "text-ink" : "text-ink-muted"}
+                    >
+                      {msgs[idx]}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Final prompt cursor */}
+            <div
+              className="mt-3 flex items-baseline gap-3"
               style={{
                 opacity: finalCursor ? 1 : 0,
-                transition: "opacity 0.5s ease",
+                transition: "opacity 0.4s ease",
               }}
             >
               <span className="select-none text-ink-soft">$</span>

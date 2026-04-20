@@ -66,7 +66,7 @@ function Row({ w, i }: { w: (typeof WORK)[number]; i: number }) {
 export default function Work() {
   const headRef = useReveal<HTMLDivElement>();
   return (
-    <section id="work" className="py-16 md:py-24">
+    <section id="work" className="py-20 md:py-28">
       <div className="mx-auto max-w-[1280px] px-6 md:px-10">
         <div ref={headRef} className="reveal mb-12 flex items-end justify-between gap-8 md:mb-16">
           <div>

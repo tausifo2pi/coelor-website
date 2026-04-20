@@ -75,7 +75,7 @@ function Item({ item, i }: { item: (typeof CAPABILITIES)[number]; i: number }) {
 
 export default function Capabilities() {
   return (
-    <section id="capabilities" className="py-16 md:py-24">
+    <section id="capabilities" className="py-20 md:py-28">
       <div className="mx-auto max-w-[1280px] px-6 md:px-10">
         <div className="mb-12 flex items-end justify-between gap-8 md:mb-16">
           <div>
