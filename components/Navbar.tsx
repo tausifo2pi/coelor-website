@@ -68,7 +68,7 @@ export default function Navbar() {
         <a
           href="#contact"
           onClick={smoothTo("contact")}
-          className="group hidden items-center gap-2 rounded-full border border-ink/80 bg-ink px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-canvas transition-all duration-200 hover:bg-transparent hover:text-ink md:inline-flex"
+          className="group hidden items-center gap-2 rounded-full border border-mint-2 bg-mint-2 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-mint-ink shadow-[0_0_24px_-4px_rgba(0,255,180,0.45)] transition-all duration-200 hover:bg-transparent hover:text-mint-2 md:inline-flex"
         >
           <span>Start a project</span>
           <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
