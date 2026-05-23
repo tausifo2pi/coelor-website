@@ -1,107 +1,59 @@
 "use client";
 
 import { useReveal } from "@/hooks/useReveal";
+import content from "@/data/site-content.json";
 
-const WORK = [
-  {
-    year: "2026",
-    client: "Fintech · Series B",
-    title: "A ledger engine that survives auditors.",
-    role: "Core engineering · Infra",
-  },
-  {
-    year: "2026",
-    client: "Healthcare AI",
-    title: "Clinical agent network cleared for pilots.",
-    role: "AI systems · Eval pipeline",
-  },
-  {
-    year: "2025",
-    client: "Logistics",
-    title: "Realtime orchestration across three continents.",
-    role: "Platform · Integrations",
-  },
-  {
-    year: "2025",
-    client: "Media",
-    title: "A publishing stack built to outlast the CMS trend cycle.",
-    role: "Product engineering",
-  },
-  {
-    year: "2024",
-    client: "Energy",
-    title: "Optimizer that pays for itself every 36 hours.",
-    role: "Data · ML systems",
-  },
-];
-
-function Row({ w, i }: { w: (typeof WORK)[number]; i: number }) {
+function PainItem({ item, i }: { item: (typeof content.pain.items)[number]; i: number }) {
   const ref = useReveal<HTMLDivElement>();
+
   return (
     <div
       ref={ref}
-      className="reveal group relative grid cursor-default grid-cols-12 items-baseline gap-4 border-t border-rule py-6 transition-colors duration-300 hover:border-rule-strong md:py-8"
-      style={{ transitionDelay: `${i * 40}ms` }}
+      className="reveal border-t border-rule py-8 md:py-10"
+      style={{ transitionDelay: `${i * 50}ms` }}
     >
-      <div className="col-span-2 font-mono text-[12px] tracking-[0.18em] text-ink-muted md:col-span-1">
-        {w.year}
-      </div>
-      <div className="col-span-10 font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted md:col-span-3">
-        {w.client}
-      </div>
-      <div className="col-span-12 md:col-span-6">
-        <h3 className="display text-[22px] leading-tight text-ink transition-colors duration-300 group-hover:text-mint-1 md:text-[30px]">
-          {w.title}
-        </h3>
-      </div>
-      <div className="col-span-11 flex items-center justify-start gap-2 md:col-span-2 md:justify-end">
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
-          {w.role}
-        </span>
-      </div>
+      <h3 className="display text-[28px] md:text-[36px]">{item.title}</h3>
+      <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-muted md:text-base">
+        {item.body}
+      </p>
     </div>
   );
 }
 
 export default function Work() {
   const headRef = useReveal<HTMLDivElement>();
+  const { pain } = content;
+
   return (
-    <section id="work" className="py-20 md:py-28">
+    <section id="pain" className="py-20 md:py-28">
       <div className="mx-auto max-w-[1280px] px-6 md:px-10">
-        <div ref={headRef} className="reveal mb-12 flex items-end justify-between gap-8 md:mb-16">
-          <div>
-            <span className="eyebrow">§ 01 — Selected Work</span>
-            <h2 className="display mt-4 text-[36px] md:text-[56px]">
-              A short list
-              <br />
-              we&rsquo;re proud of.
+        <div ref={headRef} className="reveal mb-12 grid grid-cols-1 gap-8 md:mb-16 md:grid-cols-12">
+          <div className="md:col-span-7">
+            <span className="eyebrow">{pain.eyebrow}</span>
+            <h2 className="display mt-4 text-[40px] md:text-[64px]">
+              {pain.headline}
             </h2>
           </div>
-          <p className="hidden max-w-xs text-[14px] leading-relaxed text-ink-muted md:block">
-            Under NDA for most, so the titles sketch the shape rather than name the company.
-            Happy to walk through specifics on a call.
+          <p className="max-w-md text-[15px] leading-relaxed text-ink-muted md:col-span-5 md:self-end md:text-base">
+            {pain.body}
           </p>
         </div>
 
-        <div className="border-b border-rule">
-          {WORK.map((w, i) => (
-            <Row key={w.title} w={w} i={i} />
+        <div className="grid grid-cols-1 gap-x-10 border-b border-rule md:grid-cols-2">
+          {pain.items.map((item, i) => (
+            <PainItem key={item.title} item={item} i={i} />
           ))}
         </div>
 
-        <div className="mt-10 flex flex-wrap items-baseline gap-x-8 gap-y-3 font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted md:mt-14">
-          <span className="text-ink-soft">Proof —</span>
-          <span>
-            <span className="text-ink">100+</span> projects shipped
-          </span>
-          <span className="opacity-40">·</span>
-          <span>
-            <span className="text-ink">20</span> countries
-          </span>
-          <span className="opacity-40">·</span>
-          <span>
-            <span className="text-ink">95%</span> retained past first engagement
-          </span>
+        <div className="mt-10 grid grid-cols-1 gap-4 md:mt-14 md:grid-cols-3">
+          {pain.metrics.map((metric) => (
+            <div key={metric.label} className="border-t border-rule pt-5">
+              <div className="display text-[42px] text-mint-2 md:text-[56px]">{metric.value}</div>
+              <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-muted">
+                {metric.label}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

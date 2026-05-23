@@ -1,83 +1,136 @@
 "use client";
 
 import { useReveal } from "@/hooks/useReveal";
+import content from "@/data/site-content.json";
 
-const PRINCIPLES = [
-  {
-    k: "P · 01",
-    t: "Shape over scope.",
-    b: "Scope lists pretend software is a lego kit. It isn't. We work on the shape of the problem first — the decisions a team will regret five years from now — and let scope fall out of it.",
-  },
-  {
-    k: "P · 02",
-    t: "Small teams, senior hands.",
-    b: "Every engagement is two to four operators with a decade or more on the craft. No project managers translating between you and juniors. You talk to the people writing the code.",
-  },
-  {
-    k: "P · 03",
-    t: "Operate, don't deliver.",
-    b: "A shipped build is not the end of our job. We run what we build — on-call, metrics, migrations — until the team taking it over can out-operate us.",
-  },
-];
-
-function Principle({ p, i }: { p: (typeof PRINCIPLES)[number]; i: number }) {
+function Plan({ plan, i }: { plan: (typeof content.pricing.plans)[number]; i: number }) {
   const ref = useReveal<HTMLDivElement>();
+
   return (
     <div
       ref={ref}
-      className="reveal flex flex-col gap-3 border-t border-rule pt-6 md:pt-8"
-      style={{ transitionDelay: `${i * 80}ms` }}
+      className="reveal flex min-h-[330px] flex-col justify-between border-t border-rule py-7"
+      style={{ transitionDelay: `${i * 60}ms` }}
     >
-      <span className="eyebrow">{p.k}</span>
-      <h3 className="display text-[22px] md:text-[28px]">{p.t}</h3>
-      <p className="text-[15px] leading-relaxed text-ink-muted">{p.b}</p>
+      <div>
+        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-mint-2">
+          {plan.price}
+        </div>
+        <h3 className="display mt-3 text-[32px] md:text-[42px]">{plan.name}</h3>
+        <p className="mt-4 text-[15px] leading-relaxed text-ink-muted">
+          {plan.body}
+        </p>
+      </div>
+      <ul className="mt-8 space-y-3 text-[14px] text-ink-muted">
+        {plan.features.map((feature) => (
+          <li key={feature} className="border-t border-rule pt-3">
+            {feature}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
 export default function Studio() {
-  const quoteRef = useReveal<HTMLDivElement>();
+  const demoRef = useReveal<HTMLDivElement>();
+  const pricingRef = useReveal<HTMLDivElement>();
+  const faqRef = useReveal<HTMLDivElement>();
+  const { demo, pricing, faq } = content;
+
   return (
-    <section id="studio" className="relative overflow-hidden py-20 md:py-28">
-      <div className="relative mx-auto max-w-[1280px] px-6 md:px-10">
-        <div className="mb-10 flex items-baseline gap-4 md:mb-14">
-          <span className="eyebrow">§ 03 — Studio</span>
-          <span className="h-px flex-1 bg-rule" />
-        </div>
+    <>
+      <section id="demo" className="relative overflow-hidden py-20 md:py-28">
+        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+          <div ref={demoRef} className="reveal mb-12 grid grid-cols-1 gap-8 md:mb-16 md:grid-cols-12">
+            <div className="md:col-span-7">
+              <span className="eyebrow">{demo.eyebrow}</span>
+              <h2 className="display mt-4 text-[38px] md:text-[60px]">
+                {demo.headline}
+              </h2>
+            </div>
+            <p className="max-w-md text-[15px] leading-relaxed text-ink-muted md:col-span-5 md:self-end md:text-base">
+              {demo.body}
+            </p>
+          </div>
 
-        <div
-          ref={quoteRef}
-          className="reveal relative mx-auto max-w-4xl text-center"
-        >
-          <span
-            aria-hidden
-            className="absolute -left-2 -top-4 font-display text-[100px] leading-none md:-left-10 md:-top-12 md:text-[240px]"
-            style={{ color: "rgba(10, 61, 42, 0.12)" }}
-          >
-            &ldquo;
-          </span>
-          <blockquote className="display relative text-[32px] leading-[1.1] md:text-[56px]">
-            We don&rsquo;t build software.
-            <br />
-            We engineer{" "}
-            <span className="italic" style={{ color: "#0a3d2a" }}>
-              unfair advantages
-            </span>
-            .
-          </blockquote>
-          <p className="mx-auto mt-8 max-w-xl text-[15px] leading-relaxed text-ink-muted md:text-base">
-            Coelor was founded on a simple read of the market: most software teams are fast at
-            shipping the wrong thing. We&rsquo;re small on purpose — built to be fast at shipping
-            the right one.
-          </p>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
+            <div className="md:col-span-7">
+              <div className="overflow-hidden rounded-lg border border-rule bg-canvasElev">
+                {demo.timeline.map((item, index) => (
+                  <div key={`${item.speaker}-${index}`} className="grid grid-cols-12 gap-4 border-b border-rule p-5 last:border-b-0 md:p-6">
+                    <div className="col-span-12 font-mono text-[11px] uppercase tracking-[0.18em] text-mint-2 md:col-span-3">
+                      {item.speaker}
+                    </div>
+                    <div className="col-span-12 text-[17px] leading-relaxed text-ink md:col-span-9">
+                      {item.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="md:col-span-5">
+              <div className="border-t border-rule pt-6">
+                <span className="eyebrow">Outcome</span>
+                <div className="mt-5 space-y-3">
+                  {demo.outcome.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-3 rounded-md border border-rule bg-canvasElev px-4 py-3 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-muted"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-mint-2" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div className="mt-16 grid grid-cols-1 gap-8 md:mt-20 md:grid-cols-3 md:gap-10">
-          {PRINCIPLES.map((p, i) => (
-            <Principle key={p.k} p={p} i={i} />
-          ))}
+      <section id="pricing" className="py-20 md:py-28">
+        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+          <div ref={pricingRef} className="reveal mb-12 max-w-4xl md:mb-16">
+            <span className="eyebrow">{pricing.eyebrow}</span>
+            <h2 className="display mt-4 text-[38px] md:text-[60px]">
+              {pricing.headline}
+            </h2>
+            <p className="mt-6 max-w-2xl text-[15px] leading-relaxed text-ink-muted md:text-base">
+              {pricing.body}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-x-10 gap-y-4 md:grid-cols-3">
+            {pricing.plans.map((plan, i) => (
+              <Plan key={plan.name} plan={plan} i={i} />
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section id="faq" className="border-y border-rule bg-canvasElev py-20 md:py-28">
+        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+          <div ref={faqRef} className="reveal mb-12 max-w-3xl md:mb-16">
+            <span className="eyebrow">{faq.eyebrow}</span>
+            <h2 className="display mt-4 text-[38px] md:text-[60px]">
+              {faq.headline}
+            </h2>
+          </div>
+          <div className="border-b border-rule">
+            {faq.items.map((item) => (
+              <details key={item.q} className="group border-t border-rule py-6">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6">
+                  <span className="display text-[24px] md:text-[32px]">{item.q}</span>
+                  <span className="font-mono text-[20px] text-mint-2 transition-transform duration-200 group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-ink-muted md:text-base">
+                  {item.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

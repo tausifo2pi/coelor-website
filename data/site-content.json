@@ -1,0 +1,262 @@
+{
+  "brand": {
+    "name": "Coelor",
+    "wordmark": "coelor",
+    "tagline": "AI sales agent for Bangladesh f-commerce",
+    "email": "hello@coelor.com"
+  },
+  "visuals": {
+    "heroImage": "/fcommerce-dashboard.svg",
+    "heroImageAlt": "Layered f-commerce dashboard visual"
+  },
+  "seo": {
+    "title": "Coelor — F-commerce bot for Bangladesh",
+    "description": "Set up your f-commerce bot in minutes. Connect Messenger, WhatsApp, or Instagram, import products from sheets, and automate orders with local courier and payment integrations.",
+    "openGraphTitle": "Coelor — F-commerce bot for Bangladesh",
+    "openGraphDescription": "An AI sales agent for Bangladeshi Facebook, Instagram, and WhatsApp sellers."
+  },
+  "nav": [
+    { "id": "setup", "label": "Setup" },
+    { "id": "features", "label": "Features" },
+    { "id": "demo", "label": "Demo" },
+    { "id": "pricing", "label": "Pricing" },
+    { "id": "contact", "label": "Contact" }
+  ],
+  "hero": {
+    "eyebrow": "F-commerce automation for Bangladesh",
+    "label": "Coelor · AI Sales Agent",
+    "headline": "Set up your f-commerce bot in 5 minutes.",
+    "body": "Connect your social inbox, import your product sheet, paste courier and payment keys, and let Coelor take product questions, carts, and orders from Messenger, WhatsApp, and Instagram.",
+    "primaryCta": { "label": "Launch your bot", "href": "#contact" },
+    "secondaryCta": { "label": "See how it works", "href": "#setup" },
+    "proof": ["Bangla + Banglish", "Messenger first", "Sheets-ready", "COD + SSLCommerz", "Pathao · RedX · Steadfast"],
+    "chatDemo": {
+      "title": "Live sales flow",
+      "status": "bot active",
+      "inboxTitle": "Social inbox",
+      "aiBadge": "AI",
+      "messages": [
+        { "from": "customer", "text": "bhai red dress ache? price koto?" },
+        { "from": "bot", "text": "হ্যাঁ, 5টা red dress আছে। দাম ৳1,850 থেকে। কোন size লাগবে?" },
+        { "from": "customer", "text": "M size 2 ta. Mirpur delivery." },
+        { "from": "bot", "text": "Done. Phone number দিন, তারপর order confirm করে দিচ্ছি." }
+      ],
+      "order": {
+        "title": "Order draft",
+        "itemsLabel": "Items",
+        "customerLabel": "Customer",
+        "paymentLabel": "Pay",
+        "courierLabel": "Ship",
+        "readyLabel": "ready",
+        "items": "Red Dress · M · x2",
+        "customer": "Mirpur, Dhaka",
+        "payment": "COD",
+        "courier": "Pathao ready"
+      },
+      "cards": [
+        { "label": "Reply time", "value": "2 sec" },
+        { "label": "Orders today", "value": "38" },
+        { "label": "Inbox saved", "value": "71%" }
+      ],
+      "channels": ["Messenger", "WhatsApp", "Instagram"]
+    }
+  },
+  "labels": {
+    "builtFor": "Built for",
+    "outcome": "Outcome",
+    "product": "Product",
+    "contact": "Contact",
+    "follow": "Follow"
+  },
+  "pain": {
+    "eyebrow": "Why this exists",
+    "headline": "Your inbox is leaking orders.",
+    "body": "Most f-commerce sellers do not lose customers because the product is bad. They lose customers because replies are late, inventory lives in sheets, and order details get copied between tabs all day.",
+    "items": [
+      { "title": "Repeated questions", "body": "Customers ask price, size, stock, delivery time, and return policy again and again." },
+      { "title": "Manual order taking", "body": "Phone, address, item, quantity, courier, and COD amount are collected by hand." },
+      { "title": "Sheet-based inventory", "body": "Products and stock already live in Google Sheets or Excel, but the inbox does not know that." },
+      { "title": "Courier copy-paste", "body": "Pathao, RedX, Steadfast, and payment workflows become separate admin work after every sale." }
+    ],
+    "metrics": [
+      { "value": "24/7", "label": "instant replies" },
+      { "value": "5 min", "label": "setup target" },
+      { "value": "1 inbox", "label": "bot + human handoff" }
+    ]
+  },
+  "setup": {
+    "eyebrow": "How it works",
+    "headline": "From page to selling bot without a rebuild.",
+    "body": "Coelor is designed around how Bangladesh f-commerce teams already work: social pages, spreadsheets, COD, local couriers, and fast inbox conversations.",
+    "steps": [
+      {
+        "num": "01",
+        "title": "Connect your page",
+        "body": "Connect Facebook Messenger first, then WhatsApp and Instagram as channels are enabled. No customer-facing password sharing."
+      },
+      {
+        "num": "02",
+        "title": "Import your products",
+        "body": "Bring your existing catalog from Google Sheets, Excel, CSV, or a page/catalog source so the bot knows stock, price, images, and variants."
+      },
+      {
+        "num": "03",
+        "title": "Add courier and payment keys",
+        "body": "Paste Pathao, Steadfast, RedX, SSLCommerz, and COD settings once. Coelor uses them when orders are created."
+      },
+      {
+        "num": "04",
+        "title": "Turn on the AI sales agent",
+        "body": "The bot answers in Bangla/Banglish, shows products, collects order info, and hands off to your team when needed."
+      }
+    ]
+  },
+  "features": {
+    "eyebrow": "Product",
+    "headline": "The bot is the salesperson. The dashboard is the control room.",
+    "body": "Coelor combines social commerce automation with the operational tools a real seller needs after the customer says yes.",
+    "items": [
+      {
+        "title": "Bangla/Banglish AI sales bot",
+        "body": "Understands mixed Bangla, romanized Bangla, and English for product search, stock questions, variants, cart, and checkout.",
+        "tags": ["AI replies", "Product Q&A", "Order intent"]
+      },
+      {
+        "title": "Product-aware conversations",
+        "body": "The bot can show categories, product cards, variants, prices, stock, and similar products from the merchant catalog.",
+        "tags": ["Catalog", "Variants", "Image search"]
+      },
+      {
+        "title": "Auto order collection",
+        "body": "Collects phone, delivery address, quantity, and payment preference from chat, then creates a real order.",
+        "tags": ["COD", "Checkout", "Customers"]
+      },
+      {
+        "title": "Human takeover inbox",
+        "body": "Admins can read conversations, send replies, pause the bot per customer, and keep support inside one live view.",
+        "tags": ["Handoff", "Live inbox", "Team control"]
+      },
+      {
+        "title": "Courier and payment workflow",
+        "body": "Designed for Pathao, Steadfast, RedX, COD, and SSLCommerz so confirmed orders can move into fulfillment quickly.",
+        "tags": ["Courier", "Payment", "Tracking"]
+      },
+      {
+        "title": "Sheet-first inventory",
+        "body": "Built for sellers who already manage products in Google Sheets or Excel, not only teams with a perfect ecommerce backend.",
+        "tags": ["Sheets", "Excel", "Stock sync"]
+      }
+    ]
+  },
+  "integrations": {
+    "eyebrow": "Integrations",
+    "headline": "Built around the tools BD sellers already use.",
+    "items": ["Facebook", "Messenger", "Instagram", "WhatsApp", "Google Sheets", "Excel", "Pathao", "Steadfast", "RedX", "SSLCommerz", "COD"]
+  },
+  "dashboard": {
+    "title": "Command center",
+    "subtitle": "Every message, product, and order in one place.",
+    "metrics": [
+      { "value": "428", "label": "products" },
+      { "value": "57", "label": "orders" },
+      { "value": "12", "label": "handoffs" }
+    ],
+    "panels": [
+      { "title": "Catalog sync", "body": "Sheet imported · 428 products · 37 low stock" },
+      { "title": "Bot control", "body": "Bangla replies on · human handoff ready" },
+      { "title": "Fulfillment", "body": "Pathao 14 · RedX 8 · Steadfast 5" }
+    ]
+  },
+  "demo": {
+    "eyebrow": "Demo flow",
+    "headline": "A customer can go from question to order without waiting for an admin.",
+    "body": "The website should make the core flow obvious: product question, bot reply, variant/quantity, phone/address, order, courier/payment handoff.",
+    "timeline": [
+      { "speaker": "Customer", "text": "apu ei dress ta available? M size lagbe." },
+      { "speaker": "Coelor bot", "text": "M size stock আছে। দাম ৳1,850। কয়টা নিবেন?" },
+      { "speaker": "Customer", "text": "2 ta. 017XXXXXXXX, Dhanmondi delivery." },
+      { "speaker": "Coelor", "text": "Order draft created. COD selected. Courier booking ready." }
+    ],
+    "outcome": [
+      "Product matched",
+      "Variant selected",
+      "Customer info collected",
+      "COD order created",
+      "Courier ready for fulfillment"
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Plans",
+    "headline": "Start with the bot, grow into the full operation.",
+    "body": "Plans are shaped around message volume, channels, product count, and courier/payment needs.",
+    "plans": [
+      {
+        "name": "Starter",
+        "price": "For new pages",
+        "body": "Messenger bot, product import, COD orders, and manual handoff.",
+        "features": ["1 social channel", "Sheet import", "Bangla bot replies", "Basic order dashboard"]
+      },
+      {
+        "name": "Growth",
+        "price": "For active sellers",
+        "body": "More channels, courier integrations, payment setup, and higher automation.",
+        "features": ["Messenger + WhatsApp/Instagram", "Pathao/RedX/Steadfast", "SSLCommerz", "Live inbox"]
+      },
+      {
+        "name": "Scale",
+        "price": "For teams",
+        "body": "Advanced controls for larger catalogs, teams, and high-message operations.",
+        "features": ["Multi-page support", "Advanced bot settings", "Priority setup", "Custom workflows"]
+      }
+    ]
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "headline": "Questions sellers ask before switching on the bot.",
+    "items": [
+      {
+        "q": "Do I need an ecommerce website first?",
+        "a": "No. Coelor is designed for f-commerce sellers who sell from social inboxes. A storefront can exist, but the bot and catalog can run the sales flow."
+      },
+      {
+        "q": "Can I use my existing Google Sheet or Excel file?",
+        "a": "Yes. The product direction is sheet-first: import products, stock, price, images, and variants from the files sellers already maintain."
+      },
+      {
+        "q": "Does it understand Bangla and Banglish?",
+        "a": "Yes. The bot is designed for Bangla, romanized Bangla, English, and mixed customer messages."
+      },
+      {
+        "q": "Can a human take over?",
+        "a": "Yes. Admins can pause the bot for a conversation and reply from the dashboard."
+      },
+      {
+        "q": "Which couriers and payments are planned for setup?",
+        "a": "Pathao, Steadfast, RedX, COD, and SSLCommerz are the core BD workflow targets."
+      }
+    ]
+  },
+  "contact": {
+    "eyebrow": "Launch",
+    "headline": "Bring your f-commerce page online.",
+    "body": "Send your page, product sheet format, and courier/payment providers. We will help you map the setup and switch on the sales bot.",
+    "fields": {
+      "name": "Your name",
+      "company": "Page or business name",
+      "email": "Email or WhatsApp",
+      "brief": "Tell us your page link, product count, current sheet format, and courier/payment setup."
+    },
+    "buttonIdle": "Request setup",
+    "buttonSending": "Sending...",
+    "buttonSent": "Received. We will reply soon",
+    "aside": [
+      { "title": "Good fit", "items": ["Facebook/Instagram sellers", "Inventory in sheets", "COD-heavy order flow", "Teams replying manually today"] },
+      { "title": "Setup needs", "items": ["Social page access", "Product sheet/catalog", "Courier account", "Payment/COD preference"] }
+    ]
+  },
+  "footer": {
+    "description": "AI sales agent for Bangladesh f-commerce.",
+    "location": "Built by Coelor.",
+    "note": "Your inbox, finally selling."
+  }
+}

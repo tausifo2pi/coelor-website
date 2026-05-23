@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const NAV = [
-  { id: "work", label: "Work" },
-  { id: "capabilities", label: "Capabilities" },
-  { id: "studio", label: "Studio" },
-  { id: "contact", label: "Contact" },
-];
+import content from "@/data/site-content.json";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -46,12 +40,12 @@ export default function Navbar() {
       <div className="mx-auto flex h-[68px] max-w-[1280px] items-center justify-between px-6 md:px-10">
         {/* Logo */}
         <a href="#top" onClick={smoothTo("top")}>
-          <span className="wordmark text-[26px] leading-none">coelor</span>
+          <span className="wordmark text-[26px] leading-none">{content.brand.wordmark}</span>
         </a>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-10 md:flex">
-          {NAV.map((n) => (
+          {content.nav.map((n) => (
             <a
               key={n.id}
               href={`#${n.id}`}
@@ -70,7 +64,7 @@ export default function Navbar() {
           onClick={smoothTo("contact")}
           className="group hidden items-center gap-2 rounded-full border border-mint-2 bg-mint-2 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-mint-ink shadow-[0_0_24px_-4px_rgba(0,255,180,0.45)] transition-all duration-200 hover:bg-transparent hover:text-mint-2 md:inline-flex"
         >
-          <span>Start a project</span>
+          <span>Launch your bot</span>
           <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
         </a>
 
@@ -106,7 +100,7 @@ export default function Navbar() {
         <div className="h-[68px] shrink-0" />
 
         <nav className="flex flex-1 flex-col items-center justify-center gap-8 px-6">
-          {NAV.map((n) => (
+          {content.nav.map((n) => (
             <a
               key={n.id}
               href={`#${n.id}`}
@@ -124,7 +118,7 @@ export default function Navbar() {
             onClick={smoothTo("contact")}
             className="flex w-full items-center justify-center rounded-full bg-ink py-3.5 font-mono text-[11px] uppercase tracking-[0.2em] text-canvas"
           >
-            Start a project →
+            Launch your bot →
           </a>
         </div>
       </div>

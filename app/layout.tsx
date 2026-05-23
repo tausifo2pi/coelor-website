@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
+import content from "@/data/site-content.json";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,9 +25,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Coelor — An independent software studio",
-  description:
-    "Coelor is a small, senior studio building custom software, AI systems, and infrastructure for companies that refuse off-the-shelf answers.",
+  title: content.seo.title,
+  description: content.seo.description,
   metadataBase: new URL("https://coelor.com"),
   icons: {
     icon: [
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     apple: "/icon-512.png",
   },
   openGraph: {
-    title: "Coelor — An independent software studio",
-    description: "Custom software, AI systems, and infrastructure.",
+    title: content.seo.openGraphTitle,
+    description: content.seo.openGraphDescription,
     url: "https://coelor.com",
-    siteName: "Coelor",
+    siteName: content.brand.name,
     images: [{ url: "/logo-dark-on-light.png", width: 1200, height: 300 }],
     type: "website",
   },

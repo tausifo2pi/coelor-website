@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
+import content from "@/data/site-content.json";
 
 type Field = "name" | "email" | "company" | "brief";
 
@@ -10,6 +11,7 @@ export default function Contact() {
   const formRef = useReveal<HTMLDivElement>(0.1);
   const [focus, setFocus] = useState<Field | null>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const { contact, brand } = content;
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,16 +32,13 @@ export default function Contact() {
           className="reveal mb-12 grid grid-cols-1 items-end gap-8 md:mb-16 md:grid-cols-12"
         >
           <div className="md:col-span-8">
-            <span className="eyebrow">§ 04 — Contact</span>
+            <span className="eyebrow">{contact.eyebrow}</span>
             <h2 className="display mt-4 text-[44px] md:text-[88px]">
-              Tell us what
-              <br />
-              you&rsquo;re building.
+              {contact.headline}
             </h2>
           </div>
           <p className="max-w-sm text-[15px] leading-relaxed text-ink-muted md:col-span-4">
-            A partner replies within two business days. No sales funnel, no SDR, no &ldquo;let&rsquo;s
-            circle back.&rdquo; Just a real engineer reading what you wrote.
+            {contact.body}
           </p>
         </div>
 
@@ -54,7 +53,7 @@ export default function Contact() {
                   type="text"
                   autoComplete="name"
                   required
-                  placeholder="Your full name"
+                  placeholder={contact.fields.name}
                   onFocus={() => setFocus("name")}
                   onBlur={() => setFocus(null)}
                   className="bg-transparent py-2 text-[17px] text-ink placeholder:text-ink-soft focus:outline-none"
@@ -67,7 +66,7 @@ export default function Contact() {
                   name="company"
                   type="text"
                   autoComplete="organization"
-                  placeholder="Where you work"
+                  placeholder={contact.fields.company}
                   onFocus={() => setFocus("company")}
                   onBlur={() => setFocus(null)}
                   className="bg-transparent py-2 text-[17px] text-ink placeholder:text-ink-soft focus:outline-none"
@@ -81,7 +80,7 @@ export default function Contact() {
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="you@company.com"
+                  placeholder={contact.fields.email}
                   onFocus={() => setFocus("email")}
                   onBlur={() => setFocus(null)}
                   className="bg-transparent py-2 text-[17px] text-ink placeholder:text-ink-soft focus:outline-none"
@@ -94,7 +93,7 @@ export default function Contact() {
                   name="brief"
                   rows={5}
                   required
-                  placeholder="A paragraph about what you're building and where you're stuck."
+                  placeholder={contact.fields.brief}
                   onFocus={() => setFocus("brief")}
                   onBlur={() => setFocus(null)}
                   className="resize-none bg-transparent py-2 text-[17px] leading-relaxed text-ink placeholder:text-ink-soft focus:outline-none"
@@ -103,8 +102,8 @@ export default function Contact() {
               <div className="mt-8 flex flex-col gap-4 border-t border-rule pt-6 md:col-span-2 md:flex-row md:items-center md:justify-between">
                 <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted">
                   Or email —{" "}
-                  <a href="mailto:hello@coelor.com" className="text-ink underline-offset-4 hover:underline">
-                    hello@coelor.com
+                  <a href={`mailto:${brand.email}`} className="text-ink underline-offset-4 hover:underline">
+                    {brand.email}
                   </a>
                 </span>
                 <button
@@ -113,7 +112,7 @@ export default function Contact() {
                   className="group inline-flex items-center gap-2 rounded-full border border-ink bg-ink px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-canvas transition-all duration-200 hover:bg-transparent hover:text-ink disabled:opacity-70"
                 >
                   <span>
-                    {status === "sent" ? "Received — we'll be in touch" : status === "sending" ? "Sending…" : "Send brief"}
+                    {status === "sent" ? contact.buttonSent : status === "sending" ? contact.buttonSending : contact.buttonIdle}
                   </span>
                   {status === "idle" && (
                     <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -124,21 +123,16 @@ export default function Contact() {
           </form>
 
           <aside className="flex flex-col gap-6 border-t border-rule pt-6 md:col-span-4 md:border-none md:pt-0">
-            <div>
-              <span className="eyebrow">Good fits</span>
-              <ul className="mt-3 space-y-2 text-[15px] text-ink-muted">
-                <li>— Seed to Series C, with a sharp technical problem.</li>
-                <li>— Teams that want a partner, not a vendor.</li>
-                <li>— Work that isn&rsquo;t a rebuild of the same CRUD app.</li>
-              </ul>
-            </div>
-            <div>
-              <span className="eyebrow">Not a fit</span>
-              <ul className="mt-3 space-y-2 text-[15px] text-ink-muted">
-                <li>— Body-shop augmentation by the seat.</li>
-                <li>— Marketing sites (we have opinions — we&rsquo;ll refer you).</li>
-              </ul>
-            </div>
+            {contact.aside.map((group) => (
+              <div key={group.title}>
+                <span className="eyebrow">{group.title}</span>
+                <ul className="mt-3 space-y-2 text-[15px] text-ink-muted">
+                  {group.items.map((item) => (
+                    <li key={item}>— {item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </aside>
         </div>
       </div>

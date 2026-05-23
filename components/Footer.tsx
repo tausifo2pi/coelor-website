@@ -1,3 +1,5 @@
+import content from "@/data/site-content.json";
+
 const SOCIAL = [
   {
     name: "GitHub",
@@ -17,6 +19,8 @@ const SOCIAL = [
 ];
 
 export default function Footer() {
+  const { brand, footer } = content;
+
   return (
     <footer className="relative overflow-hidden border-t border-rule bg-canvasElev">
       <div className="mx-auto max-w-[1280px] px-6 py-14 md:px-10 md:py-20">
@@ -29,22 +33,22 @@ export default function Footer() {
             letterSpacing: "-0.02em",
           }}
         >
-          coelor
+          {brand.wordmark}
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-8 border-t border-rule pt-8 text-[14px] md:grid-cols-4 md:gap-6">
           <div className="flex flex-col gap-2">
-            <span className="eyebrow">Studio</span>
-            <p className="text-ink-muted">Independent software studio.</p>
-            <p className="text-ink-muted">Remote-first, operating worldwide.</p>
+            <span className="eyebrow">Product</span>
+            <p className="text-ink-muted">{footer.description}</p>
+            <p className="text-ink-muted">{footer.location}</p>
           </div>
           <div className="flex flex-col gap-2">
             <span className="eyebrow">Contact</span>
-            <a href="mailto:hello@coelor.com" className="text-ink underline-offset-4 hover:underline">
-              hello@coelor.com
+            <a href={`mailto:${brand.email}`} className="text-ink underline-offset-4 hover:underline">
+              {brand.email}
             </a>
             <a href="#contact" className="text-ink-muted hover:text-ink">
-              Start a project →
+              Launch your bot →
             </a>
           </div>
           <div className="flex flex-col gap-2">
@@ -68,8 +72,8 @@ export default function Footer() {
           </div>
           <div className="flex flex-col items-start gap-2 md:items-end">
             <span className="eyebrow">© 2026</span>
-            <p className="text-ink-muted">Coelor. All rights reserved.</p>
-            <p className="text-ink-soft">Agile by nature.</p>
+            <p className="text-ink-muted">{brand.name}. All rights reserved.</p>
+            <p className="text-ink-soft">{footer.note}</p>
           </div>
         </div>
       </div>
