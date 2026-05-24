@@ -8,22 +8,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#07070d",
-        canvasElev: "#0d0d16",
+        canvas: "#ffffff",
+        canvasElev: "#f5f5f7",
         ink: {
-          DEFAULT: "#ebebf2",
-          muted: "#8a8a98",
-          soft: "#4f4f5c",
+          DEFAULT: "#0a0a0f",
+          muted: "#6b6b7a",
+          soft: "#a0a0ae",
         },
         rule: {
-          DEFAULT: "rgba(255,255,255,0.08)",
-          strong: "rgba(255,255,255,0.22)",
+          DEFAULT: "rgba(0,0,0,0.08)",
+          strong: "rgba(0,0,0,0.18)",
         },
         mint: {
-          1: "#b4ffd8",
-          2: "#00ffb4",
-          3: "#00b87a",
-          ink: "#0a3d2a",
+          1: "#a7f3d0",
+          2: "#059669",
+          3: "#047857",
+          ink: "#ffffff",
         },
       },
       fontFamily: {

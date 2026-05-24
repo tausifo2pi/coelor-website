@@ -26,11 +26,11 @@ export default function Work() {
 
   return (
     <section id="pain" className="py-20 md:py-28">
-      <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+      <div className="mx-auto max-w-[1100px] px-6 md:px-10">
         <div ref={headRef} className="reveal mb-12 grid grid-cols-1 gap-8 md:mb-16 md:grid-cols-12">
           <div className="md:col-span-7">
             <span className="eyebrow">{pain.eyebrow}</span>
-            <h2 className="display mt-4 text-[40px] md:text-[64px]">
+            <h2 className="display mt-4 text-[32px] md:text-[48px]">
               {pain.headline}
             </h2>
           </div>

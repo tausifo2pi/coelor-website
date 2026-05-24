@@ -16,7 +16,7 @@ function Step({ step, i }: { step: (typeof content.setup.steps)[number]; i: numb
         {step.num}
       </div>
       <div className="col-span-10 md:col-span-11">
-        <h3 className="display text-[28px] md:text-[40px]">{step.title}</h3>
+        <h3 className="display text-[22px] md:text-[30px]">{step.title}</h3>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ink-muted md:text-base">
           {step.body}
         </p>
@@ -62,11 +62,11 @@ export default function Capabilities() {
   return (
     <>
       <section id="setup" className="py-20 md:py-28">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+        <div className="mx-auto max-w-[1100px] px-6 md:px-10">
           <div ref={setupRef} className="reveal mb-12 grid grid-cols-1 gap-8 md:mb-16 md:grid-cols-12">
             <div className="md:col-span-7">
               <span className="eyebrow">{setup.eyebrow}</span>
-              <h2 className="display mt-4 text-[38px] md:text-[60px]">
+              <h2 className="display mt-4 text-[32px] md:text-[48px]">
                 {setup.headline}
               </h2>
             </div>
@@ -107,19 +107,19 @@ export default function Capabilities() {
                   className="absolute inset-0 opacity-60"
                   style={{
                     background:
-                      "linear-gradient(135deg, rgba(0,255,180,0.12), transparent 36%), linear-gradient(45deg, rgba(0,132,255,0.16), transparent 45%)",
+                      "linear-gradient(135deg, rgba(16,185,129,0.08), transparent 36%), linear-gradient(45deg, rgba(99,102,241,0.07), transparent 45%)",
                   }}
                 />
                 <div className="relative grid h-full grid-cols-12 gap-3">
-                  <div className="col-span-7 rounded-lg border border-rule bg-canvas/90 p-4">
+                  <div className="col-span-7 rounded-lg border border-rule bg-canvas p-4">
                     <div className="mb-5 flex items-center justify-between">
                       <span className="h-2 w-24 rounded-full bg-mint-2/70" />
-                      <span className="h-2 w-10 rounded-full bg-white/15" />
+                      <span className="h-2 w-10 rounded-full bg-black/10" />
                     </div>
                     <div className="space-y-3">
                       {[72, 54, 88, 61, 76].map((w, i) => (
                         <div key={i} className="rounded-md border border-rule bg-canvasElev p-3">
-                          <div className="h-2 rounded-full bg-white/12" style={{ width: `${w}%` }} />
+                          <div className="h-2 rounded-full bg-black/8" style={{ width: `${w}%` }} />
                           <div className="mt-3 h-2 rounded-full bg-mint-2/30" style={{ width: `${Math.max(28, w - 24)}%` }} />
                         </div>
                       ))}
@@ -129,11 +129,11 @@ export default function Capabilities() {
                     {dashboard.metrics.map((metric, i) => (
                       <div
                         key={metric.label}
-                        className={`rounded-lg border border-rule p-4 ${i === 0 ? "bg-[#10251d]" : "bg-canvas/90"}`}
+                        className={`rounded-lg border border-rule p-4 ${i === 0 ? "bg-emerald-50" : "bg-canvas"}`}
                       >
                         <div
                           className="display text-[46px]"
-                          style={{ color: i === 0 ? "#00ffb4" : i === 1 ? "#79b8ff" : "#ffcc66" }}
+                          style={{ color: i === 0 ? "#10b981" : i === 1 ? "#79b8ff" : "#ffcc66" }}
                         >
                           {metric.value}
                         </div>
@@ -151,10 +151,10 @@ export default function Capabilities() {
       </section>
 
       <section id="features" className="py-20 md:py-28">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+        <div className="mx-auto max-w-[1100px] px-6 md:px-10">
           <div ref={featureRef} className="reveal mb-12 flex flex-col gap-6 md:mb-16 md:max-w-4xl">
             <span className="eyebrow">{features.eyebrow}</span>
-            <h2 className="display text-[38px] md:text-[60px]">
+            <h2 className="display text-[32px] md:text-[48px]">
               {features.headline}
             </h2>
             <p className="max-w-2xl text-[15px] leading-relaxed text-ink-muted md:text-base">
@@ -170,7 +170,7 @@ export default function Capabilities() {
       </section>
 
       <section className="border-y border-rule bg-canvasElev py-12 md:py-16">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+        <div className="mx-auto max-w-[1100px] px-6 md:px-10">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
             <div className="md:col-span-4">
               <span className="eyebrow">{integrations.eyebrow}</span>

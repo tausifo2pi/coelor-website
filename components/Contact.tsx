@@ -26,14 +26,14 @@ export default function Contact() {
 
   return (
     <section id="contact" className="relative py-20 md:py-28">
-      <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+      <div className="mx-auto max-w-[1100px] px-6 md:px-10">
         <div
           ref={headRef}
           className="reveal mb-12 grid grid-cols-1 items-end gap-8 md:mb-16 md:grid-cols-12"
         >
           <div className="md:col-span-8">
             <span className="eyebrow">{contact.eyebrow}</span>
-            <h2 className="display mt-4 text-[44px] md:text-[88px]">
+            <h2 className="display mt-4 text-[36px] md:text-[64px]">
               {contact.headline}
             </h2>
           </div>

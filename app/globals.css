@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --font-display: var(--font-playfair), "Playfair Display", "Iowan Old Style", Georgia, serif;
+  --font-display: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
-  --font-logo: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-logo: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
 
-  --bg: #07070d;
-  --bg-elev: #0d0d16;
-  --ink: #ebebf2;
-  --ink-muted: #8a8a98;
-  --ink-soft: #4f4f5c;
-  --rule: rgba(255, 255, 255, 0.08);
-  --rule-strong: rgba(255, 255, 255, 0.22);
+  --bg: #ffffff;
+  --bg-elev: #f5f5f7;
+  --ink: #0a0a0f;
+  --ink-muted: #6b6b7a;
+  --ink-soft: #a0a0ae;
+  --rule: rgba(0, 0, 0, 0.08);
+  --rule-strong: rgba(0, 0, 0, 0.18);
 
-  --mint-1: #b4ffd8;
-  --mint-2: #00ffb4;
-  --mint-3: #00b87a;
-  --mint-ink: #0a3d2a;
+  --mint-1: #a7f3d0;
+  --mint-2: #059669;
+  --mint-3: #047857;
+  --mint-ink: #ffffff;
 
-  --gradient-logo: linear-gradient(90deg, #b4ffd8, #00ffb4 50%, #00c8ff);
+  --gradient-logo: linear-gradient(90deg, #059669, #10b981);
 }
 
 @layer base {
@@ -45,6 +45,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "ss01", "cv11";
+    color-scheme: light;
   }
 
   body {
@@ -53,8 +54,8 @@
   }
 
   ::selection {
-    background: #00b87a;
-    color: #0a3d2a;
+    background: #059669;
+    color: #ffffff;
   }
 
   h1,
@@ -99,8 +100,8 @@
 
   .wordmark {
     font-family: var(--font-logo);
-    font-weight: 400;
-    letter-spacing: 0.04em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     background-image: var(--gradient-logo);
     -webkit-background-clip: text;
     background-clip: text;
@@ -109,9 +110,9 @@
 
   .display {
     font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    line-height: 0.98;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 0.96;
   }
 
 }
@@ -170,38 +171,29 @@
   transform: translateY(0);
 }
 
-/* -------- Studio section — inverted cream palette -------- */
-#studio {
-  background-color: #f3eee1;
-  color: #1a1a1f;
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
 }
-#studio h1,
-#studio h2,
-#studio h3,
-#studio h4,
-#studio .text-ink {
-  color: #1a1a1f;
+
+@keyframes active-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
-#studio .text-ink-muted,
-#studio .eyebrow {
-  color: #5a5a62;
+
+.typing-dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--ink-soft);
+  animation: typing-bounce 1.2s ease-in-out infinite;
 }
-#studio .text-ink-soft {
-  color: #8a8a90;
+
+.active-dot {
+  animation: active-pulse 2s ease-in-out infinite;
 }
-#studio .border-rule {
-  border-color: rgba(10, 10, 20, 0.14);
-}
-#studio .border-rule-strong {
-  border-color: rgba(10, 10, 20, 0.28);
-}
-#studio .bg-rule {
-  background-color: rgba(10, 10, 20, 0.14);
-}
-#studio ::selection {
-  background: #0a3d2a;
-  color: #f3eee1;
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   *,

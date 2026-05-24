@@ -23,7 +23,7 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden border-t border-rule bg-canvasElev">
-      <div className="mx-auto max-w-[1280px] px-6 py-14 md:px-10 md:py-20">
+      <div className="mx-auto max-w-[1100px] px-6 py-14 md:px-10 md:py-20">
         {/* Giant wordmark */}
         <div
           aria-hidden

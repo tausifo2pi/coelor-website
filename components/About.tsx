@@ -41,11 +41,11 @@ export default function Studio() {
   return (
     <>
       <section id="demo" className="relative overflow-hidden py-20 md:py-28">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+        <div className="mx-auto max-w-[1100px] px-6 md:px-10">
           <div ref={demoRef} className="reveal mb-12 grid grid-cols-1 gap-8 md:mb-16 md:grid-cols-12">
             <div className="md:col-span-7">
               <span className="eyebrow">{demo.eyebrow}</span>
-              <h2 className="display mt-4 text-[38px] md:text-[60px]">
+              <h2 className="display mt-4 text-[32px] md:text-[48px]">
                 {demo.headline}
               </h2>
             </div>
@@ -90,10 +90,10 @@ export default function Studio() {
       </section>
 
       <section id="pricing" className="py-20 md:py-28">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+        <div className="mx-auto max-w-[1100px] px-6 md:px-10">
           <div ref={pricingRef} className="reveal mb-12 max-w-4xl md:mb-16">
             <span className="eyebrow">{pricing.eyebrow}</span>
-            <h2 className="display mt-4 text-[38px] md:text-[60px]">
+            <h2 className="display mt-4 text-[32px] md:text-[48px]">
               {pricing.headline}
             </h2>
             <p className="mt-6 max-w-2xl text-[15px] leading-relaxed text-ink-muted md:text-base">
@@ -109,10 +109,10 @@ export default function Studio() {
       </section>
 
       <section id="faq" className="border-y border-rule bg-canvasElev py-20 md:py-28">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+        <div className="mx-auto max-w-[1100px] px-6 md:px-10">
           <div ref={faqRef} className="reveal mb-12 max-w-3xl md:mb-16">
             <span className="eyebrow">{faq.eyebrow}</span>
-            <h2 className="display mt-4 text-[38px] md:text-[60px]">
+            <h2 className="display mt-4 text-[32px] md:text-[48px]">
               {faq.headline}
             </h2>
           </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import content from "@/data/site-content.json";
+import Logo from "@/components/Logo";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -33,14 +34,14 @@ export default function Navbar() {
         scrolled ? "backdrop-blur-md" : ""
       }`}
       style={{
-        backgroundColor: scrolled ? "rgba(7,7,13,0.72)" : "transparent",
+        backgroundColor: scrolled ? "rgba(255,255,255,0.88)" : "transparent",
         borderBottom: scrolled ? "1px solid var(--rule)" : "1px solid transparent",
       }}
     >
-      <div className="mx-auto flex h-[68px] max-w-[1280px] items-center justify-between px-6 md:px-10">
+      <div className="mx-auto flex h-[68px] max-w-[1100px] items-center justify-between px-6 md:px-10">
         {/* Logo */}
-        <a href="#top" onClick={smoothTo("top")}>
-          <span className="wordmark text-[26px] leading-none">{content.brand.wordmark}</span>
+        <a href="#top" onClick={smoothTo("top")} className="text-ink">
+          <Logo size={32} />
         </a>
 
         {/* Desktop nav */}
@@ -62,7 +63,7 @@ export default function Navbar() {
         <a
           href="#contact"
           onClick={smoothTo("contact")}
-          className="group hidden items-center gap-2 rounded-full border border-mint-2 bg-mint-2 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-mint-ink shadow-[0_0_24px_-4px_rgba(0,255,180,0.45)] transition-all duration-200 hover:bg-transparent hover:text-mint-2 md:inline-flex"
+          className="group hidden items-center gap-2 rounded-full border border-ink bg-ink px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-canvas transition-all duration-200 hover:bg-transparent hover:text-ink md:inline-flex"
         >
           <span>Launch your bot</span>
           <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
@@ -105,7 +106,7 @@ export default function Navbar() {
               key={n.id}
               href={`#${n.id}`}
               onClick={smoothTo(n.id)}
-              className="font-display text-[44px] tracking-tight text-ink transition-opacity duration-200 hover:opacity-60"
+              className="font-mono text-[28px] uppercase tracking-[0.12em] text-ink transition-opacity duration-200 hover:opacity-60"
             >
               {n.label}
             </a>
