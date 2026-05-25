@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT ?? 587),
-  secure: process.env.SMTP_SECURE === "true",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,10 +14,10 @@ export async function POST(req: NextRequest) {
     const ref = `COE-${Date.now().toString(36).toUpperCase()}`;
 
     // Notify Coelor inbox
-    await transporter.sendMail({
-      from: `"Coelor Contact" <${process.env.SMTP_USER}>`,
+    await resend.emails.send({
+      from: "Coelor <contact@coelor.com>",
       replyTo: email,
-      to: process.env.SMTP_TO,
+      to: "contact@coelor.com",
       subject: `[${ref}] New inquiry from ${name}${company ? ` · ${company}` : ""}`,
       html: `
         <p><strong>Ref:</strong> ${ref}</p>
@@ -38,8 +30,8 @@ export async function POST(req: NextRequest) {
     });
 
     // Confirmation to sender
-    await transporter.sendMail({
-      from: `"Coelor" <${process.env.SMTP_USER}>`,
+    await resend.emails.send({
+      from: "Coelor <contact@coelor.com>",
       to: email,
       subject: `We got your message — Ref: ${ref}`,
       html: `
