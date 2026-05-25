@@ -19,13 +19,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const ref = `COE-${Date.now().toString(36).toUpperCase()}`;
+
+    // Notify Coelor inbox
     await transporter.sendMail({
-      from: `"${name}" <${process.env.SMTP_USER}>`,
+      from: `"Coelor Contact" <${process.env.SMTP_USER}>`,
       replyTo: email,
       to: process.env.SMTP_TO,
-      subject: `New inquiry from ${name}${company ? ` · ${company}` : ""}`,
-      text: `Name: ${name}\nEmail: ${email}\nCompany: ${company || "—"}\n\n${brief}`,
+      subject: `[${ref}] New inquiry from ${name}${company ? ` · ${company}` : ""}`,
       html: `
+        <p><strong>Ref:</strong> ${ref}</p>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Company:</strong> ${company || "—"}</p>
@@ -34,7 +37,23 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    return NextResponse.json({ ok: true });
+    // Confirmation to sender
+    await transporter.sendMail({
+      from: `"Coelor" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: `We got your message — Ref: ${ref}`,
+      html: `
+        <p>Hi ${name},</p>
+        <p>Thanks for reaching out. We've received your message and will get back to you within 24 hours.</p>
+        <p><strong>Your reference number:</strong> ${ref}</p>
+        <p>If you need to follow up, reply to this email with your reference number.</p>
+        <br/>
+        <p>— Coelor Team</p>
+        <p style="color:#999;font-size:12px;">contact@coelor.com · coelor.com</p>
+      `,
+    });
+
+    return NextResponse.json({ ok: true, ref });
   } catch (err) {
     console.error("Contact API error:", err);
     return NextResponse.json({ error: "Failed to send" }, { status: 500 });

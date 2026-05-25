@@ -5,17 +5,28 @@ import { useReveal } from "@/hooks/useReveal";
 import content from "@/data/site-content.json";
 
 type Field = "name" | "email" | "company" | "brief";
+type Errors = Partial<Record<Field, string>>;
+
+function validate(data: Record<string, string>): Errors {
+  const errs: Errors = {};
+  if (!data.name.trim()) errs.name = "Name is required";
+  if (!data.email.trim()) errs.email = "Email is required";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errs.email = "Invalid email";
+  if (!data.brief.trim()) errs.brief = "Message is required";
+  else if (data.brief.trim().length < 20) errs.brief = "Too short — add more detail";
+  return errs;
+}
 
 export default function Contact() {
   const headRef = useReveal<HTMLDivElement>();
   const formRef = useReveal<HTMLDivElement>(0.1);
   const [focus, setFocus] = useState<Field | null>(null);
-  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errors, setErrors] = useState<Errors>({});
   const { contact, brand } = content;
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setStatus("sending");
     const form = e.currentTarget;
     const data = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
@@ -23,6 +34,10 @@ export default function Contact() {
       company: (form.elements.namedItem("company") as HTMLInputElement).value,
       brief: (form.elements.namedItem("brief") as HTMLTextAreaElement).value,
     };
+    const errs = validate(data);
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setErrors({});
+    setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -32,14 +47,13 @@ export default function Contact() {
       if (!res.ok) throw new Error();
       setStatus("sent");
     } catch {
-      setStatus("idle");
-      alert("Something went wrong. Please try again or email directly.");
+      setStatus("error");
     }
   };
 
   const fieldBase = (name: Field) =>
-    `flex flex-col gap-2 border-t py-5 transition-colors duration-300 ${
-      focus === name ? "border-ink" : "border-rule"
+    `flex flex-col gap-1 border-t py-5 transition-colors duration-300 ${
+      errors[name] ? "border-red-400" : focus === name ? "border-ink" : "border-rule"
     }`;
 
   return (
@@ -66,24 +80,19 @@ export default function Contact() {
               <div className={fieldBase("name")}>
                 <label htmlFor="name" className="eyebrow">Name</label>
                 <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  required
+                  id="name" name="name" type="text" autoComplete="name"
                   placeholder={contact.fields.name}
                   onFocus={() => setFocus("name")}
                   onBlur={() => setFocus(null)}
+                  onChange={() => errors.name && setErrors(p => ({ ...p, name: undefined }))}
                   className="bg-transparent py-2 text-[17px] text-ink placeholder:text-ink-soft focus:outline-none"
                 />
+                {errors.name && <span className="font-mono text-[10px] text-red-500">{errors.name}</span>}
               </div>
               <div className={fieldBase("company")}>
                 <label htmlFor="company" className="eyebrow">Company</label>
                 <input
-                  id="company"
-                  name="company"
-                  type="text"
-                  autoComplete="organization"
+                  id="company" name="company" type="text" autoComplete="organization"
                   placeholder={contact.fields.company}
                   onFocus={() => setFocus("company")}
                   onBlur={() => setFocus(null)}
@@ -93,16 +102,14 @@ export default function Contact() {
               <div className={`${fieldBase("email")} md:col-span-2`}>
                 <label htmlFor="email" className="eyebrow">Email</label>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
+                  id="email" name="email" type="email" autoComplete="email"
                   placeholder={contact.fields.email}
                   onFocus={() => setFocus("email")}
                   onBlur={() => setFocus(null)}
+                  onChange={() => errors.email && setErrors(p => ({ ...p, email: undefined }))}
                   className="bg-transparent py-2 text-[17px] text-ink placeholder:text-ink-soft focus:outline-none"
                 />
+                {errors.email && <span className="font-mono text-[10px] text-red-500">{errors.email}</span>}
               </div>
               <div className={`${fieldBase("brief")} md:col-span-2`}>
                 <label htmlFor="brief" className="eyebrow">Brief</label>
@@ -110,29 +117,35 @@ export default function Contact() {
                   id="brief"
                   name="brief"
                   rows={5}
-                  required
                   placeholder={contact.fields.brief}
                   onFocus={() => setFocus("brief")}
                   onBlur={() => setFocus(null)}
+                  onChange={() => errors.brief && setErrors(p => ({ ...p, brief: undefined }))}
                   className="resize-none bg-transparent py-2 text-[17px] leading-relaxed text-ink placeholder:text-ink-soft focus:outline-none"
                 />
+                {errors.brief && <span className="font-mono text-[10px] text-red-500">{errors.brief}</span>}
               </div>
               <div className="mt-8 flex flex-col gap-4 border-t border-rule pt-6 md:col-span-2 md:flex-row md:items-center md:justify-between">
                 <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted">
-                  Or email —{" "}
-                  <a href={`mailto:${brand.email}`} className="text-ink underline-offset-4 hover:underline">
-                    {brand.email}
-                  </a>
+                  {status === "error" ? (
+                    <span className="text-red-500">Failed to send — email us directly at{" "}
+                      <a href={`mailto:${brand.email}`} className="underline underline-offset-4">{brand.email}</a>
+                    </span>
+                  ) : (
+                    <>Or email —{" "}
+                      <a href={`mailto:${brand.email}`} className="text-ink underline-offset-4 hover:underline">{brand.email}</a>
+                    </>
+                  )}
                 </span>
                 <button
                   type="submit"
-                  disabled={status !== "idle"}
+                  disabled={status === "sending" || status === "sent"}
                   className="group inline-flex items-center gap-2 rounded-full border border-ink bg-ink px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-canvas transition-all duration-200 hover:bg-transparent hover:text-ink disabled:opacity-70"
                 >
                   <span>
                     {status === "sent" ? contact.buttonSent : status === "sending" ? contact.buttonSending : contact.buttonIdle}
                   </span>
-                  {status === "idle" && (
+                  {(status === "idle" || status === "error") && (
                     <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
                   )}
                 </button>
