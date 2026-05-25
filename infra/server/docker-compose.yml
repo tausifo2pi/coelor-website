@@ -7,6 +7,8 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+    env_file:
+      - /home/ec2-user/server/website.env
     networks:
       - coelor_network
     restart: unless-stopped

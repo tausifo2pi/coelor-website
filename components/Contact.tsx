@@ -13,10 +13,28 @@ export default function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const { contact, brand } = content;
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("sending");
-    setTimeout(() => setStatus("sent"), 650);
+    const form = e.currentTarget;
+    const data = {
+      name: (form.elements.namedItem("name") as HTMLInputElement).value,
+      email: (form.elements.namedItem("email") as HTMLInputElement).value,
+      company: (form.elements.namedItem("company") as HTMLInputElement).value,
+      brief: (form.elements.namedItem("brief") as HTMLTextAreaElement).value,
+    };
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error();
+      setStatus("sent");
+    } catch {
+      setStatus("idle");
+      alert("Something went wrong. Please try again or email directly.");
+    }
   };
 
   const fieldBase = (name: Field) =>
