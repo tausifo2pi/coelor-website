@@ -39,7 +39,9 @@
         { "from": "customer", "text": "bhai red dress ache? price koto?" },
         { "from": "bot", "text": "হ্যাঁ, 5টা red dress আছে। দাম ৳1,850 থেকে। কোন size লাগবে?" },
         { "from": "customer", "text": "M size 2 ta. Mirpur delivery." },
-        { "from": "bot", "text": "Done. Phone number দিন, তারপর order confirm করে দিচ্ছি." }
+        { "from": "bot", "text": "Done. Phone number দিন, তারপর order confirm করে দিচ্ছি." },
+        { "from": "customer", "text": "01712345678" },
+        { "from": "bot", "text": "Order confirmed! Pathao pickup tomorrow. ৳3,700 COD." }
       ],
       "order": {
         "title": "Order draft",
