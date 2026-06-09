@@ -13,6 +13,8 @@ export async function POST(req: NextRequest) {
 
     const ref = `COE-${Date.now().toString(36).toUpperCase()}`;
 
+    const logoHtml = `<img src="https://coelor.com/icon-64.png" alt="Coelor" width="40" height="40" style="display:block;margin-bottom:16px;" />`;
+
     // Notify Coelor inbox
     await resend.emails.send({
       from: "Coelor <contact@coelor.com>",
@@ -20,6 +22,7 @@ export async function POST(req: NextRequest) {
       to: "contact@coelor.com",
       subject: `[${ref}] New inquiry from ${name}${company ? ` · ${company}` : ""}`,
       html: `
+        ${logoHtml}
         <p><strong>Ref:</strong> ${ref}</p>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
@@ -35,6 +38,7 @@ export async function POST(req: NextRequest) {
       to: email,
       subject: `We got your message — Ref: ${ref}`,
       html: `
+        ${logoHtml}
         <p>Hi ${name},</p>
         <p>Thanks for reaching out. We've received your message and will get back to you within 24 hours.</p>
         <p><strong>Your reference number:</strong> ${ref}</p>

@@ -41,7 +41,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-[68px] max-w-[1100px] items-center justify-between px-6 md:px-10">
         {/* Logo */}
         <a href="#top" onClick={smoothTo("top")} className="text-ink">
-          <Logo size={32} />
+          <Logo size={44} />
         </a>
 
         {/* Desktop nav */}
