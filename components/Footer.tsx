@@ -1,4 +1,3 @@
-import Image from "next/image";
 import content from "@/data/site-content.json";
 
 const SOCIAL = [
@@ -25,14 +24,8 @@ export default function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-rule bg-canvasElev">
       <div className="mx-auto max-w-[1100px] px-6 py-14 md:px-10 md:py-20">
-        {/* Logo */}
-        <Image
-          src="/coelor-logo.png"
-          alt="Coelor"
-          width={280}
-          height={68}
-          style={{ objectFit: "contain", objectPosition: "left" }}
-        />
+        {/* Wordmark */}
+        <span className="wordmark text-[40px] leading-none md:text-[52px]">{brand.wordmark}</span>
 
         <div className="mt-10 grid grid-cols-1 gap-8 border-t border-rule pt-8 text-[14px] md:grid-cols-4 md:gap-6">
           <div className="flex flex-col gap-2">

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Inter, JetBrains_Mono } from "next/font/google";
+import { Geist, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import content from "@/data/site-content.json";
 import "./globals.css";
 
@@ -10,11 +10,12 @@ const geist = Geist({
   weight: ["400", "500", "600", "700"],
 });
 
-const inter = Inter({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-serif",
   display: "swap",
-  weight: ["400", "500", "600"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 const jetbrains = JetBrains_Mono({
@@ -40,14 +41,14 @@ export const metadata: Metadata = {
     description: content.seo.openGraphDescription,
     url: "https://coelor.com",
     siteName: content.brand.name,
-    images: [{ url: "/logo-dark-on-light.png", width: 1200, height: 300 }],
+    images: [{ url: "/logo-white-on-dark.png", width: 1200, height: 400 }],
     type: "website",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
-  colorScheme: "light",
+  themeColor: "#0B0D10",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -58,7 +59,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${inter.variable} ${jetbrains.variable}`}
+      className={`${geist.variable} ${instrumentSerif.variable} ${jetbrains.variable}`}
     >
       <body suppressHydrationWarning>{children}</body>
     </html>

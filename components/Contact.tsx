@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
+import MaskReveal from "@/components/MaskReveal";
 import content from "@/data/site-content.json";
 
 type Field = "name" | "email" | "company" | "brief";
@@ -18,7 +19,7 @@ function validate(data: Record<string, string>): Errors {
 }
 
 export default function Contact() {
-  const headRef = useReveal<HTMLDivElement>();
+  const headRef = useReveal<HTMLParagraphElement>();
   const formRef = useReveal<HTMLDivElement>(0.1);
   const [focus, setFocus] = useState<Field | null>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -59,17 +60,12 @@ export default function Contact() {
   return (
     <section id="contact" className="relative py-20 md:py-28">
       <div className="mx-auto max-w-[1100px] px-6 md:px-10">
-        <div
-          ref={headRef}
-          className="reveal mb-12 grid grid-cols-1 items-end gap-8 md:mb-16 md:grid-cols-12"
-        >
+        <div className="mb-12 grid grid-cols-1 items-end gap-8 md:mb-16 md:grid-cols-12">
           <div className="md:col-span-8">
             <span className="eyebrow">{contact.eyebrow}</span>
-            <h2 className="display mt-4 text-[36px] md:text-[64px]">
-              {contact.headline}
-            </h2>
+            <MaskReveal text={contact.headline} accent={contact.accent} className="display mt-4 text-[36px] md:text-[56px]" />
           </div>
-          <p className="max-w-sm text-[15px] leading-relaxed text-ink-muted md:col-span-4">
+          <p ref={headRef} className="reveal max-w-sm text-[15px] leading-relaxed text-ink-muted md:col-span-4" style={{ transitionDelay: "200ms" }}>
             {contact.body}
           </p>
         </div>

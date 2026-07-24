@@ -34,27 +34,28 @@ export default function Navbar() {
         scrolled ? "backdrop-blur-md" : ""
       }`}
       style={{
-        backgroundColor: scrolled ? "rgba(255,255,255,0.88)" : "transparent",
+        backgroundColor: scrolled ? "rgba(11,13,16,0.82)" : "transparent",
         borderBottom: scrolled ? "1px solid var(--rule)" : "1px solid transparent",
       }}
     >
       <div className="mx-auto flex h-[68px] max-w-[1100px] items-center justify-between px-6 md:px-10">
         {/* Logo */}
-        <a href="#top" onClick={smoothTo("top")} className="text-ink">
-          <Logo size={44} />
+        <a href="#top" onClick={smoothTo("top")} className="flex items-center gap-2.5">
+          <Logo size={30} />
+          <span className="wordmark text-[21px] leading-none">{content.brand.wordmark}</span>
         </a>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-10 md:flex">
+        <nav className="hidden items-center gap-9 md:flex">
           {content.nav.map((n) => (
             <a
               key={n.id}
               href={`#${n.id}`}
               onClick={smoothTo(n.id)}
-              className="group relative font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted transition-colors duration-200 hover:text-ink"
+              className="group relative font-mono text-[11px] uppercase tracking-[0.2em] text-ink-muted transition-colors duration-200 hover:text-ink"
             >
               {n.label}
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-ink transition-all duration-300 group-hover:w-full" />
+              <span className="absolute -bottom-1 left-0 h-px w-0 bg-mint-2 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
         </nav>
@@ -63,7 +64,7 @@ export default function Navbar() {
         <a
           href="#contact"
           onClick={smoothTo("contact")}
-          className="group hidden items-center gap-2 rounded-full border border-ink bg-ink px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-canvas transition-all duration-200 hover:bg-transparent hover:text-ink md:inline-flex"
+          className="group hidden items-center gap-2 rounded-full bg-mint-2 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] text-mint-ink transition-colors duration-300 hover:bg-mint-1 md:inline-flex"
         >
           <span>Launch your bot</span>
           <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
@@ -117,7 +118,7 @@ export default function Navbar() {
           <a
             href="#contact"
             onClick={smoothTo("contact")}
-            className="flex w-full items-center justify-center rounded-full bg-ink py-3.5 font-mono text-[11px] uppercase tracking-[0.2em] text-canvas"
+            className="flex w-full items-center justify-center rounded-full bg-mint-2 py-3.5 font-mono text-[11px] uppercase tracking-[0.2em] text-mint-ink"
           >
             Launch your bot →
           </a>

@@ -5,15 +5,11 @@
     "tagline": "AI sales agent for Bangladesh f-commerce",
     "email": "contact@coelor.com"
   },
-  "visuals": {
-    "heroImage": "/fcommerce-dashboard.svg",
-    "heroImageAlt": "Layered f-commerce dashboard visual"
-  },
   "seo": {
-    "title": "Coelor — F-commerce bot for Bangladesh",
-    "description": "Set up your f-commerce bot in minutes. Connect Messenger, WhatsApp, or Instagram, import products from sheets, and automate orders with local courier and payment integrations.",
-    "openGraphTitle": "Coelor — F-commerce bot for Bangladesh",
-    "openGraphDescription": "An AI sales agent for Bangladeshi Facebook, Instagram, and WhatsApp sellers."
+    "title": "Coelor — Your inbox, finally selling",
+    "description": "Coelor answers in Bangla, confirms the order, and books the courier — across Messenger, WhatsApp, and Instagram. Set up your f-commerce bot in minutes.",
+    "openGraphTitle": "Coelor — Your inbox, finally selling",
+    "openGraphDescription": "An AI sales agent for Bangladeshi Facebook, Instagram, and WhatsApp sellers. Replies, confirms, and books the courier while you sleep."
   },
   "nav": [
     { "id": "setup", "label": "Setup" },
@@ -23,45 +19,13 @@
     { "id": "contact", "label": "Contact" }
   ],
   "hero": {
-    "eyebrow": "F-commerce automation for Bangladesh",
-    "label": "Coelor · AI Sales Agent",
-    "headline": "Set up your f-commerce bot in 5 minutes.",
-    "body": "Connect your social inbox, import your product sheet, paste courier and payment keys, and let Coelor take product questions, carts, and orders from Messenger, WhatsApp, and Instagram.",
+    "eyebrow": "AI sales agent · Bangladesh f-commerce",
+    "headline": "Your inbox,",
+    "accent": "finally selling.",
+    "body": "Coelor answers in Bangla, confirms the order, and books the courier — across Messenger, WhatsApp, and Instagram. You wake up to packed orders, not unread messages.",
     "primaryCta": { "label": "Launch your bot", "href": "#contact" },
     "secondaryCta": { "label": "See how it works", "href": "#setup" },
-    "proof": ["Bangla + Banglish", "Messenger first", "Sheets-ready", "COD + SSLCommerz", "Pathao · RedX · Steadfast"],
-    "chatDemo": {
-      "title": "Live sales flow",
-      "status": "bot active",
-      "inboxTitle": "Social inbox",
-      "aiBadge": "AI",
-      "messages": [
-        { "from": "customer", "text": "bhai red dress ache? price koto?" },
-        { "from": "bot", "text": "হ্যাঁ, 5টা red dress আছে। দাম ৳1,850 থেকে। কোন size লাগবে?" },
-        { "from": "customer", "text": "M size 2 ta. Mirpur delivery." },
-        { "from": "bot", "text": "Done. Phone number দিন, তারপর order confirm করে দিচ্ছি." },
-        { "from": "customer", "text": "01712345678" },
-        { "from": "bot", "text": "Order confirmed! Pathao pickup tomorrow. ৳3,700 COD." }
-      ],
-      "order": {
-        "title": "Order draft",
-        "itemsLabel": "Items",
-        "customerLabel": "Customer",
-        "paymentLabel": "Pay",
-        "courierLabel": "Ship",
-        "readyLabel": "ready",
-        "items": "Red Dress · M · x2",
-        "customer": "Mirpur, Dhaka",
-        "payment": "COD",
-        "courier": "Pathao ready"
-      },
-      "cards": [
-        { "label": "Reply time", "value": "2 sec" },
-        { "label": "Orders today", "value": "38" },
-        { "label": "Inbox saved", "value": "71%" }
-      ],
-      "channels": ["Messenger", "WhatsApp", "Instagram"]
-    }
+    "proof": ["Bangla + Banglish", "Messenger first", "Sheets-ready", "COD + SSLCommerz", "Pathao · RedX · Steadfast"]
   },
   "labels": {
     "builtFor": "Built for",
@@ -72,8 +36,9 @@
   },
   "pain": {
     "eyebrow": "Why this exists",
-    "headline": "Your inbox is leaking orders.",
-    "body": "Most f-commerce sellers do not lose customers because the product is bad. They lose customers because replies are late, inventory lives in sheets, and order details get copied between tabs all day.",
+    "headline": "Every unread message is",
+    "accent": "a lost order.",
+    "body": "Sellers rarely lose customers because the product is bad. They lose them because replies are late, inventory lives in sheets, and order details get copied between tabs all day.",
     "items": [
       { "title": "Repeated questions", "body": "Customers ask price, size, stock, delivery time, and return policy again and again." },
       { "title": "Manual order taking", "body": "Phone, address, item, quantity, courier, and COD amount are collected by hand." },
@@ -88,7 +53,8 @@
   },
   "setup": {
     "eyebrow": "How it works",
-    "headline": "From page to selling bot without a rebuild.",
+    "headline": "From page to selling bot in",
+    "accent": "five minutes.",
     "body": "Coelor is designed around how Bangladesh f-commerce teams already work: social pages, spreadsheets, COD, local couriers, and fast inbox conversations.",
     "steps": [
       {
@@ -115,7 +81,8 @@
   },
   "features": {
     "eyebrow": "Product",
-    "headline": "The bot is the salesperson. The dashboard is the control room.",
+    "headline": "The bot sells.",
+    "accent": "The dashboard runs the shop.",
     "body": "Coelor combines social commerce automation with the operational tools a real seller needs after the customer says yes.",
     "items": [
       {
@@ -152,7 +119,8 @@
   },
   "integrations": {
     "eyebrow": "Integrations",
-    "headline": "Built around the tools BD sellers already use.",
+    "headline": "Built around tools you",
+    "accent": "already use.",
     "items": ["Facebook", "Messenger", "Instagram", "WhatsApp", "Google Sheets", "Excel", "Pathao", "Steadfast", "RedX", "SSLCommerz", "COD"]
   },
   "dashboard": {
@@ -171,11 +139,12 @@
   },
   "demo": {
     "eyebrow": "Demo flow",
-    "headline": "A customer can go from question to order without waiting for an admin.",
-    "body": "The website should make the core flow obvious: product question, bot reply, variant/quantity, phone/address, order, courier/payment handoff.",
+    "headline": "Question to order,",
+    "accent": "no waiting.",
+    "body": "A customer goes from product question to confirmed order without waiting for an admin: bot reply, variant, phone, address, order, courier handoff.",
     "timeline": [
       { "speaker": "Customer", "text": "apu ei dress ta available? M size lagbe." },
-      { "speaker": "Coelor bot", "text": "M size stock আছে। দাম ৳1,850। কয়টা নিবেন?" },
+      { "speaker": "Coelor bot", "text": "M size stock আছে। দাম ৳1,850। কয়টা নিবেন?" },
       { "speaker": "Customer", "text": "2 ta. 017XXXXXXXX, Dhanmondi delivery." },
       { "speaker": "Coelor", "text": "Order draft created. COD selected. Courier booking ready." }
     ],
@@ -189,7 +158,8 @@
   },
   "pricing": {
     "eyebrow": "Plans",
-    "headline": "Start with the bot, grow into the full operation.",
+    "headline": "Start with the bot,",
+    "accent": "grow into the operation.",
     "body": "Plans are shaped around message volume, channels, product count, and courier/payment needs.",
     "plans": [
       {
@@ -202,7 +172,8 @@
         "name": "Growth",
         "price": "For active sellers",
         "body": "More channels, courier integrations, payment setup, and higher automation.",
-        "features": ["Messenger + WhatsApp/Instagram", "Pathao/RedX/Steadfast", "SSLCommerz", "Live inbox"]
+        "features": ["Messenger + WhatsApp/Instagram", "Pathao/RedX/Steadfast", "SSLCommerz", "Live inbox"],
+        "highlight": true
       },
       {
         "name": "Scale",
@@ -214,7 +185,8 @@
   },
   "faq": {
     "eyebrow": "FAQ",
-    "headline": "Questions sellers ask before switching on the bot.",
+    "headline": "Before you",
+    "accent": "switch it on.",
     "items": [
       {
         "q": "Do I need an ecommerce website first?",
@@ -240,7 +212,8 @@
   },
   "contact": {
     "eyebrow": "Launch",
-    "headline": "Bring your f-commerce page online.",
+    "headline": "Switch on",
+    "accent": "your night shift.",
     "body": "Send your page, product sheet format, and courier/payment providers. We will help you map the setup and switch on the sales bot.",
     "fields": {
       "name": "Your name",
@@ -259,6 +232,6 @@
   "footer": {
     "description": "AI sales agent for Bangladesh f-commerce.",
     "location": "Built by Coelor.",
-    "note": "Your inbox, finally selling."
+    "note": "Replies while you sleep."
   }
 }
