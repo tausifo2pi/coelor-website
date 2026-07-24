@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Constructed per-request: at module scope this throws during `next build`,
+// which imports the route to collect page data before any secret is available.
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error("RESEND_API_KEY is not set");
+  return new Resend(apiKey);
+}
 
 export async function POST(req: NextRequest) {
   try {
+    const resend = getResend();
     const { name, email, company, brief } = await req.json();
 
     if (!name || !email || !brief) {
