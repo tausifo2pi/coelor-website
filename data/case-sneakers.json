@@ -1,0 +1,111 @@
+{
+  "seo": {
+    "title": "Case study: sneaker reseller stock and orders in sync · Coelor",
+    "description": "How a European sneaker reseller keeps StockX, eBay and its Shopify store in sync with its warehouse: 31,000+ products matched, stock checked every 10 minutes, orders imported every 5."
+  },
+  "hero": {
+    "eyebrow": "Case study · Sneaker resale",
+    "headline": "One stock count across StockX, eBay and your webshop.",
+    "sub": "How a European sneaker reseller stopped overselling and stopped retyping marketplace orders into its warehouse system.",
+    "primaryCta": { "label": "Book a call", "href": "#contact" },
+    "secondaryCta": { "label": "See how it works", "href": "#setup" },
+    "panel": {
+      "title": "Live sync",
+      "rows": [
+        { "icon": "refresh", "label": "Stock sync", "meta": "every 10 min", "state": "OK" },
+        { "icon": "route", "label": "Order import", "meta": "every 5 min", "state": "OK" },
+        { "icon": "git-compare", "label": "Products matched", "meta": "31,000+", "state": "OK" },
+        { "icon": "shield", "label": "Actions logged", "meta": "every run", "state": "OK" }
+      ]
+    }
+  },
+  "stats": [
+    { "value": "31,000+", "label": "products matched across systems" },
+    { "value": "10 min", "label": "stock check on every channel" },
+    { "value": "5 min", "label": "from marketplace order to warehouse" },
+    { "value": "0", "label": "manual steps per order" }
+  ],
+  "problem": {
+    "num": "01",
+    "eyebrow": "The problem",
+    "headline": "Every pair lives in four places at once.",
+    "body": "The same pair is listed size by size on StockX, eBay and the webshop, while the real stock sits in the warehouse system. Every sale has to show up everywhere, fast.",
+    "items": [
+      { "icon": "package-x", "title": "Sold twice", "body": "A size sells on StockX and stays live on the webshop. The second buyer gets a cancellation, and the marketplace counts it against you.", "tag": "oversells · penalties" },
+      { "icon": "copy", "title": "Orders retyped", "body": "Marketplace orders are copied into the warehouse system by hand before anyone can pick and ship them.", "tag": "hours every week" },
+      { "icon": "refresh", "title": "Listings paused by hand", "body": "After each sale someone pauses the same product on the other channels, size by size.", "tag": "easy to miss" },
+      { "icon": "file-spreadsheet", "title": "Spreadsheets as glue", "body": "Stock exports downloaded, cleaned and re-uploaded, with thousands of product and size combinations to match.", "tag": "errors · delays" }
+    ]
+  },
+  "setup": {
+    "num": "02",
+    "eyebrow": "What we built",
+    "headline": "The warehouse is the single source of truth.",
+    "body": "Coelor sits between the sales channels and the warehouse. It reads stock from the warehouse, pushes it to every channel and brings every order back.",
+    "beforeLabel": "Before",
+    "before": [
+      "Sold-out listings paused by hand after each sale",
+      "Marketplace orders retyped into the warehouse system",
+      "An item could sell twice before anyone noticed"
+    ],
+    "afterLabel": "After",
+    "after": [
+      "31,000+ products matched across systems",
+      "Stock checked every 10 minutes on every channel",
+      "Orders imported every 5 minutes, warehouse order created",
+      "Every action logged; dry-run verified before go-live"
+    ],
+    "flowFrom": [
+      { "name": "Shopify", "slug": "shopify" },
+      { "name": "StockX", "slug": "stockx" },
+      { "name": "eBay", "slug": "ebay" }
+    ],
+    "flowTo": [
+      { "name": "Picqer", "slug": "picqer" },
+      { "name": "Xero", "slug": "xero" },
+      { "name": "Google Sheets", "slug": "google-sheets" }
+    ],
+    "steps": [
+      { "icon": "git-compare", "title": "Match every product and size", "body": "Each product is matched across the webshop, the marketplaces and the warehouse: more than 31,000 of them." },
+      { "icon": "refresh", "title": "Sync stock every 10 minutes", "body": "Warehouse stock is checked every 10 minutes and pushed to every channel, so a sold size disappears everywhere." },
+      { "icon": "route", "title": "Import orders every 5 minutes", "body": "Marketplace orders land in the warehouse system within 5 minutes as warehouse orders, ready to pick. No retyping." },
+      { "icon": "shield", "title": "Log and verify every action", "body": "Every action is logged. The setup ran in dry-run first, so the team saw each step before it went live." }
+    ]
+  },
+  "fit": {
+    "num": "03",
+    "eyebrow": "Is this you?",
+    "headline": "Built for sneaker sellers who have outgrown manual work.",
+    "items": [
+      "You sell on StockX, Alias, eBay or other marketplaces and on your own store",
+      "You keep stock per size in a warehouse or inventory system",
+      "You have hundreds or thousands of product and size combinations",
+      "Someone on your team pauses listings or retypes orders every day"
+    ],
+    "offer": {
+      "title": "How we start",
+      "items": [
+        "A 30-minute call to map your channels and stock flow",
+        "A written scope and a fixed quote",
+        "Most builds run in 3 to 6 weeks, in dry-run first"
+      ]
+    }
+  },
+  "faq": {
+    "num": "04",
+    "eyebrow": "Questions",
+    "headline": "What sellers ask us.",
+    "items": [
+      { "q": "Do we have to change our webshop or warehouse system?", "a": "No. Coelor connects to the systems you already run through their APIs. If a system has no API, we work from its exports." },
+      { "q": "Which channels can you connect?", "a": "The build above connects Shopify, StockX and eBay to Picqer, Xero and Google Sheets. We also work with WooCommerce, Linnworks, Odoo and ChannelEngine, and can add other marketplaces that have an API." },
+      { "q": "What happens if a marketplace API goes down?", "a": "Runs retry and resume where they stopped. Nothing is applied twice. You get an alert if a run fails twice in a row." },
+      { "q": "Can we see what it will do before it changes anything?", "a": "Yes. Every automation runs in dry-run first and logs each action it would take, without taking it." },
+      { "q": "How long does it take?", "a": "Most builds take 3 to 6 weeks from the first call, including the dry-run period next to your team." }
+    ]
+  },
+  "contact": {
+    "num": "05",
+    "headline": "Tell us how you sell today.",
+    "body": "Which channels, which warehouse system, roughly how many products. We reply within one business day."
+  }
+}

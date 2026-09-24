@@ -18,8 +18,10 @@ function validate(d: Record<Field, string>): Errors {
   return e;
 }
 
-export default function Contact() {
-  const { contact, brand } = content;
+/** Optional overrides let a landing page reuse the form with its own heading. */
+export default function Contact({ num, headline, body }: { num?: string; headline?: string; body?: string } = {}) {
+  const { brand } = content;
+  const contact = { ...content.contact, ...(num && { num }), ...(headline && { headline }), ...(body && { body }) };
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState<{ name: string; email: string; ref: string } | null>(null);
