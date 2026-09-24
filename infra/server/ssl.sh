@@ -14,7 +14,9 @@ log "Removing existing certbot data"
 sudo rm -rf ~/data/certbot
 
 log "Creating necessary directories for certbot"
-mkdir -p ~/data/certbot/conf ~/data/certbot/www/.well-known/acme-challenge
+sudo mkdir -p ~/data/certbot/conf ~/data/certbot/www/.well-known/acme-challenge
+sudo chown -R "$(id -u):$(id -g)" ~/data
+touch "$LOGFILE"
 
 # Run a temporary Nginx container to handle the HTTP challenge
 log "Running temporary Nginx container"
@@ -40,6 +42,7 @@ docker rm certbot-webserver
 
 # Set the correct permissions for the certbot directories and files
 log "Setting correct permissions for certbot directories and files"
+sudo chown -R "$(id -u):$(id -g)" ~/data
 sudo chmod -R 755 ~/data/certbot
 
 # End logging
