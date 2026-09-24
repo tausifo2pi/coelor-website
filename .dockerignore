@@ -7,3 +7,7 @@ infra
 *.log
 .DS_Store
 README.md
+.track
+# Runtime env never goes into the image (written to the server at deploy time)
+.env
+.env.*

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { TOKEN_COOKIE, VISITOR_COOKIE, track } from "@/lib/track";
 import { LOGO_PNG_BASE64 } from "./logo";
 import { button, esc, keyValue, layout, p, quote, steps } from "./template";
 
@@ -92,6 +93,18 @@ export async function POST(req: NextRequest) {
       text: `Thanks, ${name}. We have your message.\n\nWe read every message ourselves and reply within one business day.\n\nReference: ${ref}\nReceived: ${when}\n\nWhat happens next\n1. ${NEXT_STEPS[0]}\n2. ${NEXT_STEPS[1]}\n3. ${NEXT_STEPS[2]}\n\nYour message:\n${message}\n\nNeed to add something? Reply to this email.\n\nCoelor · coelor.com · contact@coelor.com`,
       attachments: [logoAttachment],
     });
+
+    // Attribute the inquiry to an outreach email when the visitor came from one.
+    const token = req.cookies.get(TOKEN_COOKIE)?.value;
+    if (token) {
+      await track(req, {
+        type: "form_submit",
+        token,
+        visitor: req.cookies.get(VISITOR_COOKIE)?.value,
+        value: ref,
+        extra: { email_domain: email.split("@")[1]?.toLowerCase() ?? null },
+      });
+    }
 
     return NextResponse.json({ ok: true, ref });
   } catch (err) {

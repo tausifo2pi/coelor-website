@@ -14,3 +14,6 @@ infra/node_modules/
 infra/*.pem
 infra/Pulumi.dev.yaml
 infra/.pulumi-passphrase
+
+# Local outreach tracking events (dev)
+.track/

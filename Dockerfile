@@ -19,7 +19,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs \
- && adduser  --system --uid 1001 nextjs
+ && adduser  --system --uid 1001 nextjs \
+ && mkdir -p /data/track && chown nextjs:nodejs /data/track
+
+# Outreach tracking events (lib/track.ts). Mounted as a named volume so they survive redeploys.
+ENV TRACK_DIR=/data/track
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

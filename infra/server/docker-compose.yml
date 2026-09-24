@@ -8,6 +8,8 @@ services:
       - NODE_ENV=production
     env_file:
       - /home/ec2-user/server/website.env
+    volumes:
+      - track_data:/data/track
     networks:
       - coelor_network
     restart: unless-stopped
@@ -29,4 +31,7 @@ services:
 networks:
   coelor_network:
     driver: bridge
+
+volumes:
+  track_data:
 
