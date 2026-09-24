@@ -1,12 +1,12 @@
 {
   "seo": {
     "title": "Case study: sneaker reseller stock and orders in sync · Coelor",
-    "description": "How a European sneaker reseller keeps StockX, eBay and its Shopify store in sync with its warehouse: 31,000+ products matched, stock checked every 10 minutes, orders imported every 5."
+    "description": "How a Dutch sneaker reseller keeps StockX, eBay and its Shopify store in sync with its warehouse: 31,000+ products matched, stock checked every 10 minutes, orders imported every 5."
   },
   "hero": {
     "eyebrow": "Case study · Sneaker resale",
     "headline": "One stock count across StockX, eBay and your webshop.",
-    "sub": "How a European sneaker reseller stopped overselling and stopped retyping marketplace orders into its warehouse system.",
+    "sub": "How a Dutch sneaker reseller stopped overselling and stopped retyping marketplace orders into its warehouse system.",
     "primaryCta": { "label": "Book a call", "href": "#contact" },
     "secondaryCta": { "label": "See how it works", "href": "#setup" },
     "panel": {

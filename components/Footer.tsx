@@ -10,6 +10,7 @@ export default function Footer({ base = "" }: { base?: string }) {
         <div className="flex flex-col gap-3">
           <Logo height={26} />
           <span className="text-[13px] text-ink-soft">{footer.tagline}</span>
+          <address className="text-[13px] not-italic text-ink-soft">{brand.address}</address>
         </div>
         <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-7 gap-y-3">
           {footer.links.map((l) => (
