@@ -1,13 +1,21 @@
 import { LOGO_HEIGHT, LOGO_WIDTH } from "./logo";
 
-// Display size in the header: keep the wordmark modest, like a letterhead.
-const LOGO_W = 150;
-const LOGO_H = Math.round((LOGO_HEIGHT / LOGO_WIDTH) * LOGO_W);
+// The logo image is a self-contained dark tile (see logo.ts); shown at its natural 1x size.
+const LOGO_W = LOGO_WIDTH;
+const LOGO_H = LOGO_HEIGHT;
 
 /**
  * Table-based, client-safe email layout. The wordmark is an inline CID
  * attachment (`cid:coelor-logo`), so it renders even where remote images are
  * blocked. Colours are inline; no external CSS, no web fonts.
+ *
+ * Dark-mode rules (Gmail recolours emails and cannot be opted out of):
+ * - Light layout only. Dark text on light surfaces inverts predictably.
+ * - No white text on dark blocks: Gmail may flip the block but not the text.
+ *   Buttons and badges use the pale accent with dark text instead.
+ * - The one dark surface (header) is also set as a background-image, which
+ *   Gmail's recolouring ignores, and the logo carries its own dark tile.
+ * - No `color-scheme` meta: Apple Mail / Outlook then leave the light design alone.
  */
 
 export const esc = (s: string) =>
@@ -22,7 +30,6 @@ export function layout({ preheader, title, body }: { preheader: string; title: s
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="color-scheme" content="light dark" />
 <title>${esc(title)}</title>
 </head>
 <body style="margin:0;padding:0;background:#f2f3f6;font-family:${FONT};-webkit-font-smoothing:antialiased">
@@ -80,7 +87,7 @@ export function steps(items: string[]) {
     ${items
       .map(
         (t, i) => `<tr>
-      <td valign="top" style="padding:0 12px 10px 0"><span style="display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:11px;background:#0a0c10;color:#ffffff;font-size:12px;font-family:${MONO}">${i + 1}</span></td>
+      <td valign="top" style="padding:0 12px 10px 0"><span style="display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:11px;background:#9fb0ff;color:#0a0c10;font-weight:600;font-size:12px;font-family:${MONO}">${i + 1}</span></td>
       <td valign="top" style="padding:2px 0 10px;font-size:14px;line-height:1.5;color:#2b2f38">${esc(t)}</td>
     </tr>`
       )
@@ -99,8 +106,8 @@ export function quote(label: string, text: string) {
 
 export function button(label: string, href: string) {
   return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:4px 0 24px">
-    <tr><td style="border-radius:999px;background:#0a0c10">
-      <a href="${href}" style="display:inline-block;padding:12px 22px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:999px">${esc(label)}</a>
+    <tr><td bgcolor="#9fb0ff" style="border-radius:999px;background:#9fb0ff">
+      <a href="${href}" style="display:inline-block;padding:12px 22px;font-size:14px;font-weight:600;color:#0a0c10;text-decoration:none;border-radius:999px">${esc(label)}</a>
     </td></tr>
   </table>`;
 }
