@@ -1,21 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Manrope } from "next/font/google";
 import content from "@/data/site-content.json";
 import "./globals.css";
 
-const geist = Geist({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-geist",
+  variable: "--font-manrope",
   display: "swap",
   weight: ["400", "500", "600", "700"],
-});
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  display: "swap",
-  weight: "400",
-  style: ["normal", "italic"],
 });
 
 const jetbrains = JetBrains_Mono({
@@ -31,10 +23,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://coelor.com"),
   icons: {
     icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/icon-64.png", sizes: "64x64", type: "image/png" },
       { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/icon-512.png",
+    apple: "/apple-icon.png",
   },
   openGraph: {
     title: content.seo.openGraphTitle,
@@ -47,20 +40,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0B0D10",
+  themeColor: "#0A0C10",
   colorScheme: "dark",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${geist.variable} ${instrumentSerif.variable} ${jetbrains.variable}`}
-    >
+    <html lang="en" className={`${manrope.variable} ${jetbrains.variable}`}>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );

@@ -13,3 +13,4 @@ next-env.d.ts
 infra/node_modules/
 infra/*.pem
 infra/Pulumi.dev.yaml
+infra/.pulumi-passphrase

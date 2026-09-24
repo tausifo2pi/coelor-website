@@ -1,166 +1,142 @@
 "use client";
 
 import { useState } from "react";
-import { useReveal } from "@/hooks/useReveal";
-import MaskReveal from "@/components/MaskReveal";
 import content from "@/data/site-content.json";
+import { Icon } from "@/components/icons";
+import SectionHead from "@/components/SectionHead";
 
-type Field = "name" | "email" | "company" | "brief";
+type Field = "name" | "email" | "message";
 type Errors = Partial<Record<Field, string>>;
 
-function validate(data: Record<string, string>): Errors {
-  const errs: Errors = {};
-  if (!data.name.trim()) errs.name = "Name is required";
-  if (!data.email.trim()) errs.email = "Email is required";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errs.email = "Invalid email";
-  if (!data.brief.trim()) errs.brief = "Message is required";
-  else if (data.brief.trim().length < 20) errs.brief = "Too short — add more detail";
-  return errs;
+function validate(d: Record<Field, string>): Errors {
+  const e: Errors = {};
+  if (!d.name.trim()) e.name = "Required";
+  if (!d.email.trim()) e.email = "Required";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) e.email = "Enter a valid email";
+  if (!d.message.trim()) e.message = "Required";
+  else if (d.message.trim().length < 12) e.message = "A sentence is enough";
+  return e;
 }
 
 export default function Contact() {
-  const headRef = useReveal<HTMLParagraphElement>();
-  const formRef = useReveal<HTMLDivElement>(0.1);
-  const [focus, setFocus] = useState<Field | null>(null);
+  const { contact, brand } = content;
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errors, setErrors] = useState<Errors>({});
-  const { contact, brand } = content;
+  const [sent, setSent] = useState<{ name: string; email: string; ref: string } | null>(null);
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = {
-      name: (form.elements.namedItem("name") as HTMLInputElement).value,
-      email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      company: (form.elements.namedItem("company") as HTMLInputElement).value,
-      brief: (form.elements.namedItem("brief") as HTMLTextAreaElement).value,
-    };
+  const onSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+    const form = ev.currentTarget;
+    const get = (k: Field) => (form.elements.namedItem(k) as HTMLInputElement | HTMLTextAreaElement).value;
+    const data = { name: get("name"), email: get("email"), message: get("message") };
     const errs = validate(data);
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     setErrors({});
     setStatus("sending");
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       if (!res.ok) throw new Error();
+      const json = (await res.json()) as { ref?: string };
+      setSent({ name: data.name.trim(), email: data.email.trim(), ref: json.ref ?? "" });
       setStatus("sent");
+      form.reset();
     } catch {
       setStatus("error");
     }
   };
 
-  const fieldBase = (name: Field) =>
-    `flex flex-col gap-1 border-t py-5 transition-colors duration-300 ${
-      errors[name] ? "border-red-400" : focus === name ? "border-ink" : "border-rule"
-    }`;
+  const field = (k: Field, extra?: React.ReactNode) => (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={`c-${k}`} className="text-[13px] text-ink-soft">
+        {contact.fields[k]}
+      </label>
+      {extra}
+      {errors[k] && (
+        <span id={`c-${k}-error`} className="text-[12px] text-[#ff9a9a]">
+          {errors[k]}
+        </span>
+      )}
+    </div>
+  );
+  const a11y = (k: Field) => ({ "aria-invalid": !!errors[k], "aria-describedby": errors[k] ? `c-${k}-error` : undefined });
 
   return (
-    <section id="contact" className="relative py-20 md:py-28">
-      <div className="mx-auto max-w-[1100px] px-6 md:px-10">
-        <div className="mb-12 grid grid-cols-1 items-end gap-8 md:mb-16 md:grid-cols-12">
-          <div className="md:col-span-8">
-            <span className="eyebrow">{contact.eyebrow}</span>
-            <MaskReveal text={contact.headline} accent={contact.accent} className="display mt-4 text-[36px] md:text-[56px]" />
-          </div>
-          <p ref={headRef} className="reveal max-w-sm text-[15px] leading-relaxed text-ink-muted md:col-span-4" style={{ transitionDelay: "200ms" }}>
-            {contact.body}
-          </p>
+    <section id="contact" aria-labelledby="contact-title" className="scroll-mt-16 bg-canvas2">
+      <div className="mx-auto grid max-w-site grid-cols-1 gap-10 px-5 py-16 md:px-10 lg:grid-cols-[1fr_380px] lg:gap-24 lg:px-20 lg:py-[104px]">
+        <div className="flex flex-col gap-8">
+          <SectionHead id="contact-title" num={contact.num} eyebrow={contact.eyebrow} headline={contact.headline} body={contact.body} className="max-w-[640px]" />
+
+          {status === "sent" && sent ? (
+            <div role="status" aria-live="polite" className="panel relative flex max-w-[560px] flex-col gap-6 overflow-hidden p-7 md:p-8">
+              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-ok/15 blur-3xl" aria-hidden />
+              <div className="flex items-center gap-4">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-ok/30 bg-ok/10 text-ok">
+                  <Icon name="check" size={22} strokeWidth={2.4} />
+                </span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[22px] font-semibold text-ink">{contact.success.title}</span>
+                  <span className="font-mono text-[12px] text-ink-soft">
+                    {contact.success.refLabel} <span className="text-ink">{sent.ref}</span>
+                  </span>
+                </div>
+              </div>
+              <p className="text-[15px] leading-[1.6] text-ink-muted">
+                {contact.success.body.replace("{name}", sent.name).replace("{email}", sent.email)}
+              </p>
+              <ol className="flex flex-col gap-3 border-t border-rule pt-5">
+                {contact.success.next.map((it, i) => (
+                  <li key={it} className="flex items-start gap-3 text-[14px] text-ink-muted">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-rule-strong font-mono text-[11px] text-ink">{i + 1}</span>
+                    <span className="pt-0.5">{it}</span>
+                  </li>
+                ))}
+              </ol>
+              <button type="button" onClick={() => { setSent(null); setStatus("idle"); }} className="link-arrow self-start text-[14px] text-ink-muted hover:text-ink">
+                {contact.success.again}
+                <Icon name="arrow-right" size={14} strokeWidth={2.4} />
+              </button>
+            </div>
+          ) : (
+          <form onSubmit={onSubmit} noValidate className="panel flex max-w-[560px] flex-col gap-5 p-6 md:p-7">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              {field("name", <input id="c-name" name="name" type="text" required autoComplete="name" placeholder={contact.placeholders.name} className={`field ${errors.name ? "field-error" : ""}`} {...a11y("name")} />)}
+              {field("email", <input id="c-email" name="email" type="email" required autoComplete="email" placeholder={contact.placeholders.email} className={`field ${errors.email ? "field-error" : ""}`} {...a11y("email")} />)}
+            </div>
+            {field("message", <textarea id="c-message" name="message" rows={3} required placeholder={contact.placeholders.message} className={`field ${errors.message ? "field-error" : ""}`} {...a11y("message")} />)}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <button type="submit" disabled={status === "sending"} className="btn-primary disabled:opacity-70">
+                {status === "sending" ? contact.buttonSending : status === "error" ? contact.buttonError : contact.buttonIdle}
+                {status !== "sending" && <Icon name="arrow-right" size={15} strokeWidth={2.4} />}
+              </button>
+              <span className="text-[13px] text-ink-soft">
+                or email{" "}
+                <a href={`mailto:${brand.email}`} className="inline-block py-1 text-ink underline underline-offset-[3px]">
+                  {brand.email}
+                </a>
+              </span>
+            </div>
+            {status === "error" && (
+              <span role="status" aria-live="polite" className="text-[13px] text-[#ff9a9a]">
+                Something went wrong on our side. Please email us directly and we will pick it up.
+              </span>
+            )}
+          </form>
+          )}
         </div>
 
-        <div ref={formRef} className="reveal grid grid-cols-1 gap-10 md:grid-cols-12">
-          <form onSubmit={onSubmit} className="md:col-span-8">
-            <div className="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-x-10">
-              <div className={fieldBase("name")}>
-                <label htmlFor="name" className="eyebrow">Name</label>
-                <input
-                  id="name" name="name" type="text" autoComplete="name"
-                  placeholder={contact.fields.name}
-                  onFocus={() => setFocus("name")}
-                  onBlur={() => setFocus(null)}
-                  onChange={() => errors.name && setErrors(p => ({ ...p, name: undefined }))}
-                  className="bg-transparent py-2 text-[17px] text-ink placeholder:text-ink-soft focus:outline-none"
-                />
-                {errors.name && <span className="font-mono text-[10px] text-red-500">{errors.name}</span>}
-              </div>
-              <div className={fieldBase("company")}>
-                <label htmlFor="company" className="eyebrow">Company</label>
-                <input
-                  id="company" name="company" type="text" autoComplete="organization"
-                  placeholder={contact.fields.company}
-                  onFocus={() => setFocus("company")}
-                  onBlur={() => setFocus(null)}
-                  className="bg-transparent py-2 text-[17px] text-ink placeholder:text-ink-soft focus:outline-none"
-                />
-              </div>
-              <div className={`${fieldBase("email")} md:col-span-2`}>
-                <label htmlFor="email" className="eyebrow">Email</label>
-                <input
-                  id="email" name="email" type="email" autoComplete="email"
-                  placeholder={contact.fields.email}
-                  onFocus={() => setFocus("email")}
-                  onBlur={() => setFocus(null)}
-                  onChange={() => errors.email && setErrors(p => ({ ...p, email: undefined }))}
-                  className="bg-transparent py-2 text-[17px] text-ink placeholder:text-ink-soft focus:outline-none"
-                />
-                {errors.email && <span className="font-mono text-[10px] text-red-500">{errors.email}</span>}
-              </div>
-              <div className={`${fieldBase("brief")} md:col-span-2`}>
-                <label htmlFor="brief" className="eyebrow">Brief</label>
-                <textarea
-                  id="brief"
-                  name="brief"
-                  rows={5}
-                  placeholder={contact.fields.brief}
-                  onFocus={() => setFocus("brief")}
-                  onBlur={() => setFocus(null)}
-                  onChange={() => errors.brief && setErrors(p => ({ ...p, brief: undefined }))}
-                  className="resize-none bg-transparent py-2 text-[17px] leading-relaxed text-ink placeholder:text-ink-soft focus:outline-none"
-                />
-                {errors.brief && <span className="font-mono text-[10px] text-red-500">{errors.brief}</span>}
-              </div>
-              <div className="mt-8 flex flex-col gap-4 border-t border-rule pt-6 md:col-span-2 md:flex-row md:items-center md:justify-between">
-                <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-muted">
-                  {status === "error" ? (
-                    <span className="text-red-500">Failed to send — email us directly at{" "}
-                      <a href={`mailto:${brand.email}`} className="underline underline-offset-4">{brand.email}</a>
-                    </span>
-                  ) : (
-                    <>Or email —{" "}
-                      <a href={`mailto:${brand.email}`} className="text-ink underline-offset-4 hover:underline">{brand.email}</a>
-                    </>
-                  )}
-                </span>
-                <button
-                  type="submit"
-                  disabled={status === "sending" || status === "sent"}
-                  className="group inline-flex items-center gap-2 rounded-full border border-ink bg-ink px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-canvas transition-all duration-200 hover:bg-transparent hover:text-ink disabled:opacity-70"
-                >
-                  <span>
-                    {status === "sent" ? contact.buttonSent : status === "sending" ? contact.buttonSending : contact.buttonIdle}
-                  </span>
-                  {(status === "idle" || status === "error") && (
-                    <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                  )}
-                </button>
-              </div>
-            </div>
-          </form>
-
-          <aside className="flex flex-col gap-6 border-t border-rule pt-6 md:col-span-4 md:border-none md:pt-0">
-            {contact.aside.map((group) => (
-              <div key={group.title}>
-                <span className="eyebrow">{group.title}</span>
-                <ul className="mt-3 space-y-2 text-[15px] text-ink-muted">
-                  {group.items.map((item) => (
-                    <li key={item}>— {item}</li>
-                  ))}
-                </ul>
-              </div>
+        <div className="panel flex flex-col gap-5 self-start p-7 lg:mt-[104px]">
+          <span className="text-[14px] font-semibold text-ink">{contact.aside.title}</span>
+          <ol className="flex flex-col gap-4">
+            {contact.aside.items.map((it, i) => (
+              <li key={it} className="flex items-start gap-3 text-[14px] leading-[1.5] text-ink-muted">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-rule-strong font-mono text-[11px] text-ink">{i + 1}</span>
+                <span className="pt-0.5">{it}</span>
+              </li>
             ))}
-          </aside>
+          </ol>
         </div>
       </div>
     </section>

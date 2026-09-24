@@ -2,125 +2,120 @@
 
 import { useEffect, useState } from "react";
 import content from "@/data/site-content.json";
+
+import { Icon } from "@/components/icons";
 import Logo from "@/components/Logo";
+
+const Arrow = () => <Icon name="arrow-right" size={14} strokeWidth={2.4} />;
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-    window.scrollTo(0, 0);
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [menuOpen]);
+    document.body.style.overflow = open ? "hidden" : "";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    if (open) window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
-  const smoothTo = (id: string) => (e: React.MouseEvent) => {
+  const go = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    setMenuOpen(false);
+    setOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-[60] transition-colors duration-300 ${
-        scrolled ? "backdrop-blur-md" : ""
-      }`}
-      style={{
-        backgroundColor: scrolled ? "rgba(11,13,16,0.82)" : "transparent",
-        borderBottom: scrolled ? "1px solid var(--rule)" : "1px solid transparent",
-      }}
-    >
-      <div className="mx-auto flex h-[68px] max-w-[1100px] items-center justify-between px-6 md:px-10">
-        {/* Logo */}
-        <a href="#top" onClick={smoothTo("top")} className="flex items-center gap-2.5">
-          <Logo size={30} />
-          <span className="wordmark text-[21px] leading-none">{content.brand.wordmark}</span>
+    <header className="fixed inset-x-0 top-0 z-[60]">
+      <div
+        className="transition-[background-color,border-color] duration-300"
+        style={{
+          backgroundColor: scrolled || open ? "rgba(10,12,16,0.82)" : "transparent",
+          backdropFilter: scrolled && !open ? "blur(14px)" : "none",
+          WebkitBackdropFilter: scrolled && !open ? "blur(14px)" : "none",
+          borderBottom: `1px solid ${scrolled ? "var(--rule)" : "transparent"}`,
+        }}
+      >
+      <div className="mx-auto flex h-[68px] max-w-site items-center justify-between px-5 md:h-[76px] md:px-10 lg:px-20">
+        <a href="#top" onClick={go("top")} aria-label={`${content.brand.name} home`} className="flex items-center py-2">
+          <Logo height={26} priority className="md:hidden" />
+          <Logo height={32} priority className="hidden md:block" />
         </a>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-9 md:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
           {content.nav.map((n) => (
-            <a
-              key={n.id}
-              href={`#${n.id}`}
-              onClick={smoothTo(n.id)}
-              className="group relative font-mono text-[11px] uppercase tracking-[0.2em] text-ink-muted transition-colors duration-200 hover:text-ink"
-            >
+            <a key={n.id} href={`#${n.id}`} onClick={go(n.id)} className="py-1.5 text-[15px] font-medium text-ink/85 transition-colors hover:text-ink">
               {n.label}
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-mint-2 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
         </nav>
 
-        {/* Desktop CTA */}
         <a
-          href="#contact"
-          onClick={smoothTo("contact")}
-          className="group hidden items-center gap-2 rounded-full bg-mint-2 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] text-mint-ink transition-colors duration-300 hover:bg-mint-1 md:inline-flex"
+          href={content.navCta.href}
+          onClick={go("contact")}
+          className="hidden h-10 items-center gap-2 rounded-full border border-rule-strong bg-white/10 px-[18px] text-[15px] font-medium text-ink transition-colors hover:bg-white/15 lg:inline-flex"
         >
-          <span>Launch your bot</span>
-          <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+          {content.navCta.label}
+          <Arrow />
         </a>
 
-        {/* Hamburger / X — z-[70] keeps it above the overlay in every scenario */}
         <button
           type="button"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((v) => !v)}
-          className="relative z-[70] -mr-2 flex h-10 w-10 items-center justify-center text-ink md:hidden"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+          onClick={() => setOpen((v) => !v)}
+          className="relative z-[70] -mr-2 flex h-11 w-11 items-center justify-center text-ink lg:hidden"
         >
-          {menuOpen ? (
-            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-              <line x1="4" y1="4" x2="18" y2="18" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-              <line x1="18" y1="4" x2="4" y2="18" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          {open ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <path d="M6 6l12 12" />
+              <path d="M18 6L6 18" />
             </svg>
           ) : (
-            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-              <line x1="3" y1="8" x2="19" y2="8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-              <line x1="3" y1="14" x2="19" y2="14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <path d="M4 7h16" />
+              <path d="M4 12h16" />
+              <path d="M4 17h16" />
             </svg>
           )}
         </button>
       </div>
+      </div>
 
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 z-50 flex flex-col bg-canvas transition-opacity duration-300 md:hidden ${
-          menuOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        id="mobile-menu"
+        inert={!open}
+        aria-hidden={!open}
+        className={`fixed inset-x-0 top-0 z-50 flex h-[100dvh] flex-col bg-canvas transition-opacity duration-300 lg:hidden ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        {/* Top bar spacer so links don't hide under the header */}
         <div className="h-[68px] shrink-0" />
-
-        <nav className="flex flex-1 flex-col items-center justify-center gap-8 px-6">
+        <nav aria-label="Mobile" className="flex flex-1 flex-col justify-center gap-7 px-8">
           {content.nav.map((n) => (
-            <a
-              key={n.id}
-              href={`#${n.id}`}
-              onClick={smoothTo(n.id)}
-              className="font-mono text-[28px] uppercase tracking-[0.12em] text-ink transition-opacity duration-200 hover:opacity-60"
-            >
+            <a key={n.id} href={`#${n.id}`} onClick={go(n.id)} className="text-[32px] font-semibold tracking-tight text-ink">
               {n.label}
             </a>
           ))}
         </nav>
-
-        <div className="shrink-0 border-t border-rule px-6 py-8">
-          <a
-            href="#contact"
-            onClick={smoothTo("contact")}
-            className="flex w-full items-center justify-center rounded-full bg-mint-2 py-3.5 font-mono text-[11px] uppercase tracking-[0.2em] text-mint-ink"
-          >
-            Launch your bot →
+        <div className="shrink-0 border-t border-rule px-8 py-8">
+          <a href="#contact" onClick={go("contact")} className="btn-primary w-full">
+            {content.navCta.label}
+            <Arrow />
           </a>
         </div>
       </div>

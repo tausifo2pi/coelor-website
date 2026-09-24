@@ -2,236 +2,476 @@
   "brand": {
     "name": "Coelor",
     "wordmark": "coelor",
-    "tagline": "AI sales agent for Bangladesh f-commerce",
+    "tagline": "Automation for the work between your systems",
     "email": "contact@coelor.com"
   },
   "seo": {
-    "title": "Coelor — Your inbox, finally selling",
-    "description": "Coelor answers in Bangla, confirms the order, and books the courier — across Messenger, WhatsApp, and Instagram. Set up your f-commerce bot in minutes.",
-    "openGraphTitle": "Coelor — Your inbox, finally selling",
-    "openGraphDescription": "An AI sales agent for Bangladeshi Facebook, Instagram, and WhatsApp sellers. Replies, confirms, and books the courier while you sleep."
+    "title": "Coelor — Business automation and systems integration",
+    "description": "Coelor connects the systems your business runs on and automates the work between them. Orders, stock, documents and reports move on their own; your team steps in only when a decision is needed.",
+    "openGraphTitle": "Coelor — Automation infrastructure for growing businesses",
+    "openGraphDescription": "We connect the systems your business runs on and automate the work between them."
   },
   "nav": [
-    { "id": "setup", "label": "Setup" },
-    { "id": "features", "label": "Features" },
-    { "id": "demo", "label": "Demo" },
-    { "id": "pricing", "label": "Pricing" },
-    { "id": "contact", "label": "Contact" }
+    {
+      "id": "problem",
+      "label": "Why"
+    },
+    {
+      "id": "services",
+      "label": "Services"
+    },
+    {
+      "id": "process",
+      "label": "Process"
+    },
+    {
+      "id": "work",
+      "label": "Work"
+    },
+    {
+      "id": "faq",
+      "label": "FAQ"
+    }
   ],
+  "navCta": {
+    "label": "Book a call",
+    "href": "#contact"
+  },
   "hero": {
-    "eyebrow": "AI sales agent · Bangladesh f-commerce",
-    "headline": "Your inbox,",
-    "accent": "finally selling.",
-    "body": "Coelor answers in Bangla, confirms the order, and books the courier — across Messenger, WhatsApp, and Instagram. You wake up to packed orders, not unread messages.",
-    "primaryCta": { "label": "Launch your bot", "href": "#contact" },
-    "secondaryCta": { "label": "See how it works", "href": "#setup" },
-    "proof": ["Bangla + Banglish", "Messenger first", "Sheets-ready", "COD + SSLCommerz", "Pathao · RedX · Steadfast"]
-  },
-  "labels": {
-    "builtFor": "Built for",
-    "outcome": "Outcome",
-    "product": "Product",
-    "contact": "Contact",
-    "follow": "Follow"
-  },
-  "pain": {
-    "eyebrow": "Why this exists",
-    "headline": "Every unread message is",
-    "accent": "a lost order.",
-    "body": "Sellers rarely lose customers because the product is bad. They lose them because replies are late, inventory lives in sheets, and order details get copied between tabs all day.",
-    "items": [
-      { "title": "Repeated questions", "body": "Customers ask price, size, stock, delivery time, and return policy again and again." },
-      { "title": "Manual order taking", "body": "Phone, address, item, quantity, courier, and COD amount are collected by hand." },
-      { "title": "Sheet-based inventory", "body": "Products and stock already live in Google Sheets or Excel, but the inbox does not know that." },
-      { "title": "Courier copy-paste", "body": "Pathao, RedX, Steadfast, and payment workflows become separate admin work after every sale." }
-    ],
-    "metrics": [
-      { "value": "24/7", "label": "instant replies" },
-      { "value": "5 min", "label": "setup target" },
-      { "value": "1 inbox", "label": "bot + human handoff" }
-    ]
-  },
-  "setup": {
-    "eyebrow": "How it works",
-    "headline": "From page to selling bot in",
-    "accent": "five minutes.",
-    "body": "Coelor is designed around how Bangladesh f-commerce teams already work: social pages, spreadsheets, COD, local couriers, and fast inbox conversations.",
-    "steps": [
-      {
-        "num": "01",
-        "title": "Connect your page",
-        "body": "Connect Facebook Messenger first, then WhatsApp and Instagram as channels are enabled. No customer-facing password sharing."
-      },
-      {
-        "num": "02",
-        "title": "Import your products",
-        "body": "Bring your existing catalog from Google Sheets, Excel, CSV, or a page/catalog source so the bot knows stock, price, images, and variants."
-      },
-      {
-        "num": "03",
-        "title": "Add courier and payment keys",
-        "body": "Paste Pathao, Steadfast, RedX, SSLCommerz, and COD settings once. Coelor uses them when orders are created."
-      },
-      {
-        "num": "04",
-        "title": "Turn on the AI sales agent",
-        "body": "The bot answers in Bangla/Banglish, shows products, collects order info, and hands off to your team when needed."
-      }
-    ]
-  },
-  "features": {
-    "eyebrow": "Product",
-    "headline": "The bot sells.",
-    "accent": "The dashboard runs the shop.",
-    "body": "Coelor combines social commerce automation with the operational tools a real seller needs after the customer says yes.",
-    "items": [
-      {
-        "title": "Bangla/Banglish AI sales bot",
-        "body": "Understands mixed Bangla, romanized Bangla, and English for product search, stock questions, variants, cart, and checkout.",
-        "tags": ["AI replies", "Product Q&A", "Order intent"]
-      },
-      {
-        "title": "Product-aware conversations",
-        "body": "The bot can show categories, product cards, variants, prices, stock, and similar products from the merchant catalog.",
-        "tags": ["Catalog", "Variants", "Image search"]
-      },
-      {
-        "title": "Auto order collection",
-        "body": "Collects phone, delivery address, quantity, and payment preference from chat, then creates a real order.",
-        "tags": ["COD", "Checkout", "Customers"]
-      },
-      {
-        "title": "Human takeover inbox",
-        "body": "Admins can read conversations, send replies, pause the bot per customer, and keep support inside one live view.",
-        "tags": ["Handoff", "Live inbox", "Team control"]
-      },
-      {
-        "title": "Courier and payment workflow",
-        "body": "Designed for Pathao, Steadfast, RedX, COD, and SSLCommerz so confirmed orders can move into fulfillment quickly.",
-        "tags": ["Courier", "Payment", "Tracking"]
-      },
-      {
-        "title": "Sheet-first inventory",
-        "body": "Built for sellers who already manage products in Google Sheets or Excel, not only teams with a perfect ecommerce backend.",
-        "tags": ["Sheets", "Excel", "Stock sync"]
-      }
-    ]
+    "headline": "Automation built for growing businesses.",
+    "sub": "We connect the systems you run and automate the work between them.",
+    "primaryCta": {
+      "label": "Book a call",
+      "href": "#contact"
+    },
+    "secondaryCta": {
+      "label": "See how it works",
+      "href": "#process"
+    },
+    "feed": {
+      "title": "Live activity",
+      "footer": "4 jobs healthy · runs every 5 min",
+      "events": [
+        {
+          "id": "e1",
+          "icon": "refresh",
+          "title": "Stock synced",
+          "detail": "StockX · eBay · 3 listings paused",
+          "time": "14:20"
+        },
+        {
+          "id": "e2",
+          "icon": "route",
+          "title": "Order M-77120 routed",
+          "detail": "Shopify → Picqer",
+          "time": "14:19"
+        },
+        {
+          "id": "e3",
+          "icon": "receipt",
+          "title": "Invoice INV-2291 booked",
+          "detail": "Xero",
+          "time": "14:18"
+        },
+        {
+          "id": "e4",
+          "icon": "link",
+          "title": "12 products matched",
+          "detail": "Shopify · Picqer · StockX",
+          "time": "14:15"
+        },
+        {
+          "id": "e5",
+          "icon": "bell-off",
+          "title": "Order M-77118 held",
+          "detail": "eBay · needs review",
+          "time": "14:12",
+          "state": "review"
+        },
+        {
+          "id": "e6",
+          "icon": "package-x",
+          "title": "Shipment created",
+          "detail": "Picqer → DHL",
+          "time": "14:11"
+        },
+        {
+          "id": "e7",
+          "icon": "calendar-clock",
+          "title": "Daily report sent",
+          "detail": "Google Sheets",
+          "time": "14:10"
+        },
+        {
+          "id": "e8",
+          "icon": "refresh",
+          "title": "Stock levels pushed",
+          "detail": "WooCommerce",
+          "time": "14:08"
+        }
+      ]
+    }
   },
   "integrations": {
-    "eyebrow": "Integrations",
-    "headline": "Built around tools you",
-    "accent": "already use.",
-    "items": ["Facebook", "Messenger", "Instagram", "WhatsApp", "Google Sheets", "Excel", "Pathao", "Steadfast", "RedX", "SSLCommerz", "COD"]
-  },
-  "dashboard": {
-    "title": "Command center",
-    "subtitle": "Every message, product, and order in one place.",
-    "metrics": [
-      { "value": "428", "label": "products" },
-      { "value": "57", "label": "orders" },
-      { "value": "12", "label": "handoffs" }
-    ],
-    "panels": [
-      { "title": "Catalog sync", "body": "Sheet imported · 428 products · 37 low stock" },
-      { "title": "Bot control", "body": "Bangla replies on · human handoff ready" },
-      { "title": "Fulfillment", "body": "Pathao 14 · RedX 8 · Steadfast 5" }
-    ]
-  },
-  "demo": {
-    "eyebrow": "Demo flow",
-    "headline": "Question to order,",
-    "accent": "no waiting.",
-    "body": "A customer goes from product question to confirmed order without waiting for an admin: bot reply, variant, phone, address, order, courier handoff.",
-    "timeline": [
-      { "speaker": "Customer", "text": "apu ei dress ta available? M size lagbe." },
-      { "speaker": "Coelor bot", "text": "M size stock আছে। দাম ৳1,850। কয়টা নিবেন?" },
-      { "speaker": "Customer", "text": "2 ta. 017XXXXXXXX, Dhanmondi delivery." },
-      { "speaker": "Coelor", "text": "Order draft created. COD selected. Courier booking ready." }
-    ],
-    "outcome": [
-      "Product matched",
-      "Variant selected",
-      "Customer info collected",
-      "COD order created",
-      "Courier ready for fulfillment"
-    ]
-  },
-  "pricing": {
-    "eyebrow": "Plans",
-    "headline": "Start with the bot,",
-    "accent": "grow into the operation.",
-    "body": "Plans are shaped around message volume, channels, product count, and courier/payment needs.",
-    "plans": [
+    "label": "Connects to the platforms you already sell and ship on",
+    "items": [
       {
-        "name": "Starter",
-        "price": "For new pages",
-        "body": "Messenger bot, product import, COD orders, and manual handoff.",
-        "features": ["1 social channel", "Sheet import", "Bangla bot replies", "Basic order dashboard"]
+        "name": "Shopify",
+        "file": "/brands/shopify.svg",
+        "h": 28
       },
       {
-        "name": "Growth",
-        "price": "For active sellers",
-        "body": "More channels, courier integrations, payment setup, and higher automation.",
-        "features": ["Messenger + WhatsApp/Instagram", "Pathao/RedX/Steadfast", "SSLCommerz", "Live inbox"],
-        "highlight": true
+        "name": "WooCommerce",
+        "file": "/brands/woocommerce.svg",
+        "h": 27
       },
       {
-        "name": "Scale",
-        "price": "For teams",
-        "body": "Advanced controls for larger catalogs, teams, and high-message operations.",
-        "features": ["Multi-page support", "Advanced bot settings", "Priority setup", "Custom workflows"]
+        "name": "eBay",
+        "file": "/brands/ebay.svg",
+        "h": 70
+      },
+      {
+        "name": "StockX",
+        "file": "/brands/stockx.svg",
+        "h": 32
+      },
+      {
+        "name": "Picqer",
+        "file": "/brands/picqer.svg",
+        "h": 28
+      },
+      {
+        "name": "Linnworks",
+        "file": "/brands/linnworks.svg",
+        "h": 33
+      },
+      {
+        "name": "Odoo",
+        "file": "/brands/odoo.svg",
+        "h": 88
+      },
+      {
+        "name": "ChannelEngine",
+        "file": "/brands/channelengine.svg",
+        "h": 28
+      }
+    ]
+  },
+  "problem": {
+    "num": "01",
+    "eyebrow": "Why",
+    "headline": "Most operational work is copying data between systems.",
+    "body": "Webshop, warehouse, marketplaces, accounting, spreadsheets. Each does its job. None of them talk to each other, so your team bridges the gap by hand.",
+    "items": [
+      {
+        "icon": "copy",
+        "title": "Double entry",
+        "body": "The same order or product is typed into two or three systems. Every entry is a chance for a mismatch.",
+        "tag": "typos · mismatches"
+      },
+      {
+        "icon": "package-x",
+        "title": "Stock out of sync",
+        "body": "An item sells in one channel and stays live in another. The second buyer gets a cancellation.",
+        "tag": "oversells · penalties"
+      },
+      {
+        "icon": "file-spreadsheet",
+        "title": "Spreadsheets as glue",
+        "body": "Exports downloaded, cleaned and re-uploaded on a schedule someone has to remember.",
+        "tag": "hours every week"
+      },
+      {
+        "icon": "bell-off",
+        "title": "Silent failures",
+        "body": "An import stops or a file never arrives, and the gap surfaces days later in a report.",
+        "tag": "found too late"
+      }
+    ]
+  },
+  "services": {
+    "num": "02",
+    "eyebrow": "Services",
+    "headline": "The work between a sale and a closed book.",
+    "body": "Six automations we build most often. Each runs on a schedule or a webhook, logs what it did, and asks for a person only when it needs one.",
+    "items": [
+      {
+        "icon": "refresh",
+        "title": "Inventory sync",
+        "body": "Stock levels checked across every channel. Sold-out items paused everywhere, automatically.",
+        "meta": "every 10 min"
+      },
+      {
+        "icon": "route",
+        "title": "Order routing",
+        "body": "Orders pulled from marketplaces and webshops, matched to the right variant, created in your warehouse or ERP.",
+        "meta": "every 5 min"
+      },
+      {
+        "icon": "link",
+        "title": "Record matching",
+        "body": "Products, variants and customers reconciled across systems by code, name and attributes. Matched once, reused forever.",
+        "meta": "on every new record"
+      },
+      {
+        "icon": "calendar-clock",
+        "title": "Reports and exports",
+        "body": "Stock, sales and exception reports delivered to Sheets, Excel or email, in the layout your team already uses.",
+        "meta": "daily · weekly"
+      },
+      {
+        "icon": "receipt",
+        "title": "Documents and finance",
+        "body": "Invoices, credit notes and payment updates generated from orders and booked into accounting.",
+        "meta": "on order events"
+      },
+      {
+        "icon": "shield",
+        "title": "Retries, logs, alerts",
+        "body": "Rate limits, outages and bad data handled with backoff. Every action logged. Dry-run before anything changes.",
+        "meta": "always on"
+      }
+    ]
+  },
+  "process": {
+    "num": "03",
+    "eyebrow": "Process",
+    "headline": "From first call to running automation.",
+    "timeline": "Typical build: 3 to 6 weeks.",
+    "steps": [
+      {
+        "icon": "phone",
+        "when": "Week 0",
+        "title": "Audit",
+        "body": "A 30-minute call. We map your systems and the data that moves between them. You get a written scope and a fixed quote."
+      },
+      {
+        "icon": "wrench",
+        "when": "Weeks 1–4",
+        "title": "Build",
+        "body": "We connect the APIs, reconcile your data and run everything in dry-run next to your team. You see each action before it happens."
+      },
+      {
+        "icon": "power",
+        "when": "Week 5",
+        "title": "Go live",
+        "body": "Dry-run off. Orders, stock and documents move on their own. Alerts go to the channel your team already watches."
+      },
+      {
+        "icon": "activity",
+        "when": "Ongoing",
+        "title": "Operate",
+        "body": "We monitor runs, absorb API changes and add automations as the operation grows."
+      }
+    ]
+  },
+  "work": {
+    "num": "04",
+    "eyebrow": "Work",
+    "headline": "Automation underneath. AI on top.",
+    "body": "Two recent builds: the plumbing that keeps a multi-channel retailer's stock and orders in sync, and an AI sales agent that sells inside the chat apps customers already use.",
+    "ops": {
+      "label": "Operations automation",
+      "title": "A retailer selling through a warehouse, a webshop and two marketplace regions.",
+      "beforeLabel": "Before",
+      "before": [
+        "Sold-out listings paused by hand after each sale",
+        "Marketplace orders retyped into the warehouse system",
+        "An item could sell twice before anyone noticed"
+      ],
+      "afterLabel": "After",
+      "after": [
+        "31,000+ products matched across systems",
+        "Stock checked every 10 minutes on every channel",
+        "Orders imported every 5 minutes, warehouse order created",
+        "Every action logged; dry-run verified before go-live"
+      ],
+      "flowFrom": [
+        {
+          "name": "Shopify",
+          "slug": "shopify"
+        },
+        {
+          "name": "StockX",
+          "slug": "stockx"
+        },
+        {
+          "name": "eBay",
+          "slug": "ebay"
+        }
+      ],
+      "flowTo": [
+        {
+          "name": "Picqer",
+          "slug": "picqer"
+        },
+        {
+          "name": "Xero",
+          "slug": "xero"
+        },
+        {
+          "name": "Google Sheets",
+          "slug": "google-sheets"
+        }
+      ]
+    },
+    "ai": {
+      "label": "AI sales agent",
+      "title": "A sales agent that answers, finds the product and closes the order inside the chat.",
+      "body": "Built for a social-commerce store on Messenger, WhatsApp and Instagram. The agent understands the customer's language, matches photos to products, collects the order and books the courier. A human takes over with one click.",
+      "chat": [
+        {
+          "from": "customer",
+          "text": "Do you have this one in 42?",
+          "image": true
+        },
+        {
+          "from": "agent",
+          "text": "Found it: Runner Low, size 42, in stock at €129. Two similar pairs below. Deliver to your usual address?",
+          "image": false
+        },
+        {
+          "from": "customer",
+          "text": "Yes, cash on delivery.",
+          "image": false
+        },
+        {
+          "from": "agent",
+          "text": "Order #1042 placed. Courier booked, arrives tomorrow. Tracking link sent.",
+          "image": false
+        }
+      ],
+      "caps": [
+        {
+          "icon": "route",
+          "title": "Social sales agent",
+          "body": "Messenger, WhatsApp and Instagram in one inbox, with human handoff."
+        },
+        {
+          "icon": "link",
+          "title": "Shopify sales agent",
+          "body": "The same agent on your Shopify store: answers, recommends, converts."
+        },
+        {
+          "icon": "refresh",
+          "title": "AI visual search",
+          "body": "Customer sends a photo, gets the matching product and size."
+        },
+        {
+          "icon": "activity",
+          "title": "Similar-product recommendations",
+          "body": "Every reply shows the next best options, which lifts basket size."
+        }
+      ]
+    },
+    "stats": [
+      {
+        "value": "31,000+",
+        "label": "products in sync"
+      },
+      {
+        "value": "3",
+        "label": "chat platforms, one inbox"
+      },
+      {
+        "value": "24/7",
+        "label": "replies and order intake"
+      },
+      {
+        "value": "0",
+        "label": "manual steps per order"
       }
     ]
   },
   "faq": {
-    "eyebrow": "FAQ",
-    "headline": "Before you",
-    "accent": "switch it on.",
+    "num": "05",
+    "eyebrow": "Questions",
+    "headline": "Before the first call.",
     "items": [
       {
-        "q": "Do I need an ecommerce website first?",
-        "a": "No. Coelor is designed for f-commerce sellers who sell from social inboxes. A storefront can exist, but the bot and catalog can run the sales flow."
+        "q": "Do we have to change the systems we use?",
+        "a": "No. Coelor connects to what you already run through its API. If a system has no API, we work from its exports."
       },
       {
-        "q": "Can I use my existing Google Sheet or Excel file?",
-        "a": "Yes. The product direction is sheet-first: import products, stock, price, images, and variants from the files sellers already maintain."
+        "q": "What kind of work can be automated?",
+        "a": "Anything that follows rules and moves data between systems: orders, stock, invoices, reports, customer records, notifications."
       },
       {
-        "q": "Does it understand Bangla and Banglish?",
-        "a": "Yes. The bot is designed for Bangla, romanized Bangla, English, and mixed customer messages."
+        "q": "What happens when one of our systems goes down?",
+        "a": "Runs retry with backoff and resume where they stopped. Nothing is applied twice. You get an alert if a run fails twice in a row."
       },
       {
-        "q": "Can a human take over?",
-        "a": "Yes. Admins can pause the bot for a conversation and reply from the dashboard."
+        "q": "Can we see what it will do before it changes anything?",
+        "a": "Yes. Every automation ships with a dry-run mode that logs each action it would take without taking it."
       },
       {
-        "q": "Which couriers and payments are planned for setup?",
-        "a": "Pathao, Steadfast, RedX, COD, and SSLCommerz are the core BD workflow targets."
+        "q": "How long until it is live?",
+        "a": "Most builds take 3 to 6 weeks from the audit call, depending on how many systems are involved."
+      },
+      {
+        "q": "Who owns the code?",
+        "a": "You do. It runs in your cloud account or ours, with documentation and handover included."
       }
     ]
   },
   "contact": {
-    "eyebrow": "Launch",
-    "headline": "Switch on",
-    "accent": "your night shift.",
-    "body": "Send your page, product sheet format, and courier/payment providers. We will help you map the setup and switch on the sales bot.",
+    "eyebrow": "Contact",
+    "headline": "Tell us what runs by hand today.",
+    "body": "Three fields. We reply within one business day.",
     "fields": {
-      "name": "Your name",
-      "company": "Page or business name",
-      "email": "Email or WhatsApp",
-      "brief": "Tell us your page link, product count, current sheet format, and courier/payment setup."
+      "name": "Name",
+      "email": "Email",
+      "message": "What should run on its own?"
     },
-    "buttonIdle": "Request setup",
-    "buttonSending": "Sending...",
-    "buttonSent": "Received. We will reply soon",
-    "aside": [
-      { "title": "Good fit", "items": ["Facebook/Instagram sellers", "Inventory in sheets", "COD-heavy order flow", "Teams replying manually today"] },
-      { "title": "Setup needs", "items": ["Social page access", "Product sheet/catalog", "Courier account", "Payment/COD preference"] }
-    ]
+    "buttonIdle": "Send message",
+    "buttonSending": "Sending…",
+    "buttonError": "Could not send. Email us instead.",
+    "aside": {
+      "title": "What happens next",
+      "items": [
+        "We reply within one business day",
+        "A 30-minute call to map your systems",
+        "A written scope and a fixed quote"
+      ]
+    },
+    "num": "06",
+    "placeholders": {
+      "name": "Your name",
+      "email": "you@company.com",
+      "message": "e.g. orders from our webshop are typed into the warehouse system by hand"
+    },
+    "success": {
+      "title": "Message received.",
+      "body": "Thanks, {name}. A confirmation is on its way to {email}. We read every message ourselves and reply within one business day.",
+      "refLabel": "Reference",
+      "next": [
+        "We reply within one business day",
+        "A 30-minute call to map your systems",
+        "A written scope and a fixed quote"
+      ],
+      "again": "Send another message"
+    }
   },
   "footer": {
-    "description": "AI sales agent for Bangladesh f-commerce.",
-    "location": "Built by Coelor.",
-    "note": "Replies while you sleep."
+    "tagline": "Automation for the work between your systems.",
+    "links": [
+      {
+        "label": "Services",
+        "href": "#services"
+      },
+      {
+        "label": "Process",
+        "href": "#process"
+      },
+      {
+        "label": "Work",
+        "href": "#work"
+      },
+      {
+        "label": "Contact",
+        "href": "#contact"
+      }
+    ],
+    "copyright": "© 2026 Coelor"
   }
 }

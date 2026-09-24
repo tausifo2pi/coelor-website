@@ -1,37 +1,34 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-  ],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        canvas: "#0B0D10",
-        canvasElev: "#0F1216",
-        card: "rgba(255,255,255,0.03)",
+        canvas: "#0A0C10",
+        canvas2: "#0D0F14",
+        panel: "#12151C",
+        panel2: "#171A22",
         ink: {
-          DEFAULT: "#EDEFF3",
-          muted: "#99A1AF",
-          soft: "#5C6470",
+          DEFAULT: "#F2F4F8",
+          muted: "#B3BAC6",
+          soft: "#7D8695",
         },
         rule: {
-          DEFAULT: "rgba(255,255,255,0.07)",
+          DEFAULT: "rgba(255,255,255,0.08)",
           strong: "rgba(255,255,255,0.16)",
         },
-        mint: {
-          1: "#6EE7B7",
-          2: "#10B981",
-          3: "#059669",
-          ink: "#06251B",
-        },
+        accent: "#9FB0FF",
+        ok: "#34D399",
+        warn: "#F5B04D",
       },
       fontFamily: {
-        display: ["var(--font-geist)", "system-ui", "sans-serif"],
-        serif: ["var(--font-serif)", "Georgia", "serif"],
-        body: ["var(--font-geist)", "system-ui", "sans-serif"],
+        sans: ["var(--font-manrope)", "system-ui", "sans-serif"],
+        display: ["var(--font-manrope)", "system-ui", "sans-serif"],
         mono: ["var(--font-jetbrains)", "ui-monospace", "monospace"],
+      },
+      maxWidth: {
+        site: "1280px",
       },
     },
   },

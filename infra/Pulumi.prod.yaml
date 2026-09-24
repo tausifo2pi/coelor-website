@@ -1,0 +1,4 @@
+encryptionsalt: v1:63zUmqYlG34=:v1:md7in3xiVc6uJQPR:w+T7tSjYPR+61es01zZzPo0OTCLATQ==
+config:
+  aws:region: eu-central-1
+  cicd-coelor:appName: coelor

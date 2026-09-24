@@ -3,24 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --font-display: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
-  --font-body: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
-  --font-serif-display: var(--font-serif), Georgia, serif;
+  --font-sans: var(--font-manrope), "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-manrope), "Manrope", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
 
-  --bg: #0b0d10;
-  --bg-elev: #0f1216;
-  --ink: #edeff3;
-  --ink-muted: #99a1af;
-  --ink-soft: #5c6470;
-  --rule: rgba(255, 255, 255, 0.07);
+  --bg: #0a0c10;
+  --bg-2: #0d0f14;
+  --panel: #12151c;
+  --panel-2: #171a22;
+  --ink: #f2f4f8;
+  --ink-muted: #b3bac6;
+  --ink-soft: #7d8695;
+  --rule: rgba(255, 255, 255, 0.08);
   --rule-strong: rgba(255, 255, 255, 0.16);
-
-  --mint-1: #6ee7b7;
-  --mint-2: #10b981;
-  --mint-3: #059669;
-  --mint-ink: #06251b;
-  --glow: rgba(16, 185, 129, 0.25);
+  --accent: #9fb0ff;
+  --ok: #34d399;
+  --warn: #f5b04d;
 }
 
 @layer base {
@@ -38,8 +36,8 @@
     padding: 0;
     background-color: var(--bg);
     color: var(--ink);
-    font-family: var(--font-body);
-    font-size: 17px;
+    font-family: var(--font-sans);
+    font-size: 16px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -52,21 +50,14 @@
   }
 
   ::selection {
-    background: #10b981;
-    color: #06251b;
+    background: #9fb0ff;
+    color: #0a0c10;
   }
 
   h1,
   h2,
   h3,
-  h4 {
-    font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    margin: 0;
-    color: var(--ink);
-  }
-
+  h4,
   p {
     margin: 0;
   }
@@ -76,164 +67,264 @@
     text-decoration: none;
   }
 
-  button {
+  button,
+  input,
+  textarea {
     font-family: inherit;
   }
 
-  hr {
-    border: none;
-    border-top: 1px solid var(--rule);
-    margin: 0;
+  input,
+  textarea {
+    outline: none;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
 @layer components {
-  .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
+  .skip-link {
+    position: absolute;
+    left: 16px;
+    top: -60px;
+    z-index: 100;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 14px;
+    font-weight: 600;
+    transition: top 0.15s ease;
+  }
+
+  .skip-link:focus-visible {
+    top: 16px;
+  }
+
+  h1,
+  h2,
+  h3,
+  .display,
+  .h2 {
+    font-family: var(--font-display);
   }
 
   .display {
-    font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.0;
+  }
+
+  .h2 {
+    font-weight: 700;
     letter-spacing: -0.03em;
-    line-height: 1.04;
+    line-height: 1.08;
   }
 
-  /* Serif italic accent inside display headlines — matches the brand wordmark */
-  .accent-serif {
-    font-family: var(--font-serif-display);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    color: var(--mint-1);
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
   }
 
-  .wordmark {
-    font-family: var(--font-serif-display);
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    color: var(--ink);
-  }
-
-  /* Glass panel surface */
-  .glass {
-    background: rgba(255, 255, 255, 0.03);
+  .panel {
+    background: var(--panel);
     border: 1px solid var(--rule);
     border-radius: 14px;
   }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 22px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: #ffffff;
+  }
+
+  .btn-primary:active {
+    transform: translateY(1px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 22px;
+    border-radius: 999px;
+    border: 1px solid var(--rule-strong);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.24);
+  }
+
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .link-arrow svg {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .link-arrow:hover svg {
+    transform: translateX(4px);
+  }
+
+  .field {
+    height: 46px;
+    width: 100%;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 16px; /* 16px minimum: iOS Safari zooms the page on focus below this */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .field:focus {
+    border-color: rgba(159, 176, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(159, 176, 255, 0.15);
+  }
+
+  .field-error {
+    border-color: rgba(255, 99, 99, 0.7);
+  }
+
+  textarea.field {
+    height: auto;
+    padding: 12px 14px;
+    resize: vertical;
+  }
+
+  .field::placeholder {
+    color: rgba(125, 134, 149, 0.7);
+  }
 }
 
-/* ============ Atmosphere ============ */
+/* ============ Hero band ============ */
 
-/* Hairline horizon under the hero */
-.horizon {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.35), transparent);
-}
-
-/* ============ Reveal system ============ */
-
-.reveal {
-  opacity: 0;
-  transform: translateY(22px);
-  filter: blur(5px);
-  transition:
-    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: var(--d, 0ms);
-}
-
-.reveal.is-in {
-  opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
-}
-
-/* Word-mask headline reveal — each word rises out of its own clip box */
-.mask-word {
-  display: inline-block;
+/* The gradient sits in the hero's top-right and dissolves into the dark with a
+   soft elliptical mask: no straight edge, no slab. */
+.hero-band {
+  position: absolute;
+  inset: -12% -8% -6% -8%;
   overflow: hidden;
-  vertical-align: top;
-  /* keep descenders visible despite tight display line-height */
-  padding-bottom: 0.14em;
-  margin-bottom: -0.14em;
+  pointer-events: none;
+  mask-image: radial-gradient(115% 95% at 82% 8%, #000 34%, rgba(0, 0, 0, 0.55) 52%, transparent 74%);
+  -webkit-mask-image: radial-gradient(115% 95% at 82% 8%, #000 34%, rgba(0, 0, 0, 0.55) 52%, transparent 74%);
 }
 
-.mask-word > span {
-  display: inline-block;
-  transform: translateY(112%);
-  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: var(--d, 0ms);
+@media (max-width: 767px) {
+  .hero-band {
+    mask-image: radial-gradient(150% 70% at 90% 0%, #000 28%, rgba(0, 0, 0, 0.5) 48%, transparent 72%);
+    -webkit-mask-image: radial-gradient(150% 70% at 90% 0%, #000 28%, rgba(0, 0, 0, 0.5) 48%, transparent 72%);
+  }
 }
 
-.mask-reveal.is-in .mask-word > span {
-  transform: translateY(0);
+/* Hero glass card: large radius, gradient hairline border, inner top light */
+.glass-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 40px 100px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(24px) saturate(1.3);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
 }
 
-/* Hero load choreography — plays once on mount, no observer */
-@keyframes rise-in {
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0.18));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Process timeline: gradient rail that slowly sweeps; vertical on phones */
+.rail {
+  background: linear-gradient(90deg, rgba(159, 176, 255, 0.15), #9fb0ff 35%, #34d399 70%, rgba(52, 211, 153, 0.15));
+  background-size: 200% 100%;
+  animation: rail-sweep 9s linear infinite;
+}
+
+@keyframes rail-sweep {
   from {
-    opacity: 0;
-    transform: translateY(18px);
-    filter: blur(4px);
+    background-position: 100% 0;
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+    background-position: -100% 0;
   }
 }
 
-.rise-in {
-  animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--d, 0ms);
-}
-
-/* Status dot pulse */
-@keyframes active-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
+@media (max-width: 1023px) {
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 23px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #9fb0ff, #34d399);
+    opacity: 0.6;
   }
 }
 
-.active-dot {
-  animation: active-pulse 2s ease-in-out infinite;
-}
-
-/* ============ Section motion ============ */
-
-/* Dashboard mock — bars draw themselves on reveal */
-.bar-grow {
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: var(--d, 0ms);
-}
-
-.is-in .bar-grow {
-  transform: scaleX(1);
-}
-
-/* Integrations marquee — slow, edge-masked, pauses on hover */
+/* Brand marquee: one continuous flow, edge-masked, pauses on hover */
 .marquee {
   overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
 }
 
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee 42s linear infinite;
+  align-items: center;
+  animation: marquee 48s linear infinite;
+  will-change: transform;
 }
 
 .marquee:hover .marquee-track {
@@ -246,25 +337,37 @@
   }
 }
 
-/* Feature tile hover — quiet lift + emerald edge */
-.tile {
-  transition:
-    border-color 0.4s ease,
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.4s ease;
+.brand-logo {
+  display: block;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.72;
+  transition: opacity 0.3s ease;
 }
 
-.tile:hover {
-  border-color: rgba(16, 185, 129, 0.3);
-  background-color: rgba(255, 255, 255, 0.045);
-  transform: translateY(-3px);
+.brand-logo:hover {
+  opacity: 1;
 }
 
-/* FAQ answer entrance */
-@keyframes faq-in {
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+    justify-content: center;
+  }
+}
+
+/* ============ Motion ============ */
+
+@keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -272,8 +375,36 @@
   }
 }
 
-details[open] .faq-answer {
-  animation: faq-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+.rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.pulse {
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] .faq-chevron {
+  transform: rotate(45deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
