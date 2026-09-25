@@ -91,13 +91,13 @@ function Hero() {
           <div className="flex flex-wrap items-center gap-2 border-t border-rule pt-4">
             <ul className="flex flex-wrap gap-2">
               {cs.setup.flowFrom.map((f) => (
-                <Chip key={f.slug} {...f} />
+                <Chip key={f.name} {...f} />
               ))}
             </ul>
             <Icon name="arrow-right" size={14} className="text-ink-soft" />
             <ul className="flex flex-wrap gap-2">
               {cs.setup.flowTo.slice(0, 1).map((f) => (
-                <Chip key={f.slug} {...f} />
+                <Chip key={f.name} {...f} />
               ))}
             </ul>
           </div>
@@ -162,7 +162,7 @@ function Setup() {
             <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">Sales channels</span>
             <ul className="flex flex-wrap gap-2">
               {setup.flowFrom.map((f) => (
-                <Chip key={f.slug} {...f} />
+                <Chip key={f.name} {...f} />
               ))}
             </ul>
           </div>
@@ -172,10 +172,10 @@ function Setup() {
           </span>
           <Icon name="arrow-right" size={16} className="hidden text-ink-soft lg:block" />
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">Warehouse, accounting, reporting</span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">Warehouse and reporting</span>
             <ul className="flex flex-wrap gap-2">
               {setup.flowTo.map((f) => (
-                <Chip key={f.slug} {...f} />
+                <Chip key={f.name} {...f} />
               ))}
             </ul>
           </div>

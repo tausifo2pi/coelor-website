@@ -1,75 +1,163 @@
 {
   "seo": {
-    "title": "Case study: sneaker reseller stock and orders in sync · Coelor",
-    "description": "How a Dutch sneaker reseller keeps StockX, eBay and its Shopify store in sync with its warehouse: 31,000+ products matched, stock checked every 10 minutes, orders imported every 5."
+    "title": "Case study: sneaker reseller stock in sync across StockX and Alias · Coelor",
+    "description": "How a Dutch sneaker reseller keeps StockX and Alias in sync with its warehouse: sold-out sizes switched off every 10 minutes, marketplace sales off the warehouse stock within minutes, 31,000+ sizes checked."
   },
   "hero": {
     "eyebrow": "Case study · Sneaker resale",
-    "headline": "One stock count across StockX, eBay and your webshop.",
-    "sub": "How a Dutch sneaker reseller stopped overselling and stopped retyping marketplace orders into its warehouse system.",
-    "primaryCta": { "label": "Book a call", "href": "#contact" },
-    "secondaryCta": { "label": "See how it works", "href": "#setup" },
+    "headline": "One stock count across StockX, Alias and the warehouse.",
+    "sub": "How a Dutch sneaker reseller stopped pausing sold-out sizes by hand and stopped typing marketplace sales into its warehouse system.",
+    "primaryCta": {
+      "label": "Book a call",
+      "href": "#contact"
+    },
+    "secondaryCta": {
+      "label": "See how it works",
+      "href": "#setup"
+    },
     "panel": {
       "title": "Live sync",
       "rows": [
-        { "icon": "refresh", "label": "Stock sync", "meta": "every 10 min", "state": "OK" },
-        { "icon": "route", "label": "Order import", "meta": "every 5 min", "state": "OK" },
-        { "icon": "git-compare", "label": "Products matched", "meta": "31,000+", "state": "OK" },
-        { "icon": "shield", "label": "Actions logged", "meta": "every run", "state": "OK" }
+        {
+          "icon": "refresh",
+          "label": "Sold-out sweep",
+          "meta": "10 min",
+          "state": "OK"
+        },
+        {
+          "icon": "route",
+          "label": "Marketplace sales",
+          "meta": "5–7 min",
+          "state": "OK"
+        },
+        {
+          "icon": "git-compare",
+          "label": "Sizes checked",
+          "meta": "31,000+",
+          "state": "OK"
+        },
+        {
+          "icon": "shield",
+          "label": "Delistings",
+          "meta": "team chat",
+          "state": "OK"
+        }
       ]
     }
   },
   "stats": [
-    { "value": "31,000+", "label": "products matched across systems" },
-    { "value": "10 min", "label": "stock check on every channel" },
-    { "value": "5 min", "label": "from marketplace order to warehouse" },
-    { "value": "0", "label": "manual steps per order" }
+    {
+      "value": "31,000+",
+      "label": "sizes checked on every run"
+    },
+    {
+      "value": "10 min",
+      "label": "until a sold-out size is off every marketplace"
+    },
+    {
+      "value": "5–7 min",
+      "label": "from marketplace sale to warehouse stock"
+    },
+    {
+      "value": "4",
+      "label": "marketplace accounts, EU and US"
+    }
   ],
   "problem": {
     "num": "01",
     "eyebrow": "The problem",
-    "headline": "Every pair lives in four places at once.",
-    "body": "The same pair is listed size by size on StockX, eBay and the webshop, while the real stock sits in the warehouse system. Every sale has to show up everywhere, fast.",
+    "headline": "Every pair lives in several places at once.",
+    "body": "The same pair is listed size by size on StockX and Alias, in more than one region, while the real stock sits in the warehouse system. Every sale has to show up everywhere, fast.",
     "items": [
-      { "icon": "package-x", "title": "Sold twice", "body": "A size sells on StockX and stays live on the webshop. The second buyer gets a cancellation, and the marketplace counts it against you.", "tag": "oversells · penalties" },
-      { "icon": "copy", "title": "Orders retyped", "body": "Marketplace orders are copied into the warehouse system by hand before anyone can pick and ship them.", "tag": "hours every week" },
-      { "icon": "refresh", "title": "Listings paused by hand", "body": "After each sale someone pauses the same product on the other channels, size by size.", "tag": "easy to miss" },
-      { "icon": "file-spreadsheet", "title": "Spreadsheets as glue", "body": "Stock exports downloaded, cleaned and re-uploaded, with thousands of product and size combinations to match.", "tag": "errors · delays" }
+      {
+        "icon": "package-x",
+        "title": "Sold twice",
+        "body": "A size sells on one marketplace and stays live on another. The second buyer gets a cancellation, and the marketplace counts it against you.",
+        "tag": "oversells · penalties"
+      },
+      {
+        "icon": "copy",
+        "title": "Sales typed over",
+        "body": "Every marketplace sale is taken off the warehouse stock by hand before the count is right again.",
+        "tag": "hours every week"
+      },
+      {
+        "icon": "refresh",
+        "title": "Listings paused by hand",
+        "body": "After each sale someone pauses the same size on the other accounts, one by one.",
+        "tag": "easy to miss"
+      },
+      {
+        "icon": "file-spreadsheet",
+        "title": "Sizes written ten ways",
+        "body": "9W, 9M, 38,5 and (GS): the same size is spelled differently in the warehouse and on each marketplace.",
+        "tag": "mismatches · delays"
+      }
     ]
   },
   "setup": {
     "num": "02",
     "eyebrow": "What we built",
     "headline": "The warehouse is the single source of truth.",
-    "body": "Coelor sits between the sales channels and the warehouse. It reads stock from the warehouse, pushes it to every channel and brings every order back.",
+    "body": "Coelor sits between the marketplaces and the warehouse. It reads stock from the warehouse, switches off sold-out sizes on every marketplace account and brings every sale back.",
     "beforeLabel": "Before",
     "before": [
-      "Sold-out listings paused by hand after each sale",
-      "Marketplace orders retyped into the warehouse system",
-      "An item could sell twice before anyone noticed"
+      "Sold-out sizes paused by hand after each sale",
+      "Marketplace sales typed into the warehouse system",
+      "A size could sell twice before anyone noticed"
     ],
     "afterLabel": "After",
     "after": [
-      "31,000+ products matched across systems",
-      "Stock checked every 10 minutes on every channel",
-      "Orders imported every 5 minutes, warehouse order created",
-      "Every action logged; dry-run verified before go-live"
+      "EU and US sizes read from 31,000+ product names and linked",
+      "Sold-out sizes switched off on every account every 10 minutes",
+      "StockX and Alias sales off the warehouse stock within minutes",
+      "Every automatic delisting posted to the team chat"
     ],
     "flowFrom": [
-      { "name": "Shopify", "slug": "shopify" },
-      { "name": "StockX", "slug": "stockx" },
-      { "name": "eBay", "slug": "ebay" }
+      {
+        "name": "StockX EU",
+        "slug": "stockx"
+      },
+      {
+        "name": "StockX US",
+        "slug": "stockx"
+      },
+      {
+        "name": "Alias",
+        "slug": "alias"
+      }
     ],
     "flowTo": [
-      { "name": "Picqer", "slug": "picqer" },
-      { "name": "Xero", "slug": "xero" },
-      { "name": "Google Sheets", "slug": "google-sheets" }
+      {
+        "name": "Picqer",
+        "slug": "picqer"
+      },
+      {
+        "name": "Google Sheets",
+        "slug": "google-sheets"
+      }
     ],
     "steps": [
-      { "icon": "git-compare", "title": "Match every product and size", "body": "Each product is matched across the webshop, the marketplaces and the warehouse: more than 31,000 of them." },
-      { "icon": "refresh", "title": "Sync stock every 10 minutes", "body": "Warehouse stock is checked every 10 minutes and pushed to every channel, so a sold size disappears everywhere." },
-      { "icon": "route", "title": "Import orders every 5 minutes", "body": "Marketplace orders land in the warehouse system within 5 minutes as warehouse orders, ready to pick. No retyping." },
-      { "icon": "shield", "title": "Log and verify every action", "body": "Every action is logged. The setup ran in dry-run first, so the team saw each step before it went live." }
+      {
+        "icon": "git-compare",
+        "title": "Read and link every size",
+        "body": "EU and US sizes are read from each product name, more than 31,000 of them, and linked to the same size on StockX and Alias. Exceptions can be linked by hand."
+      },
+      {
+        "icon": "refresh",
+        "title": "Switch off sold-out sizes",
+        "body": "Every 10 minutes the whole warehouse catalogue is checked, and any size with no free stock is switched off on every marketplace account."
+      },
+      {
+        "icon": "route",
+        "title": "Bring every sale back",
+        "body": "StockX sales are picked up every 5 minutes and Alias sales every 7. Each one comes off the warehouse stock with its order number."
+      },
+      {
+        "icon": "shield",
+        "title": "Report and test every action",
+        "body": "Every automatic switch-off is posted to the team chat, and every change can run in test mode first."
+      }
     ]
   },
   "fit": {
@@ -77,17 +165,17 @@
     "eyebrow": "Is this you?",
     "headline": "Built for sneaker sellers who have outgrown manual work.",
     "items": [
-      "You sell on StockX, Alias, eBay or other marketplaces and on your own store",
+      "You sell on StockX, Alias or other marketplaces and on your own store",
       "You keep stock per size in a warehouse or inventory system",
       "You have hundreds or thousands of product and size combinations",
-      "Someone on your team pauses listings or retypes orders every day"
+      "Someone on your team pauses listings or types over sales every day"
     ],
     "offer": {
       "title": "How we start",
       "items": [
         "A 30-minute call to map your channels and stock flow",
         "A written scope and a fixed quote",
-        "Most builds run in 3 to 6 weeks, in dry-run first"
+        "Most builds run in 3 to 6 weeks, in test mode first"
       ]
     }
   },
@@ -96,11 +184,26 @@
     "eyebrow": "Questions",
     "headline": "What sellers ask us.",
     "items": [
-      { "q": "Do we have to change our webshop or warehouse system?", "a": "No. Coelor connects to the systems you already run through their APIs. If a system has no API, we work from its exports." },
-      { "q": "Which channels can you connect?", "a": "The build above connects Shopify, StockX and eBay to Picqer, Xero and Google Sheets. We also work with WooCommerce, Linnworks, Odoo and ChannelEngine, and can add other marketplaces that have an API." },
-      { "q": "What happens if a marketplace API goes down?", "a": "Runs retry and resume where they stopped. Nothing is applied twice. You get an alert if a run fails twice in a row." },
-      { "q": "Can we see what it will do before it changes anything?", "a": "Yes. Every automation runs in dry-run first and logs each action it would take, without taking it." },
-      { "q": "How long does it take?", "a": "Most builds take 3 to 6 weeks from the first call, including the dry-run period next to your team." }
+      {
+        "q": "Do we have to change our webshop or warehouse system?",
+        "a": "No. Coelor connects to the systems you already run through their APIs. If a system has no API, we work from its exports."
+      },
+      {
+        "q": "Which channels can you connect?",
+        "a": "The build above connects StockX (EU and US) and Alias to Picqer and Google Sheets. We connect other marketplaces and shop systems through their APIs, or work from their exports."
+      },
+      {
+        "q": "What happens if a marketplace API goes down?",
+        "a": "Runs back off and retry when a marketplace is slow or rate-limits. A sale is only marked as handled after it has come off the warehouse stock, so a failed run is picked up again on the next one."
+      },
+      {
+        "q": "Can we see what it will do before it changes anything?",
+        "a": "Yes. Every change can run in test mode first, which logs what it would do without doing it."
+      },
+      {
+        "q": "How long does it take?",
+        "a": "Most builds take 3 to 6 weeks from the first call, including the dry-run period next to your team."
+      }
     ]
   },
   "contact": {
