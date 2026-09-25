@@ -14,6 +14,20 @@ services:
       - coelor_network
     restart: unless-stopped
 
+  # Lead outreach API + admin panel (https://coelor.com/admin/lead-outreach). The image is built on this server by
+  # lead-outreach/deploy/deploy.sh (pull_policy: never, so the website deploy's `docker-compose pull` skips it).
+  lead-outreach:
+    image: lead-outreach:local
+    pull_policy: never
+    env_file:
+      - /home/ec2-user/server/lead-outreach.env
+    volumes:
+      - track_data:/data/track:ro
+    mem_limit: 320m
+    networks:
+      - coelor_network
+    restart: unless-stopped
+
   nginx:
     image: nginx:latest
     ports:

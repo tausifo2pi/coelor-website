@@ -158,7 +158,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} << 'EOF'
             cd /home/ec2-user/server
             docker-compose down
-            docker-compose pull
+            docker-compose pull --ignore-pull-failures
             docker-compose up -d
           EOF
 
@@ -172,4 +172,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Cleanup Docker
-        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} "docker system prune -a -f"
+        # Dangling images + stopped containers only: `prune -a` would also delete lead-outreach:local (built on the server,
+        # not in any registry) whenever that container happens to be down.
+        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.API_SERVER }} "docker image prune -f && docker container prune -f"
