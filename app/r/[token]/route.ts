@@ -1,5 +1,5 @@
-// Email link: https://coelor.com/r/<token>[?to=/some/path]; without ?to it opens the sneaker case study, the page
-// outreach mails point to (short links read better in plain-text mail). Logs the click, remembers the
+// Email link: https://coelor.com/r/<token>[?to=/some/path]; without ?to it opens the case study (a neutral address; the page
+// adapts to the platform mix of this email, see lib/case-page.ts). Short links read better in plain-text mail. Logs the click, remembers the
 // token in a first-party cookie so later pageviews are attributed, then redirects on-site.
 import { NextResponse, type NextRequest } from "next/server";
 import {
@@ -14,7 +14,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_TARGET = "/case-studies/sneakers";
+const DEFAULT_TARGET = "/case-studies/stock-sync";
 
 // Only same-site paths, so the link can never be used as an open redirect.
 function safeTarget(to: string | null): string {

@@ -7,7 +7,7 @@ import { caseContent, caseMetadata } from "@/lib/case-page";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
-  return caseMetadata("/case-studies/sneakers");
+  return caseMetadata("/case-studies/stock-sync");
 }
 
 export default async function CaseStudyPage() {

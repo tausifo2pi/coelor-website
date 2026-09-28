@@ -210,5 +210,149 @@
     "num": "05",
     "headline": "Tell us how you sell today.",
     "body": "Which channels, which warehouse system, roughly how many products. We reply within one business day."
+  },
+  "adaptive": {
+    "_note": "Dynamic case study (lead-outreach/PLAN_dynamic_case_study.md). Used only when the reader's email link carries a platform mix: 2 of the platforms they use + 1-2 others. Texts describe the same sync for those platforms (true: this is what we build); the real client's results stay attributed to the real client and its real stack (proof). Placeholders: {all} {sells} {sellA} {sellB} {system} {System} {systems} {item} {items} {Items} {variant} {variants} {Variants}. Never a word about the reader's own store or category.",
+    "seoTitle": "Case study: one stock count across {all} · Coelor",
+    "seoDescription": "The same stock sync, set up for {all}: sold-out {variants} switched off everywhere within minutes and every sale back in one stock count.",
+    "eyebrow": "Case study · One stock count, every platform",
+    "headline": "One stock count across {all}.",
+    "sub": "The same sync, set up for {sells} with {system} as the stock source: sold-out {variants} switched off everywhere within minutes, and every sale back in one count.",
+    "panelTitle": "Same sync · {all}",
+    "panelRows": [
+      {
+        "icon": "refresh",
+        "label": "Sold-out {variants} off {sellA}",
+        "meta": "10 min",
+        "state": "OK"
+      },
+      {
+        "icon": "route",
+        "label": "{sellB} sales into {system}",
+        "meta": "5–7 min",
+        "state": "OK"
+      },
+      {
+        "icon": "git-compare",
+        "label": "{Variants} linked across platforms",
+        "meta": "every run",
+        "state": "OK"
+      },
+      {
+        "icon": "shield",
+        "label": "Delistings reported",
+        "meta": "team chat",
+        "state": "OK"
+      }
+    ],
+    "proof": "First built for a Dutch reseller on StockX, Alias and Picqer. These are their results.",
+    "problemHeadline": "Every {item} lives in several places at once.",
+    "problemBody": "The same {items} are listed on {sells}, while the real stock is counted in {system}. A sale in one place has to reach all the others before the next buyer does.",
+    "problemItems": [
+      {
+        "angle": "marketplace_listing",
+        "icon": "package-x",
+        "title": "Sold twice",
+        "body": "A {variant} sells on {sellA} and stays live on {sellB}. The second buyer gets a cancellation, and the platform counts it against you.",
+        "tag": "oversells · penalties"
+      },
+      {
+        "angle": "store_and_web",
+        "icon": "package-x",
+        "title": "Store and web out of step",
+        "body": "A {item} sold over the counter stays for sale online until someone takes it off by hand.",
+        "tag": "store · webshop"
+      },
+      {
+        "angle": "*",
+        "icon": "copy",
+        "title": "Sales typed over",
+        "body": "Every sale from {sellB} is taken off the stock in {system} by hand before the count is right again.",
+        "tag": "hours every week"
+      },
+      {
+        "angle": "multi_marketplace",
+        "icon": "refresh",
+        "title": "Listings paused by hand",
+        "body": "After each sale someone pauses the same {variant} on the other platforms, one by one.",
+        "tag": "easy to miss"
+      },
+      {
+        "angle": "many_variants",
+        "icon": "file-spreadsheet",
+        "title": "{Variants} written ten ways",
+        "body": "The same {variant} is spelled differently in {system} and on each platform, so nothing matches without a person.",
+        "tag": "mismatches · delays"
+      },
+      {
+        "angle": "warehouse_system",
+        "icon": "link",
+        "title": "The stock system knows first",
+        "body": "{System} has the right count, but the platforms only hear about it hours later.",
+        "tag": "stale listings"
+      }
+    ],
+    "setupHeadline": "{System} is the single source of truth.",
+    "setupBody": "Coelor sits between {sells} and {system}. It reads the stock, switches off sold-out {variants} everywhere and brings every sale back, so the count stays right without anyone typing it over.",
+    "steps": [
+      {
+        "icon": "git-compare",
+        "title": "Link every {variant}",
+        "body": "Each {variant} in {system} is linked to the same {variant} on {sells}, however each platform spells it."
+      },
+      {
+        "icon": "refresh",
+        "title": "Switch off sold-out {variants}",
+        "body": "Every 10 minutes the whole catalogue is checked, and any {variant} with no free stock is switched off on every platform."
+      },
+      {
+        "icon": "route",
+        "title": "Bring every sale back",
+        "body": "Sales from {sells} come off the stock in {system} within minutes, so the next buyer sees the real count."
+      },
+      {
+        "icon": "shield",
+        "title": "Report and test every action",
+        "body": "Every automatic switch-off is posted to the team chat, and every change can run in test mode first."
+      }
+    ],
+    "before": [
+      "Sold-out {variants} paused by hand after each sale",
+      "Sales from {sellB} typed into {system}",
+      "A {variant} could sell twice before anyone noticed"
+    ],
+    "after": [
+      "Every {variant} linked across {all}",
+      "Sold-out {variants} switched off on every platform every 10 minutes",
+      "Sales from {sells} off the stock within minutes",
+      "Every automatic delisting posted to the team chat"
+    ],
+    "fitHeadline": "Built for sellers who have outgrown manual work.",
+    "fitItems": [
+      {
+        "angle": "marketplace_listing",
+        "text": "You sell on {sells} as well as your own channels"
+      },
+      {
+        "angle": "store_and_web",
+        "text": "Your store and your webshop share the same stock"
+      },
+      {
+        "angle": "warehouse_system",
+        "text": "You keep stock per {variant} in {system} or a similar system"
+      },
+      {
+        "angle": "many_variants",
+        "text": "You have hundreds or thousands of {item} and {variant} combinations"
+      },
+      {
+        "angle": "*",
+        "text": "Someone on your team pauses listings or types over sales every day"
+      }
+    ],
+    "faqTop": {
+      "q": "Does this work with {all}?",
+      "a": "Coelor connects through each platform's API where there is one, and through exports or the seller tools where there is not. We map your exact setup on the first call and confirm the scope in writing before anything is built."
+    }
   }
 }

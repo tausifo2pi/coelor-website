@@ -35,6 +35,21 @@ import {
   SiSap,
   SiEbay,
   SiStockx,
+  SiEtsy,
+  SiTiktok,
+  SiBigcommerce,
+  SiWix,
+  SiSquarespace,
+  SiShopware,
+  SiVinted,
+  SiZalando,
+  SiDiscogs,
+  SiAllegro,
+  SiKaufland,
+  SiAftership,
+  SiWebflow,
+  SiSquare,
+  SiCardmarket,
 } from "@icons-pack/react-simple-icons";
 
 const LUCIDE: Record<string, ComponentType<LucideProps>> = {
@@ -82,6 +97,22 @@ const BRANDS: Record<string, BrandIcon> = {
   sap: SiSap,
   ebay: SiEbay,
   stockx: SiStockx,
+  // platforms of the dynamic case study's mixes (slugs as lead-outreach sends them)
+  etsy: SiEtsy,
+  "tiktok-shop": SiTiktok,
+  bigcommerce: SiBigcommerce,
+  wix: SiWix,
+  squarespace: SiSquarespace,
+  shopware: SiShopware,
+  vinted: SiVinted,
+  zalando: SiZalando,
+  discogs: SiDiscogs,
+  allegro: SiAllegro,
+  kaufland: SiKaufland,
+  aftership: SiAftership,
+  webflow: SiWebflow,
+  square: SiSquare,
+  cardmarket: SiCardmarket,
 };
 
 /** Third-party platform logo (Simple Icons). Falls back to a monogram tile. */
