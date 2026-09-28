@@ -444,19 +444,16 @@ details[open] .faq-chevron {
   object-fit: cover;
 }
 
-/* the lines between the platforms and Coelor: one slow, quiet flow */
-.flow-line {
-  fill: none;
-  stroke: rgba(159, 176, 255, 0.6);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 5;
-  animation: flow-dash 2.8s linear infinite;
-}
-
-@keyframes flow-dash {
-  to {
-    stroke-dashoffset: -16;
-  }
+/* a part of the reader's setup that is no platform (counter, warehouse, sheet): never styled like a brand */
+.facet-tile {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rule-strong);
+  background: var(--panel-2);
+  color: var(--accent);
 }
 
 .viz-stage {

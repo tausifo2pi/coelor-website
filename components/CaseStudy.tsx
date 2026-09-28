@@ -4,12 +4,13 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import Logo from "@/components/Logo";
 import { Icon } from "@/components/icons";
-import { PlatformList, PlatformTile } from "@/components/PlatformLogo";
-import type { CaseContent, HookItem, Named } from "@/lib/case-adapt";
+import { PlatformTile } from "@/components/PlatformLogo";
+import type { CaseContent, HookItem, Role } from "@/lib/case-adapt";
 
-// The outreach case study, rendered from its content: told for the real client's stack, or for one reader's platform
-// mix (lib/case-adapt.ts). Used by /case-studies/stock-sync, /case-studies/sneakers and the panel preview /p/<token>.
-// Motion is kept to the quiet flow on the sync map lines and the "Running" dot.
+// The outreach case study, rendered from its content: told for one reader's own setup, or the real client's story
+// (lib/case-adapt.ts). Used by /case-studies/stock-sync, /case-studies/sneakers and the panel preview /p/<token>.
+// Each platform's logo appears once, in the hero's setup card; everything else uses names and neutral icons. No motion
+// but the "Sync running" dot.
 
 function Header() {
   return (
@@ -31,55 +32,44 @@ function Header() {
   );
 }
 
-/* ---------- hero: the headline names the platforms with their logos; the map shows the same sync ---------- */
+/* ---------- hero: the reader's setup, where it slips, what the sync does ---------- */
 
-function Lines({ from, to }: { from: number; to: number }) {
-  // curves from `from` evenly spaced points on the left to `to` points on the right (viewBox 0..40 × 0..100)
-  const ys = (n: number) => Array.from({ length: n }, (_, i) => ((i + 0.5) / n) * 100);
-  const paths = from === 1 ? ys(to).map((y) => `M0 50 C20 50 20 ${y} 40 ${y}`) : ys(from).map((y) => `M0 ${y} C20 ${y} 20 50 40 50`);
-  return (
-    <svg viewBox="0 0 40 100" preserveAspectRatio="none" className="h-full w-full" aria-hidden>
-      {paths.map((d) => (
-        <path key={d} d={d} className="flow-line" vectorEffect="non-scaling-stroke" />
-      ))}
-    </svg>
-  );
-}
+const joinNames = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
 
-function MapColumn({ items, label }: { items: Named[]; label: string }) {
+function SetupCard({ c }: { c: CaseContent }) {
+  const { hero } = c;
   return (
-    <div className="flex h-full flex-col gap-2">
-      <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-ink-soft">{label}</span>
-      <ul className="flex flex-1 flex-col justify-around gap-2">
-        {items.map((p, i) => (
-          <li key={`${p.name}-${i}`} className="flex min-w-0 items-center gap-2.5 rounded-[11px] border border-rule bg-white/[0.03] p-1.5 pr-2.5">
-            <PlatformTile slug={p.slug} name={p.name} size={30} />
-            <span className="min-w-0 break-words text-[12px] font-medium leading-[1.25] text-ink sm:text-[13px]">{p.name}</span>
+    <div className="glass-card flex flex-col gap-5 p-5 sm:p-6" aria-label={hero.setupTitle}>
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">{hero.setupTitle}</span>
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ok">
+          <span className="pulse h-2 w-2 rounded-full bg-ok" aria-hidden />
+          Sync running
+        </span>
+      </div>
+      <ul className="flex flex-col gap-2">
+        {hero.setup.map((p, i) => (
+          <li key={`${p.slug}-${i}`} className="flex items-center gap-3 rounded-[12px] border border-rule bg-white/[0.03] p-2 pr-3">
+            <PlatformTile slug={p.slug} name={p.name} size={34} />
+            <span className="min-w-0 flex-1 text-[14px] font-medium text-ink">{p.name}</span>
+            {p.role && <span className="text-right text-[12px] text-ink-soft">{p.role}</span>}
           </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-function SyncMap({ c }: { c: CaseContent }) {
-  const from = c.setup.flowFrom, to = c.setup.flowTo;
-  return (
-    <div className="grid grid-cols-[minmax(0,1fr)_28px_auto_28px_minmax(0,1fr)] items-stretch sm:grid-cols-[minmax(0,1fr)_44px_auto_44px_minmax(0,1fr)]">
-      <MapColumn items={from} label="Sell on" />
-      <div className="pt-6">
-        <Lines from={from.length} to={1} />
-      </div>
-      <div className="flex flex-col justify-center pt-6">
-        <span className="flex flex-col items-center gap-1.5 rounded-[14px] border border-accent/35 bg-accent/10 px-3 py-3 shadow-[0_0_40px_-12px_rgba(159,176,255,0.6)]">
-          <Logo height={13} />
-          <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-accent">sync</span>
+      <div className="flex flex-col gap-1.5 rounded-[12px] border border-warn/25 bg-warn/[0.06] p-4">
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-warn">
+          <Icon name="alert" size={13} />
+          {hero.gapTitle}
         </span>
+        <p className="text-[14px] leading-[1.55] text-ink">{hero.gap}</p>
       </div>
-      <div className="pt-6">
-        <Lines from={1} to={to.length} />
+      <div className="flex flex-col gap-1.5 rounded-[12px] border border-ok/25 bg-ok/[0.06] p-4">
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-[#8fe7c2]">
+          <Icon name="check" size={13} strokeWidth={2.4} />
+          {hero.fixTitle}
+        </span>
+        <p className="text-[14px] leading-[1.55] text-ink">{hero.fix}</p>
       </div>
-      <MapColumn items={to} label="Stock in" />
     </div>
   );
 }
@@ -95,7 +85,8 @@ function Hero({ c }: { c: CaseContent }) {
             {hero.eyebrow}
           </span>
           <h1 id="case-title" className="display mt-5 text-[36px] leading-[1.08] text-ink sm:text-[46px] lg:text-[54px]">
-            {hero.lead} <PlatformList items={hero.platforms} />.
+            {hero.lead} {joinNames(hero.places.map((p) => p.name))}
+            {hero.tail}.
           </h1>
           <p className="mt-5 max-w-[520px] text-[16px] leading-[1.6] text-ink-muted md:text-[18px]">{hero.sub}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -108,48 +99,26 @@ function Hero({ c }: { c: CaseContent }) {
             </a>
           </div>
         </div>
-
-        <div className="glass-card flex flex-col gap-5 p-4 sm:p-6" aria-label="Sync status">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">{hero.panel.title}</span>
-            <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ok">
-              <span className="pulse h-2 w-2 rounded-full bg-ok" aria-hidden />
-              Running
-            </span>
-          </div>
-          <SyncMap c={c} />
-          <ul className="flex flex-col divide-y divide-rule rounded-[12px] border border-rule bg-canvas/80">
-            {hero.panel.rows.map((r) => (
-              <li key={r.label} className="flex items-center gap-3 px-3.5 py-2.5">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] bg-accent/10 text-accent">
-                  <Icon name={r.icon} size={14} />
-                </span>
-                <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-ink sm:text-[14px]">{r.label}</span>
-                <span className="hidden font-mono text-[12px] text-ink-muted sm:inline">{r.meta}</span>
-                <span className="rounded-md bg-ok/10 px-2 py-0.5 font-mono text-[11px] text-ok">{r.state}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <SetupCard c={c} />
       </div>
     </section>
   );
 }
 
-/* ---------- "Is this you?": each card shows the hand work with the reader's own platforms ---------- */
+/* ---------- "Is this you?": each card draws the hand work with neutral icons ---------- */
 
-const T = 38; // tile size in the card visuals
+const T = 36; // node size in the card drawings
+const ROLE_ICON: Record<Role, string> = { web: "globe", market: "bag", counter: "store", system: "warehouse", sheet: "file-spreadsheet", warehouse: "warehouse" };
 
-function Tile({ p, badge, dim = false }: { p: Named | null; badge?: ReactNode; dim?: boolean }) {
+function Node({ role, badge, dim = false }: { role: Role | null; badge?: ReactNode; dim?: boolean }) {
   return (
     <span className={`relative inline-flex ${dim ? "opacity-45" : ""}`}>
-      {p ? (
-        <PlatformTile slug={p.slug} name={p.name} size={T} />
-      ) : (
-        <span className="inline-flex items-center justify-center rounded-[9px] border border-dashed border-rule-strong text-ink-soft" style={{ width: T, height: T }} aria-hidden>
-          <Icon name="plus" size={14} />
-        </span>
-      )}
+      <span
+        className={`inline-flex items-center justify-center rounded-[10px] border ${role ? "border-rule-strong bg-white/[0.05] text-ink" : "border-dashed border-rule-strong text-ink-soft"}`}
+        style={{ width: T, height: T }}
+      >
+        <Icon name={role ? ROLE_ICON[role] : "plus"} size={16} />
+      </span>
       {badge && <span className="viz-badge">{badge}</span>}
     </span>
   );
@@ -179,47 +148,32 @@ function spellings(c: CaseContent) {
 }
 
 function Viz({ it, c }: { it: HookItem; c: CaseContent }) {
-  const { a, b, system } = c.cast;
-  const sys = system ?? { name: "Your warehouse", slug: "warehouse" };
+  const { a, b } = c.cast;
+  const stock = c.cast.stock ?? "warehouse";
+  const pen = <Icon name="pencil" size={9} />;
   switch (it.viz) {
-    case "copy":
-      return (<><Tile p={a} /><Arrow /><Glyph name="copy" /><Arrow /><Tile p={b} badge="2×" /></>);
-    case "edit":
-      return (<><Tile p={a} badge={<Icon name="pencil" size={9} />} /><Tile p={b} badge={<Icon name="pencil" size={9} />} /><Tile p={sys} badge={<Icon name="pencil" size={9} />} /></>);
-    case "sale":
-      return (
-        <>
-          <Col><Tile p={b} /><Pill>sold</Pill></Col>
-          <Arrow />
-          <Glyph name="keyboard" />
-          <Arrow />
-          <Tile p={a} badge="−1" />
-          <Tile p={sys} badge="−1" />
-        </>
-      );
-    case "twice":
-      return (
-        <>
-          <Col><Tile p={a} /><Pill>1 left</Pill></Col>
-          <Glyph name="alert" tone="warn" />
-          <Col><Tile p={b} /><Pill tone="warn">sold again</Pill></Col>
-        </>
-      );
-    case "type":
-      return (<><Col><Tile p={b} /><Pill>order</Pill></Col><Arrow /><Glyph name="keyboard" /><Arrow /><Tile p={sys} /></>);
-    case "sheet":
-      return (<><Glyph name="file-spreadsheet" tone="accent" /><Arrow /><Tile p={a} dim /><Tile p={b} dim /></>);
-    case "pause":
-      return (
-        <>
-          <Col><Tile p={a} /><Pill>sold</Pill></Col>
-          <Arrow />
-          <Tile p={b} badge={<Icon name="pause" size={9} />} />
-          <Tile p={null} badge={<Icon name="pause" size={9} />} />
-        </>
-      );
     case "store":
-      return (<><Col><Glyph name="store" /><Pill>sold</Pill></Col><Glyph name="alert" tone="warn" /><Col><Tile p={a} /><Pill tone="warn">still live</Pill></Col></>);
+      return (<><Col><Node role="counter" /><Pill>sold</Pill></Col><Glyph name="alert" tone="warn" /><Col><Node role={a} /><Pill tone="warn">still for sale</Pill></Col></>);
+    case "unique":
+      return (<><Col><Node role={b} /><Pill>sold</Pill></Col><Glyph name="alert" tone="warn" /><Col><Node role={a} /><Pill tone="warn">still for sale</Pill></Col></>);
+    case "buyin":
+      return (<><Glyph name="package-plus" tone="accent" /><Arrow /><Glyph name="keyboard" /><Arrow /><Node role={a} badge="+1" />{b && b !== "counter" && <Node role={b} badge="+1" />}</>);
+    case "multistore":
+      return (<><Node role="counter" badge="12" /><Node role="counter" badge="9" /><Glyph name="alert" tone="warn" /><Node role={a} badge="?" /></>);
+    case "copy":
+      return (<><Node role={a} /><Arrow /><Glyph name="copy" /><Arrow /><Node role={b} badge="2×" /></>);
+    case "twice":
+      return (<><Col><Node role={a} /><Pill>1 left</Pill></Col><Glyph name="alert" tone="warn" /><Col><Node role={b} /><Pill tone="warn">sold again</Pill></Col></>);
+    case "sale":
+      return (<><Col><Node role={b} /><Pill>sold</Pill></Col><Arrow /><Glyph name="keyboard" /><Arrow /><Node role={a} badge="−1" />{c.cast.stock && <Node role={stock} badge="−1" />}</>);
+    case "edit":
+      return (<><Node role={a} badge={pen} />{b && <Node role={b} badge={pen} />}{c.cast.stock && <Node role={stock} badge={pen} />}</>);
+    case "type":
+      return (<><Col><Node role={a} /><Pill>order</Pill></Col><Arrow /><Glyph name="keyboard" /><Arrow /><Node role="system" /></>);
+    case "sheet":
+      return (<><Glyph name="file-spreadsheet" tone="accent" /><Arrow /><Node role={a} dim />{b && <Node role={b} dim />}</>);
+    case "pause":
+      return (<><Col><Node role={a} /><Pill>sold</Pill></Col><Arrow /><Node role={b} badge={<Icon name="pause" size={9} />} /><Node role={null} badge={<Icon name="pause" size={9} />} /></>);
     case "variants":
       return (
         <span className="flex flex-wrap items-center justify-center gap-1.5">
@@ -229,9 +183,9 @@ function Viz({ it, c }: { it: HookItem; c: CaseContent }) {
         </span>
       );
     case "restock":
-      return (<><Glyph name="package-plus" tone="accent" /><Arrow /><Tile p={a} badge="+" /><Tile p={b} badge="+" /><Tile p={sys} badge="+" /></>);
+      return (<><Glyph name="package-plus" tone="accent" /><Arrow /><Node role={a} badge="+" />{b && <Node role={b} badge="+" />}{c.cast.stock && <Node role={stock} badge="+" />}</>);
     case "returns":
-      return (<><Glyph name="undo" /><Arrow /><Tile p={a} badge="+1" /><Tile p={b} badge="+1" /></>);
+      return (<><Glyph name="undo" /><Arrow /><Node role={a} badge="+1" />{b && <Node role={b} badge="+1" />}</>);
     default:
       return null;
   }
@@ -246,7 +200,7 @@ function Hook({ c }: { c: CaseContent }) {
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
           {hook.items.map((it) => (
             <li key={it.viz} className="panel flex flex-col overflow-hidden">
-              <div className="viz-stage flex h-[104px] items-center justify-center gap-2.5 border-b border-rule px-4" aria-hidden>
+              <div className="viz-stage flex h-[96px] items-center justify-center gap-2.5 border-b border-rule px-4" aria-hidden>
                 <Viz it={it} c={c} />
               </div>
               <div className="flex flex-col gap-1.5 p-5">
@@ -268,15 +222,14 @@ function Hook({ c }: { c: CaseContent }) {
   );
 }
 
-/* ---------- the real client's results, on its real stack ---------- */
+/* ---------- the real client's results ---------- */
 
 function Results({ c }: { c: CaseContent }) {
   return (
     <section id="results" aria-label="Results" className="border-y border-rule">
-      <div className="mx-auto max-w-site px-5 pt-10 md:px-10 lg:px-20">
-        <p className="text-[15px] leading-[1.9] text-ink-muted md:text-[16px]">
-          {c.proof.lead} <span className="font-medium text-ink"><PlatformList items={c.proof.platforms} size="1.35em" /></span>. {c.proof.tail}
-        </p>
+      <div className="mx-auto flex max-w-site flex-col gap-1.5 px-5 pt-10 md:px-10 lg:px-20">
+        <p className="text-[15px] leading-[1.6] text-ink md:text-[16px]">{c.proof.text}</p>
+        {c.proof.origin && <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft">{c.proof.origin}</p>}
       </div>
       <ul className="mx-auto grid max-w-site grid-cols-2 gap-px px-5 md:px-10 lg:grid-cols-4 lg:px-20">
         {c.stats.map((s) => (

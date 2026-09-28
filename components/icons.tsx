@@ -28,6 +28,7 @@ import {
   TriangleAlert,
   Tag,
   ShoppingBag,
+  Globe,
   type LucideProps,
 } from "lucide-react";
 import {
@@ -91,6 +92,7 @@ const LUCIDE: Record<string, ComponentType<LucideProps>> = {
   alert: TriangleAlert,
   tag: Tag,
   bag: ShoppingBag,
+  globe: Globe,
 };
 
 /** UI icon by name (Lucide). Unknown names render nothing. */
