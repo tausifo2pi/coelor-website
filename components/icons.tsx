@@ -18,6 +18,16 @@ import {
   Check,
   Plus,
   ArrowRight,
+  Warehouse,
+  Store,
+  Pencil,
+  Keyboard,
+  PackagePlus,
+  Undo2,
+  Pause,
+  TriangleAlert,
+  Tag,
+  ShoppingBag,
   type LucideProps,
 } from "lucide-react";
 import {
@@ -71,6 +81,16 @@ const LUCIDE: Record<string, ComponentType<LucideProps>> = {
   check: Check,
   plus: Plus,
   "arrow-right": ArrowRight,
+  warehouse: Warehouse,
+  store: Store,
+  pencil: Pencil,
+  keyboard: Keyboard,
+  "package-plus": PackagePlus,
+  undo: Undo2,
+  pause: Pause,
+  alert: TriangleAlert,
+  tag: Tag,
+  bag: ShoppingBag,
 };
 
 /** UI icon by name (Lucide). Unknown names render nothing. */

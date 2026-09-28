@@ -3,6 +3,8 @@
 // about the reader's own store. Any problem (no token, unknown token, slow or down service) means "no mix": the page
 // then shows the generic case study.
 
+import { platformInfo } from "@/lib/platforms";
+
 export type CasePlatform = { name: string; slug: string; kind: "sell" | "system" };
 export type CaseWords = { item: string; items: string; variant: string; variants: string };
 export type CaseMix = { platforms: CasePlatform[]; words: CaseWords; angle: string[] };
@@ -20,11 +22,12 @@ function valid(x: unknown): CaseMix | null {
     .map((p) => {
       const r = (p ?? {}) as Record<string, unknown>;
       const name = str(r.name, 40), slug = str(r.slug, 40), kind = r.kind === "sell" || r.kind === "system" ? r.kind : null;
-      return name && slug && kind ? { name, slug, kind } : null;
+      // only platforms a page may name (lib/platforms.ts), in the role they have there
+      return name && slug && kind && platformInfo(slug)?.kind === kind ? { name, slug, kind } : null;
     })
     .filter((p): p is CasePlatform => p !== null)
     .slice(0, 4);
-  if (!platforms.length) return null;
+  if (!platforms.some((p) => p.kind === "sell")) return null; // a sync needs somewhere to sell
   const w = (o.words ?? {}) as Record<string, unknown>;
   const words: CaseWords = { item: "item", items: "items", variant: "variant", variants: "variants" };
   for (const k of Object.keys(words) as (keyof CaseWords)[]) if (typeof w[k] === "string" && WORD.test(w[k] as string)) words[k] = w[k] as string;

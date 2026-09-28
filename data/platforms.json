@@ -1,0 +1,585 @@
+{
+ "_note": "Platforms a case page may name (lead-outreach server/src/leads/casepage.js platformOf: places to sell + systems that count the stock; never a competitor such as a connector or a listing/stock-sync tool). Keys are the slugs lead-outreach sends. logo: a square icon in /public/platforms (bleed = an app icon with its own background, shown edge to edge); no logo = a monogram tile. src = where the icon came from. A platform missing here is dropped from a mix by lib/case-mix.ts, so a name added to the vocabulary needs an entry (and ideally an icon) here too.",
+ "platforms": {
+  "stockx": {
+   "name": "StockX",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/stockx.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "alias-goat": {
+   "name": "Alias",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/alias-goat.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "ebay": {
+   "name": "eBay",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/ebay.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "amazon": {
+   "name": "Amazon",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/amazon.svg",
+   "src": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg"
+  },
+  "walmart": {
+   "name": "Walmart",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/walmart.png",
+   "bleed": false,
+   "src": "https://www.walmart.com/apple-touch-icon.png"
+  },
+  "etsy": {
+   "name": "Etsy",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/etsy.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "whatnot": {
+   "name": "Whatnot",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/whatnot.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "tiktok-shop": {
+   "name": "TikTok Shop",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/tiktok-shop.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "vinted": {
+   "name": "Vinted",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/vinted.png",
+   "bleed": true,
+   "src": "https://marketplace-web-assets.vinted.com/_next/static/media/apple-touch-icon.0yqfwm74_4s9g.png"
+  },
+  "allegro": {
+   "name": "Allegro",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/allegro.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "zalando": {
+   "name": "Zalando",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/zalando.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "kaufland": {
+   "name": "Kaufland",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/kaufland.svg",
+   "src": "simple-icons:kaufland (CC0)"
+  },
+  "bol": {
+   "name": "Bol",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/bol.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "otto": {
+   "name": "OTTO",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/otto.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "cdiscount": {
+   "name": "Cdiscount",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/cdiscount.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "fruugo": {
+   "name": "Fruugo",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/fruugo.png",
+   "bleed": true,
+   "src": "google-s2:fruugo.com"
+  },
+  "onbuy": {
+   "name": "OnBuy",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/onbuy.png",
+   "bleed": true,
+   "src": "google-s2:onbuy.com"
+  },
+  "reverb": {
+   "name": "Reverb",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/reverb.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "discogs": {
+   "name": "Discogs",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/discogs.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "cardmarket": {
+   "name": "Cardmarket",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/cardmarket.svg",
+   "src": "simple-icons:cardmarket (CC0)"
+  },
+  "tcgplayer": {
+   "name": "TCGplayer",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/tcgplayer.png",
+   "bleed": false,
+   "src": "https://www.tcgplayer.com/images/android-chrome-512.png"
+  },
+  "chrono24": {
+   "name": "Chrono24",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/chrono24.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "catawiki": {
+   "name": "Catawiki",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/catawiki.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "bricklink": {
+   "name": "BrickLink",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/bricklink.png",
+   "bleed": true,
+   "src": "google-s2:bricklink.com"
+  },
+  "depop": {
+   "name": "Depop",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/depop.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "grailed": {
+   "name": "Grailed",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/grailed.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "vestiaire-collective": {
+   "name": "Vestiaire",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/vestiaire-collective.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "poshmark": {
+   "name": "Poshmark",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/poshmark.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "mercari": {
+   "name": "Mercari",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/mercari.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "1stdibs": {
+   "name": "1stDibs",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/1stdibs.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "chairish": {
+   "name": "Chairish",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/chairish.png",
+   "bleed": true,
+   "src": "https://chairish-static-assets.freetls.fastly.net/platform-release-2026-09-28.1/www.chairish.com/apple-touch-icon-152x152-precomposed.png"
+  },
+  "abebooks": {
+   "name": "AbeBooks",
+   "kind": "sell",
+   "type": "marketplace"
+  },
+  "biblio": {
+   "name": "Biblio",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/biblio.png",
+   "bleed": false,
+   "src": "google-s2:biblio.com"
+  },
+  "stadium-goods": {
+   "name": "Stadium Goods",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/stadium-goods.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "back-market": {
+   "name": "Back Market",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/back-market.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "marktplaats": {
+   "name": "Marktplaats",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/marktplaats.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "facebook-marketplace": {
+   "name": "Facebook Marketplace",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/facebook-marketplace.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "faire": {
+   "name": "Faire",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/faire.png",
+   "bleed": true,
+   "src": "https://www.faire.com/apple-touch-icon.png"
+  },
+  "shipbob": {
+   "name": "ShipBob",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/shipbob.png",
+   "bleed": false,
+   "src": "https://www.shipbob.com/wp-content/themes/shipbob-2022/resources/icons/touch.png"
+  },
+  "shipmonk": {
+   "name": "ShipMonk",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/shipmonk.png",
+   "bleed": false,
+   "src": "https://www.shipmonk.com/wp-content/uploads/2025/01/cropped-shipmonk-symbol-green-180x180.png"
+  },
+  "shiphero": {
+   "name": "ShipHero",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/shiphero.png",
+   "bleed": false,
+   "src": "https://cdn.prod.website-files.com/6915f01ece943af094239ff7/691e04e46f3f7cbdab9c1408_S%20copy_256x%20256.ico"
+  },
+  "byrd": {
+   "name": "byrd",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/byrd.png",
+   "bleed": false,
+   "src": "https://cdn.prod.website-files.com/647371f04a4117524228d2bf/6473741685a56d64b2593d7c_webclip.png"
+  },
+  "monta": {
+   "name": "Monta",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/monta.png",
+   "bleed": false,
+   "src": "https://gomonta.com/wp-content/uploads/2024/04/cropped-Favicon-96x96-1-180x180.png"
+  },
+  "zendbox": {
+   "name": "Zendbox",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/zendbox.png",
+   "bleed": false,
+   "src": "https://cdn.shopify.com/app-store/listing_images/d863ae0681ab32f946c15a730948f2bf/icon/CL_c2avhhpQDEAE=.png"
+  },
+  "amazon-mcf": {
+   "name": "Amazon MCF",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/amazon-mcf.svg",
+   "src": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg"
+  },
+  "deliverr-flexport": {
+   "name": "Flexport",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/deliverr-flexport.svg",
+   "src": "https://www.flexport.com/favicon.svg"
+  },
+  "arvato": {
+   "name": "Arvato",
+   "kind": "system",
+   "type": "fulfilment_3pl",
+   "logo": "/platforms/arvato.png",
+   "bleed": false,
+   "src": "https://arvato.com/assets/favicon/apple-icon-180x180.png"
+  },
+  "picqer": {
+   "name": "Picqer",
+   "kind": "system",
+   "type": "inventory_erp",
+   "logo": "/platforms/picqer.svg",
+   "src": "picqer.com brand logo (symbol only)"
+  },
+  "odoo": {
+   "name": "Odoo",
+   "kind": "system",
+   "type": "inventory_erp",
+   "logo": "/platforms/odoo.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "exact-online": {
+   "name": "Exact Online",
+   "kind": "system",
+   "type": "inventory_erp",
+   "logo": "/platforms/exact-online.png",
+   "bleed": true,
+   "src": "https://www.exact.com/media/templates/site/pwttemplate/images/favicon/apple-touch-icon.png"
+  },
+  "stocky": {
+   "name": "Stocky",
+   "kind": "system",
+   "type": "inventory_erp",
+   "logo": "/platforms/stocky.png",
+   "bleed": true,
+   "src": "https://cdn.shopify.com/app-store/listing_images/2c3e75a5cc00f53379485a2d0455d265/icon/CMes2sX0lu8CEAE=.png"
+  },
+  "easyscan": {
+   "name": "EasyScan",
+   "kind": "system",
+   "type": "inventory_erp",
+   "logo": "/platforms/easyscan.png",
+   "bleed": true,
+   "src": "https://cdn.shopify.com/app-store/listing_images/2608db50f9b29c58b9a6231ba55b8804/icon/CJ2zoqeB-e8CEAE=.jpeg"
+  },
+  "prediko": {
+   "name": "Prediko",
+   "kind": "system",
+   "type": "inventory_erp",
+   "logo": "/platforms/prediko.png",
+   "bleed": true,
+   "src": "https://cdn.prod.website-files.com/68ceeb4f2c25c399d42f4726/695ba11a0074f26e62d12fb5_prediko-logomark.webp"
+  },
+  "fabrikator": {
+   "name": "Fabrikator",
+   "kind": "system",
+   "type": "inventory_erp",
+   "logo": "/platforms/fabrikator.png",
+   "bleed": true,
+   "src": "https://www.fabrikator.io/images/webclip.png"
+  },
+  "shopify-pos": {
+   "name": "Shopify POS",
+   "kind": "system",
+   "type": "pos",
+   "logo": "/platforms/shopify-pos.svg",
+   "src": "iconify logos:shopify (CC0)"
+  },
+  "lightspeed-pos": {
+   "name": "Lightspeed POS",
+   "kind": "system",
+   "type": "pos",
+   "logo": "/platforms/lightspeed-pos.svg",
+   "src": "https://www.lightspeedhq.com/favicon.svg?v=5"
+  },
+  "square": {
+   "name": "Square",
+   "kind": "system",
+   "type": "pos",
+   "logo": "/platforms/square.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "clover": {
+   "name": "Clover",
+   "kind": "system",
+   "type": "pos",
+   "logo": "/platforms/clover.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "shopify": {
+   "name": "Shopify",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/shopify.svg",
+   "src": "iconify logos:shopify (CC0)"
+  },
+  "woocommerce": {
+   "name": "WooCommerce",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/woocommerce.svg",
+   "src": "iconify logos:woocommerce-icon (CC0)"
+  },
+  "lightspeed": {
+   "name": "Lightspeed",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/lightspeed.svg",
+   "src": "https://www.lightspeedhq.com/favicon.svg?v=5"
+  },
+  "magento": {
+   "name": "Magento",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/magento.svg",
+   "src": "iconify logos:magento (CC0)"
+  },
+  "shopware": {
+   "name": "Shopware",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/shopware.png",
+   "bleed": false,
+   "src": "https://www.shopware.com/seo/apple-touch-icon.png"
+  },
+  "prestashop": {
+   "name": "PrestaShop",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/prestashop.svg",
+   "src": "iconify logos:prestashop-icon (CC0)"
+  },
+  "wix": {
+   "name": "Wix",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/wix.png",
+   "bleed": true,
+   "src": "https://www.wix.com/favicon.ico"
+  },
+  "squarespace": {
+   "name": "Squarespace",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/squarespace.png",
+   "bleed": false,
+   "src": "https://media-www.sqspcdn.com/logos/apple-touch-icon-1024.png"
+  },
+  "big-cartel": {
+   "name": "Big Cartel",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/big-cartel.svg",
+   "src": "simple-icons:bigcartel (CC0)"
+  },
+  "bigcommerce": {
+   "name": "BigCommerce",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/bigcommerce.svg",
+   "src": "https://storage.googleapis.com/s.mkswft.com/RmlsZTozYTVlNmQwZi00OWUzLTRlY2YtOTVhZC0zZTVmNTAwMDJkNmY=/BigCommerce-logomark-whitebg.svg"
+  },
+  "ecwid": {
+   "name": "Ecwid",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/ecwid.png",
+   "bleed": true,
+   "src": "https://don16obqbay2c.cloudfront.net/favicons/com/favicon_180.png"
+  },
+  "shoptet": {
+   "name": "Shoptet",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/shoptet.png",
+   "bleed": false,
+   "src": "https://www.shoptet.cz/apple-touch-icon.png"
+  },
+  "shoper": {
+   "name": "Shoper",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/shoper.png",
+   "bleed": false,
+   "src": "google-s2:shoper.pl"
+  },
+  "ccv-shop": {
+   "name": "CCV Shop",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/ccv-shop.png",
+   "bleed": true,
+   "src": "https://www.ccvshop.nl/apple-touch-icon.png"
+  },
+  "webflow": {
+   "name": "Webflow",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/webflow.png",
+   "bleed": true,
+   "src": "https://cdn.prod.website-files.com/686294e263eb7e215bd232f7/686d53d0446d4237b2f38c5f_webclip.png"
+  },
+  "opencart": {
+   "name": "OpenCart",
+   "kind": "sell",
+   "type": "webshop",
+   "logo": "/platforms/opencart.svg",
+   "src": "wikimedia commons"
+  },
+  "google-sheets": {
+   "name": "Google Sheets",
+   "kind": "system",
+   "type": "reporting",
+   "logo": "/platforms/google-sheets.svg",
+   "src": "simple-icons:googlesheets (CC0)"
+  }
+ }
+}

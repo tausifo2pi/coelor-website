@@ -142,19 +142,9 @@
         "h": 28
       },
       {
-        "name": "Linnworks",
-        "file": "/brands/linnworks.svg",
-        "h": 33
-      },
-      {
         "name": "Odoo",
         "file": "/brands/odoo.svg",
         "h": 88
-      },
-      {
-        "name": "ChannelEngine",
-        "file": "/brands/channelengine.svg",
-        "h": 28
       }
     ]
   },

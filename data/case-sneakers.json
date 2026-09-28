@@ -1,100 +1,117 @@
 {
+  "_note": "The outreach case study (lead-outreach/PLAN_dynamic_case_study.md). Texts with {placeholders} are told for the reader's platform mix when their email link carries one, and for the real client's own stack (StockX, Alias, Picqer; pairs and sizes) otherwise. Placeholders: {all} {sells} {sellA} {sellB} {SellB} {system} {System} {count} {item} {items} {Item} {Items} {variant} {variants} {Variants}. The real client's results always stay attributed to the real client and its real stack. Never a word about the reader's own store or category, and never the name or use of a competitor (connectors, listing or stock-sync tools).",
   "seo": {
     "title": "Case study: sneaker reseller stock in sync across StockX and Alias · Coelor",
     "description": "How a Dutch sneaker reseller keeps StockX and Alias in sync with its warehouse: sold-out sizes switched off every 10 minutes, marketplace sales off the warehouse stock within minutes, 31,000+ sizes checked."
   },
+  "realStack": [
+    { "name": "StockX", "slug": "stockx", "kind": "sell" },
+    { "name": "Alias", "slug": "alias-goat", "kind": "sell" },
+    { "name": "Picqer", "slug": "picqer", "kind": "system" }
+  ],
+  "realWords": { "item": "pair", "items": "pairs", "variant": "size", "variants": "sizes" },
   "hero": {
     "eyebrow": "Case study · Sneaker resale",
-    "headline": "One stock count across StockX, Alias and the warehouse.",
+    "lead": "One stock count across",
     "sub": "How a Dutch sneaker reseller stopped pausing sold-out sizes by hand and stopped typing marketplace sales into its warehouse system.",
-    "primaryCta": {
-      "label": "Book a call",
-      "href": "#contact"
-    },
-    "secondaryCta": {
-      "label": "See how it works",
-      "href": "#setup"
-    },
+    "primaryCta": { "label": "Book a call", "href": "#contact" },
+    "secondaryCta": { "label": "Is this you?", "href": "#hook" },
     "panel": {
       "title": "Live sync",
       "rows": [
-        {
-          "icon": "refresh",
-          "label": "Sold-out sweep",
-          "meta": "10 min",
-          "state": "OK"
-        },
-        {
-          "icon": "route",
-          "label": "Marketplace sales",
-          "meta": "5–7 min",
-          "state": "OK"
-        },
-        {
-          "icon": "git-compare",
-          "label": "Sizes checked",
-          "meta": "31,000+",
-          "state": "OK"
-        },
-        {
-          "icon": "shield",
-          "label": "Delistings",
-          "meta": "team chat",
-          "state": "OK"
-        }
+        { "icon": "refresh", "label": "Sold-out sweep", "meta": "10 min", "state": "OK" },
+        { "icon": "route", "label": "Marketplace sales", "meta": "5–7 min", "state": "OK" },
+        { "icon": "git-compare", "label": "Sizes checked", "meta": "31,000+", "state": "OK" },
+        { "icon": "shield", "label": "Delistings", "meta": "team chat", "state": "OK" }
       ]
     }
   },
-  "stats": [
-    {
-      "value": "31,000+",
-      "label": "sizes checked on every run"
-    },
-    {
-      "value": "10 min",
-      "label": "until a sold-out size is off every marketplace"
-    },
-    {
-      "value": "5–7 min",
-      "label": "from marketplace sale to warehouse stock"
-    },
-    {
-      "value": "4",
-      "label": "marketplace accounts, EU and US"
-    }
-  ],
-  "problem": {
+  "hook": {
     "num": "01",
-    "eyebrow": "The problem",
-    "headline": "Every pair lives in several places at once.",
-    "body": "The same pair is listed size by size on StockX and Alias, in more than one region, while the real stock sits in the warehouse system. Every sale has to show up everywhere, fast.",
+    "eyebrow": "Is this you?",
+    "headline": "Selling on {sells} usually means this.",
+    "body": "Every card below is work someone on your team does by hand today. Each one is a job the sync takes over.",
+    "footer": "Recognise two or more? That is exactly the work we automate.",
     "items": [
       {
-        "icon": "package-x",
-        "title": "Sold twice",
-        "body": "A size sells on one marketplace and stays live on another. The second buyer gets a cancellation, and the marketplace counts it against you.",
-        "tag": "oversells · penalties"
+        "angle": "manual_listing",
+        "viz": "copy",
+        "title": "Every product built twice",
+        "body": "A new {item} goes live on {sellA}, then someone builds the same listing again on {sellB}: title, photos, {variants} and price."
       },
       {
-        "icon": "copy",
-        "title": "Sales typed over",
-        "body": "Every marketplace sale is taken off the warehouse stock by hand before the count is right again.",
-        "tag": "hours every week"
+        "angle": "*",
+        "viz": "edit",
+        "title": "One product, managed in {count} places",
+        "body": "A new price, a better photo or a fixed title is typed into {all}, one by one."
       },
       {
-        "icon": "refresh",
-        "title": "Listings paused by hand",
-        "body": "After each sale someone pauses the same size on the other accounts, one by one.",
-        "tag": "easy to miss"
+        "angle": "*",
+        "viz": "sale",
+        "title": "Stock fixed by hand after every sale",
+        "body": "Something sells on {sellB}, and someone lowers the count on {sellA} and in {system} before the next buyer comes."
       },
       {
-        "icon": "file-spreadsheet",
-        "title": "Sizes written ten ways",
-        "body": "9W, 9M, 38,5 and (GS): the same size is spelled differently in the warehouse and on each marketplace.",
-        "tag": "mismatches · delays"
+        "angle": "marketplace_listing",
+        "viz": "twice",
+        "title": "The last one sold twice",
+        "body": "The last {variant} sells on {sellA} while it is still live on {sellB}. One buyer gets a cancellation, and the platform counts it against you."
+      },
+      {
+        "angle": "warehouse_system",
+        "viz": "type",
+        "title": "Orders typed into {system}",
+        "body": "Orders from {sellB} are copied into {system} by hand, so the stock and the picking list are right."
+      },
+      {
+        "angle": "no_stock_system",
+        "viz": "sheet",
+        "title": "The real count lives in a spreadsheet",
+        "body": "The only complete stock list is a sheet someone keeps up to date, and every platform is a little behind it."
+      },
+      {
+        "angle": "multi_marketplace",
+        "viz": "pause",
+        "title": "Listings paused one by one",
+        "body": "After each sale someone pauses the same {variant} on every other platform, one account at a time."
+      },
+      {
+        "angle": "store_and_web",
+        "viz": "store",
+        "title": "Shop floor and web out of step",
+        "body": "Something sold over the counter stays for sale online until someone takes it off by hand."
+      },
+      {
+        "angle": "many_variants",
+        "viz": "variants",
+        "title": "{Variants} spelled ten ways",
+        "body": "The same {variant} is written one way in {system} and another on each platform, so nothing matches without a person."
+      },
+      {
+        "angle": "*",
+        "viz": "restock",
+        "title": "New stock entered everywhere",
+        "body": "A delivery arrives, and the new count has to go into {all} before it can sell."
+      },
+      {
+        "angle": "*",
+        "viz": "returns",
+        "title": "Returns put back by hand",
+        "body": "A returned {item} is checked, then added back to the stock on every platform it sells on."
       }
     ]
   },
+  "proof": {
+    "generic": "The results at a Dutch sneaker reseller on",
+    "adapted": "First built for a Dutch reseller on",
+    "tail": "These are their numbers."
+  },
+  "stats": [
+    { "value": "31,000+", "label": "sizes checked on every run" },
+    { "value": "10 min", "label": "until a sold-out size is off every marketplace" },
+    { "value": "5–7 min", "label": "from marketplace sale to warehouse stock" },
+    { "value": "4", "label": "marketplace accounts, EU and US" }
+  ],
   "setup": {
     "num": "02",
     "eyebrow": "What we built",
@@ -114,28 +131,13 @@
       "Every automatic delisting posted to the team chat"
     ],
     "flowFrom": [
-      {
-        "name": "StockX EU",
-        "slug": "stockx"
-      },
-      {
-        "name": "StockX US",
-        "slug": "stockx"
-      },
-      {
-        "name": "Alias",
-        "slug": "alias"
-      }
+      { "name": "StockX EU", "slug": "stockx" },
+      { "name": "StockX US", "slug": "stockx" },
+      { "name": "Alias", "slug": "alias-goat" }
     ],
     "flowTo": [
-      {
-        "name": "Picqer",
-        "slug": "picqer"
-      },
-      {
-        "name": "Google Sheets",
-        "slug": "google-sheets"
-      }
+      { "name": "Picqer", "slug": "picqer" },
+      { "name": "Google Sheets", "slug": "google-sheets" }
     ],
     "steps": [
       {
@@ -160,24 +162,15 @@
       }
     ]
   },
-  "fit": {
+  "offer": {
     "num": "03",
-    "eyebrow": "Is this you?",
-    "headline": "Built for sneaker sellers who have outgrown manual work.",
+    "eyebrow": "How we start",
+    "headline": "From first call to live sync, in test mode first.",
     "items": [
-      "You sell on StockX, Alias or other marketplaces and on your own store",
-      "You keep stock per size in a warehouse or inventory system",
-      "You have hundreds or thousands of product and size combinations",
-      "Someone on your team pauses listings or types over sales every day"
-    ],
-    "offer": {
-      "title": "How we start",
-      "items": [
-        "A 30-minute call to map your channels and stock flow",
-        "A written scope and a fixed quote",
-        "Most builds run in 3 to 6 weeks, in test mode first"
-      ]
-    }
+      { "title": "A 30-minute call", "body": "We map your platforms, your stock flow and where the hand work is." },
+      { "title": "A written scope", "body": "What gets connected, what runs when, and a fixed quote." },
+      { "title": "Live in 3 to 6 weeks", "body": "Every change runs in test mode next to your team before it goes live." }
+    ]
   },
   "faq": {
     "num": "04",
@@ -189,12 +182,12 @@
         "a": "No. Coelor connects to the systems you already run through their APIs. If a system has no API, we work from its exports."
       },
       {
-        "q": "Which channels can you connect?",
-        "a": "The build above connects StockX (EU and US) and Alias to Picqer and Google Sheets. We connect other marketplaces and shop systems through their APIs, or work from their exports."
+        "q": "Which platforms can you connect?",
+        "a": "The build above connects StockX (EU and US) and Alias to Picqer and Google Sheets. We connect other marketplaces, webshops and warehouse systems through their APIs, or work from their exports."
       },
       {
-        "q": "What happens if a marketplace API goes down?",
-        "a": "Runs back off and retry when a marketplace is slow or rate-limits. A sale is only marked as handled after it has come off the warehouse stock, so a failed run is picked up again on the next one."
+        "q": "What happens if a platform's API goes down?",
+        "a": "Runs back off and retry when a platform is slow or rate-limits. A sale is only marked as handled after it has come off the stock, so a failed run is picked up again on the next one."
       },
       {
         "q": "Can we see what it will do before it changes anything?",
@@ -209,91 +202,22 @@
   "contact": {
     "num": "05",
     "headline": "Tell us how you sell today.",
-    "body": "Which channels, which warehouse system, roughly how many products. We reply within one business day."
+    "body": "Which platforms, which warehouse system, roughly how many products. We reply within one business day."
   },
   "adaptive": {
-    "_note": "Dynamic case study (lead-outreach/PLAN_dynamic_case_study.md). Used only when the reader's email link carries a platform mix: 2 of the platforms they use + 1-2 others. Texts describe the same sync for those platforms (true: this is what we build); the real client's results stay attributed to the real client and its real stack (proof). Placeholders: {all} {sells} {sellA} {sellB} {system} {System} {systems} {item} {items} {Items} {variant} {variants} {Variants}. Never a word about the reader's own store or category.",
     "seoTitle": "Case study: one stock count across {all} · Coelor",
     "seoDescription": "The same stock sync, set up for {all}: sold-out {variants} switched off everywhere within minutes and every sale back in one stock count.",
     "eyebrow": "Case study · One stock count, every platform",
-    "headline": "One stock count across {all}.",
     "sub": "The same sync, set up for {sells} with {system} as the stock source: sold-out {variants} switched off everywhere within minutes, and every sale back in one count.",
-    "panelTitle": "Same sync · {all}",
+    "panelTitle": "Same sync · your platforms",
     "panelRows": [
-      {
-        "icon": "refresh",
-        "label": "Sold-out {variants} off {sellA}",
-        "meta": "10 min",
-        "state": "OK"
-      },
-      {
-        "icon": "route",
-        "label": "{sellB} sales into {system}",
-        "meta": "5–7 min",
-        "state": "OK"
-      },
-      {
-        "icon": "git-compare",
-        "label": "{Variants} linked across platforms",
-        "meta": "every run",
-        "state": "OK"
-      },
-      {
-        "icon": "shield",
-        "label": "Delistings reported",
-        "meta": "team chat",
-        "state": "OK"
-      }
-    ],
-    "proof": "First built for a Dutch reseller on StockX, Alias and Picqer. These are their results.",
-    "problemHeadline": "Every {item} lives in several places at once.",
-    "problemBody": "The same {items} are listed on {sells}, while the real stock is counted in {system}. A sale in one place has to reach all the others before the next buyer does.",
-    "problemItems": [
-      {
-        "angle": "marketplace_listing",
-        "icon": "package-x",
-        "title": "Sold twice",
-        "body": "A {variant} sells on {sellA} and stays live on {sellB}. The second buyer gets a cancellation, and the platform counts it against you.",
-        "tag": "oversells · penalties"
-      },
-      {
-        "angle": "store_and_web",
-        "icon": "package-x",
-        "title": "Store and web out of step",
-        "body": "A {item} sold over the counter stays for sale online until someone takes it off by hand.",
-        "tag": "store · webshop"
-      },
-      {
-        "angle": "*",
-        "icon": "copy",
-        "title": "Sales typed over",
-        "body": "Every sale from {sellB} is taken off the stock in {system} by hand before the count is right again.",
-        "tag": "hours every week"
-      },
-      {
-        "angle": "multi_marketplace",
-        "icon": "refresh",
-        "title": "Listings paused by hand",
-        "body": "After each sale someone pauses the same {variant} on the other platforms, one by one.",
-        "tag": "easy to miss"
-      },
-      {
-        "angle": "many_variants",
-        "icon": "file-spreadsheet",
-        "title": "{Variants} written ten ways",
-        "body": "The same {variant} is spelled differently in {system} and on each platform, so nothing matches without a person.",
-        "tag": "mismatches · delays"
-      },
-      {
-        "angle": "warehouse_system",
-        "icon": "link",
-        "title": "The stock system knows first",
-        "body": "{System} has the right count, but the platforms only hear about it hours later.",
-        "tag": "stale listings"
-      }
+      { "icon": "refresh", "label": "Sold-out {variants} off {sellA}", "meta": "10 min", "state": "OK" },
+      { "icon": "route", "label": "{SellB} sales into {system}", "meta": "5–7 min", "state": "OK" },
+      { "icon": "git-compare", "label": "{Variants} linked across platforms", "meta": "every run", "state": "OK" },
+      { "icon": "shield", "label": "Delistings reported", "meta": "team chat", "state": "OK" }
     ],
     "setupHeadline": "{System} is the single source of truth.",
-    "setupBody": "Coelor sits between {sells} and {system}. It reads the stock, switches off sold-out {variants} everywhere and brings every sale back, so the count stays right without anyone typing it over.",
+    "setupBody": "Coelor sits between {sells} on one side and {system} on the other. It reads the stock, switches off sold-out {variants} everywhere and brings every sale back, so the count stays right without anyone typing it over.",
     "steps": [
       {
         "icon": "git-compare",
@@ -327,32 +251,9 @@
       "Sales from {sells} off the stock within minutes",
       "Every automatic delisting posted to the team chat"
     ],
-    "fitHeadline": "Built for sellers who have outgrown manual work.",
-    "fitItems": [
-      {
-        "angle": "marketplace_listing",
-        "text": "You sell on {sells} as well as your own channels"
-      },
-      {
-        "angle": "store_and_web",
-        "text": "Your store and your webshop share the same stock"
-      },
-      {
-        "angle": "warehouse_system",
-        "text": "You keep stock per {variant} in {system} or a similar system"
-      },
-      {
-        "angle": "many_variants",
-        "text": "You have hundreds or thousands of {item} and {variant} combinations"
-      },
-      {
-        "angle": "*",
-        "text": "Someone on your team pauses listings or types over sales every day"
-      }
-    ],
     "faqTop": {
       "q": "Does this work with {all}?",
-      "a": "Coelor connects through each platform's API where there is one, and through exports or the seller tools where there is not. We map your exact setup on the first call and confirm the scope in writing before anything is built."
+      "a": "Coelor connects through each platform's API where there is one, and through exports where there is not. We map your exact setup on the first call and confirm the scope in writing before anything is built."
     }
   }
 }

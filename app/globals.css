@@ -417,3 +417,69 @@ details[open] .faq-chevron {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============ Case study: platform tiles, sync map, hook cards ============ */
+
+.platform-tile {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 6px 18px -8px rgba(0, 0, 0, 0.7);
+}
+
+.platform-tile img {
+  display: block;
+  width: 68%;
+  height: 68%;
+  object-fit: contain;
+}
+
+.platform-tile img.is-bleed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* the lines between the platforms and Coelor: one slow, quiet flow */
+.flow-line {
+  fill: none;
+  stroke: rgba(159, 176, 255, 0.6);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  animation: flow-dash 2.8s linear infinite;
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+.viz-stage {
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(159, 176, 255, 0.09), transparent 70%),
+    var(--panel-2);
+}
+
+.viz-badge {
+  position: absolute;
+  right: -7px;
+  top: -7px;
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+}
