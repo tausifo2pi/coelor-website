@@ -1,31 +1,72 @@
 {
-  "_note": "The outreach case study (lead-outreach/PLAN_dynamic_case_study.md). A reader who came through their email link sees it told for their own setup: their places to sell (named platforms with logos, or 'your shop counter'), the system that counts their stock, the gap in between and what the sync does; everyone else sees the real client's story. Placeholders (lib/case-adapt.ts): {A} {onA} {B} {onB} {sells} {where} {onSells} {places} {count} {system} {System} {inStock} {andSystem} {everywhere} {item} {items} {Item} {Items} {variant} {variants} {Variants}. The real client's results always stay attributed to the real client. Never a word about the reader's own store beyond the platforms they use, and never the name or use of a competitor (connectors, listing or stock-sync tools). Logos only in the hero.",
+  "_note": "The outreach case study (lead-outreach/PLAN_dynamic_case_study.md). A reader who came through their email link sees it told for their own setup: their places to sell (named platforms with logos, or 'your shop counter'), the system that counts their stock, the gap in between and what the sync does; everyone else sees the real client's story. Placeholders (lib/case-adapt.ts): {A} {onA} {B} {onB} {sells} {where} {onSells} {places} {count} {system} {System} {inStock} {andSystem} {everywhere} {item} {items} {Item} {Items} {variant} {variants} {Variants}. The real client's results always stay attributed to the real client. Never a word about the reader's own store beyond the platforms they use, and never the name or use of a competitor (connectors, listing or stock-sync tools). Each platform logo appears once, in the hero's setup card; the rest of the page uses words.",
   "seo": {
     "title": "Case study: sneaker reseller stock in sync across StockX and Alias · Coelor",
     "description": "How a Dutch sneaker reseller keeps StockX and Alias in sync with its warehouse: sold-out sizes switched off every 10 minutes, marketplace sales off the warehouse stock within minutes, 31,000+ sizes checked."
   },
   "real": {
     "platforms": [
-      { "name": "StockX", "slug": "stockx", "kind": "sell" },
-      { "name": "Alias", "slug": "alias-goat", "kind": "sell" },
-      { "name": "Picqer", "slug": "picqer", "kind": "system" }
+      {
+        "name": "StockX",
+        "slug": "stockx",
+        "kind": "sell"
+      },
+      {
+        "name": "Alias",
+        "slug": "alias-goat",
+        "kind": "sell"
+      },
+      {
+        "name": "Picqer",
+        "slug": "picqer",
+        "kind": "system"
+      }
     ],
     "setup": [
-      { "name": "StockX EU and US", "slug": "stockx", "role": "2 marketplace accounts" },
-      { "name": "Alias", "slug": "alias-goat", "role": "marketplace" },
-      { "name": "Picqer", "slug": "picqer", "role": "counts the stock" }
+      {
+        "name": "StockX EU and US",
+        "slug": "stockx",
+        "role": "2 marketplace accounts"
+      },
+      {
+        "name": "Alias",
+        "slug": "alias-goat",
+        "role": "marketplace"
+      },
+      {
+        "name": "Picqer",
+        "slug": "picqer",
+        "role": "counts the stock"
+      }
     ],
-    "words": { "item": "pair", "items": "pairs", "variant": "size", "variants": "sizes" },
-    "angles": ["marketplace_listing", "multi_marketplace", "warehouse_system", "many_variants"],
+    "words": {
+      "item": "pair",
+      "items": "pairs",
+      "variant": "size",
+      "variants": "sizes"
+    },
+    "angles": [
+      "marketplace_listing",
+      "multi_marketplace",
+      "warehouse_system",
+      "many_variants"
+    ],
     "gap": "A size sold on StockX stayed live on Alias and the other accounts until someone paused it by hand.",
-    "fix": "Sold-out sizes are switched off on every account every 10 minutes, and every sale comes off the Picqer stock."
+    "fix": "Sold-out sizes are switched off on every account every 10 minutes, and every sale comes off the Picqer stock.",
+    "gapItem": "twice"
   },
   "hero": {
     "eyebrow": "Case study · Sneaker resale",
     "lead": "One stock count across",
     "sub": "How a Dutch sneaker reseller stopped pausing sold-out sizes by hand and stopped typing marketplace sales into its warehouse system.",
-    "primaryCta": { "label": "Book a call", "href": "#contact" },
-    "secondaryCta": { "label": "Is this you?", "href": "#hook" },
+    "primaryCta": {
+      "label": "Book a call",
+      "href": "#contact"
+    },
+    "secondaryCta": {
+      "label": "Is this you?",
+      "href": "#hook"
+    },
     "setupTitle": "Their setup",
     "gapTitle": "Where it slipped",
     "fixTitle": "With the sync"
@@ -34,80 +75,137 @@
     "num": "01",
     "eyebrow": "Is this you?",
     "headline": "Selling {where} usually means this.",
-    "body": "Every card below is work someone on your team does by hand today. Each one is a job the sync takes over.",
+    "body": "Each row is work someone on your team does by hand today, and how often it comes back. Every one of them is a job the sync takes over.",
     "footer": "Recognise two or more? That is exactly the work we automate.",
     "items": [
       {
-        "angle": "store_and_web", "needs": "counter", "viz": "store",
+        "key": "store",
+        "angle": "store_and_web",
+        "needs": "counter",
+        "group": "double",
+        "every": "every counter sale",
         "title": "Shop counter and web out of step",
         "body": "Something sold at the counter stays for sale {onA} until someone takes it off by hand."
       },
       {
-        "angle": "unique_items", "needs": "B", "viz": "unique",
+        "key": "unique",
+        "angle": "unique_items",
+        "needs": "B",
+        "group": "double",
+        "every": "every one-off sale",
         "title": "The one-off piece sold twice",
         "body": "Each piece exists once. When it sells {onB}, it is still for sale {onA} until someone remembers to take it off."
       },
       {
-        "angle": "buy_in", "needs": "", "viz": "buyin",
+        "key": "buyin",
+        "angle": "buy_in",
+        "needs": "",
+        "group": "buyin",
+        "every": "every buy-in",
         "title": "Buy-ins listed by hand",
         "body": "Every {item} you buy in or take in trade is counted, photographed and then listed {onSells}, one by one."
       },
       {
-        "angle": "multi_store", "needs": "", "viz": "multistore",
+        "key": "multistore",
+        "angle": "multi_store",
+        "needs": "",
+        "group": "multistore",
+        "every": "every day",
         "title": "Several shops, one stock",
         "body": "Each location keeps its own count, so nobody knows what is really free to sell {onA}."
       },
       {
-        "angle": "manual_listing", "needs": "twoSells", "viz": "copy",
+        "key": "copy",
+        "angle": "manual_listing",
+        "needs": "twoSells",
+        "group": "listing",
+        "every": "every new product",
         "title": "Every product built twice",
         "body": "A new {item} goes live {onA}, then someone builds the same listing again {onB}: title, photos, {variants} and price."
       },
       {
-        "angle": "marketplace_listing", "needs": "twoSells", "viz": "twice",
+        "key": "twice",
+        "angle": "marketplace_listing",
+        "needs": "twoSells",
+        "group": "double",
+        "every": "when stock runs low",
         "title": "The last one sold twice",
         "body": "The last {variant} sells {onA} while it is still live {onB}. One buyer gets a cancellation, and the platform counts it against you."
       },
       {
-        "angle": "*", "needs": "B", "viz": "sale",
+        "key": "sale",
+        "angle": "*",
+        "needs": "B",
+        "group": "aftersale",
+        "every": "after every sale",
         "title": "Stock fixed by hand after every sale",
         "body": "Something sells {onB}, and someone lowers the count {onA}{andSystem} before the next buyer comes."
       },
       {
-        "angle": "*", "needs": "two", "viz": "edit",
+        "key": "edit",
+        "angle": "*",
+        "needs": "two",
+        "group": "listing",
+        "every": "every change",
         "title": "One product, managed in {count} places",
         "body": "A new price, a better photo or a fixed title is typed into {places}, one by one."
       },
       {
-        "angle": "warehouse_system", "needs": "system", "viz": "type",
+        "key": "type",
+        "angle": "warehouse_system",
+        "needs": "system",
+        "group": "stock",
+        "every": "every order",
         "title": "Orders typed into {system}",
         "body": "Orders {onA} are copied into {system} by hand, so the stock and the picking list are right."
       },
       {
-        "angle": "no_stock_system", "needs": "", "viz": "sheet",
+        "key": "sheet",
+        "angle": "no_stock_system",
+        "needs": "",
+        "group": "stock",
+        "every": "every day",
         "title": "The real count lives in a spreadsheet",
         "body": "The only complete stock list is a sheet someone keeps up to date, and {A} is always a little behind it."
       },
       {
-        "angle": "multi_marketplace", "needs": "twoSells", "viz": "pause",
+        "key": "pause",
+        "angle": "multi_marketplace",
+        "needs": "twoSells",
+        "group": "aftersale",
+        "every": "after every sale",
         "title": "Listings paused one by one",
         "body": "After each sale someone pauses the same {variant} on every other platform, one account at a time."
       },
       {
-        "angle": "many_variants", "needs": "variants", "viz": "variants",
+        "key": "variants",
+        "angle": "many_variants",
+        "needs": "variants",
+        "group": "variants",
+        "every": "every new product",
         "title": "{Variants} spelled ten ways",
         "body": "The same {variant} is written one way in {system} and another on each platform, so nothing matches without a person."
       },
       {
-        "angle": "*", "needs": "", "viz": "restock",
+        "key": "restock",
+        "angle": "*",
+        "needs": "",
+        "group": "restock",
+        "every": "every delivery",
         "title": "New stock entered by hand",
         "body": "A delivery arrives, and the new count has to go into {places} before it can sell."
       },
       {
-        "angle": "*", "needs": "", "viz": "returns",
+        "key": "returns",
+        "angle": "*",
+        "needs": "",
+        "group": "returns",
+        "every": "every return",
         "title": "Returns put back by hand",
         "body": "A returned {item} is checked, then added back to the stock by hand, {everywhere}."
       }
-    ]
+    ],
+    "lead": "Where it slips most"
   },
   "proof": {
     "sneaker": "First built for a Dutch sneaker reseller on StockX, Alias and Picqer. These are their numbers.",
@@ -116,16 +214,40 @@
   },
   "stats": {
     "sneaker": [
-      { "value": "31,000+", "label": "sizes checked on every run" },
-      { "value": "10 min", "label": "until a sold-out size is off every marketplace" },
-      { "value": "5–7 min", "label": "from marketplace sale to warehouse stock" },
-      { "value": "4", "label": "marketplace accounts, EU and US" }
+      {
+        "value": "31,000+",
+        "label": "sizes checked on every run"
+      },
+      {
+        "value": "10 min",
+        "label": "until a sold-out size is off every marketplace"
+      },
+      {
+        "value": "5–7 min",
+        "label": "from marketplace sale to warehouse stock"
+      },
+      {
+        "value": "4",
+        "label": "marketplace accounts, EU and US"
+      }
     ],
     "neutral": [
-      { "value": "31,000+", "label": "product variants checked on every run" },
-      { "value": "10 min", "label": "until a sold-out item is off every marketplace" },
-      { "value": "5–7 min", "label": "from a marketplace sale to the warehouse stock" },
-      { "value": "4", "label": "marketplace accounts, EU and US" }
+      {
+        "value": "31,000+",
+        "label": "product variants checked on every run"
+      },
+      {
+        "value": "10 min",
+        "label": "until a sold-out item is off every marketplace"
+      },
+      {
+        "value": "5–7 min",
+        "label": "from a marketplace sale to the warehouse stock"
+      },
+      {
+        "value": "4",
+        "label": "marketplace accounts, EU and US"
+      }
     ]
   },
   "setup": {
@@ -174,9 +296,18 @@
     "eyebrow": "How we start",
     "headline": "From first call to live sync, in test mode first.",
     "items": [
-      { "title": "A 30-minute call", "body": "We map your platforms, your stock flow and where the hand work is." },
-      { "title": "A written scope", "body": "What gets connected, what runs when, and a fixed quote." },
-      { "title": "Live in 3 to 6 weeks", "body": "Every change runs in test mode next to your team before it goes live." }
+      {
+        "title": "A 30-minute call",
+        "body": "We map your platforms, your stock flow and where the hand work is."
+      },
+      {
+        "title": "A written scope",
+        "body": "What gets connected, what runs when, and a fixed quote."
+      },
+      {
+        "title": "Live in 3 to 6 weeks",
+        "body": "Every change runs in test mode next to your team before it goes live."
+      }
     ]
   },
   "faq": {
@@ -234,21 +365,72 @@
       "web": "where you sell online"
     },
     "gaps": [
-      { "when": "counter+unique_items", "gap": "A one-off piece sold at the counter stays for sale {onA} until someone remembers to take it off.", "fix": "A sale at the counter takes the piece off {A} within minutes. One count, nobody retyping." },
-      { "when": "counter", "gap": "Something sold at the counter stays for sale {onA} until someone takes it off by hand.", "fix": "A sale at the counter comes off {A} within minutes. One count, nobody retyping." },
-      { "when": "twoSells+unique_items", "gap": "Each piece exists once, but it is for sale {onA} and {onB}. When it sells in one place, the other still shows it.", "fix": "A sale in one place switches the piece off everywhere else within minutes." },
-      { "when": "twoSells", "gap": "A sale {onA} doesn't reach {B} by itself, so the last {variant} can sell twice.", "fix": "A sale in one place switches the {variant} off everywhere else within minutes." },
-      { "when": "system", "gap": "Orders {onA} are typed into {system} by hand before the count is right.", "fix": "Orders {onA} land in {system} by themselves, with their order number." },
-      { "when": "sheet", "gap": "The only full stock count is a sheet, and {A} is always a little behind it.", "fix": "One live count: sales, restocks and returns update {A} by themselves." },
-      { "when": "", "gap": "Every sale, restock and return is corrected {onA} by hand.", "fix": "One live count: sales, restocks and returns update {A} by themselves." }
+      {
+        "when": "counter+unique_items",
+        "gap": "A one-off piece sold at the counter stays for sale {onA} until someone remembers to take it off.",
+        "fix": "A sale at the counter takes the piece off {A} within minutes. One count, nobody retyping.",
+        "item": "store"
+      },
+      {
+        "when": "counter",
+        "gap": "Something sold at the counter stays for sale {onA} until someone takes it off by hand.",
+        "fix": "A sale at the counter comes off {A} within minutes. One count, nobody retyping.",
+        "item": "store"
+      },
+      {
+        "when": "twoSells+unique_items",
+        "gap": "Each piece exists once, but it is for sale {onA} and {onB}. When it sells in one place, the other still shows it.",
+        "fix": "A sale in one place switches the piece off everywhere else within minutes.",
+        "item": "unique"
+      },
+      {
+        "when": "twoSells",
+        "gap": "A sale {onA} doesn't reach {B} by itself, so the last {variant} can sell twice.",
+        "fix": "A sale in one place switches the {variant} off everywhere else within minutes.",
+        "item": "twice"
+      },
+      {
+        "when": "system",
+        "gap": "Orders {onA} are typed into {system} by hand before the count is right.",
+        "fix": "Orders {onA} land in {system} by themselves, with their order number.",
+        "item": "type"
+      },
+      {
+        "when": "sheet",
+        "gap": "The only full stock count is a sheet, and {A} is always a little behind it.",
+        "fix": "One live count: sales, restocks and returns update {A} by themselves.",
+        "item": "sheet"
+      },
+      {
+        "when": "",
+        "gap": "Every sale, restock and return is corrected {onA} by hand.",
+        "fix": "One live count: sales, restocks and returns update {A} by themselves.",
+        "item": "sale"
+      }
     ],
     "setupHeadline": "{System} is the single source of truth.",
     "setupBody": "Coelor sits between {sells} on one side and {system} on the other. It reads the stock, takes sold-out {variants} off everywhere and brings every sale back, so the count stays right without anyone typing it over.",
     "steps": [
-      { "icon": "git-compare", "title": "Link every {variant}", "body": "Every {variant} is linked across {places}, however each place spells it." },
-      { "icon": "refresh", "title": "Switch off sold-out {variants}", "body": "Every 10 minutes the whole catalogue is checked, and any {variant} with no free stock is taken off everywhere it is for sale." },
-      { "icon": "route", "title": "Bring every sale back", "body": "Sales from {sells} come off the stock {inStock} within minutes, so the next buyer sees the real count." },
-      { "icon": "shield", "title": "Report and test every action", "body": "Every automatic change is posted to the team chat, and every change can run in test mode first." }
+      {
+        "icon": "git-compare",
+        "title": "Link every {variant}",
+        "body": "Every {variant} is linked across {places}, however each place spells it."
+      },
+      {
+        "icon": "refresh",
+        "title": "Switch off sold-out {variants}",
+        "body": "Every 10 minutes the whole catalogue is checked, and any {variant} with no free stock is taken off everywhere it is for sale."
+      },
+      {
+        "icon": "route",
+        "title": "Bring every sale back",
+        "body": "Sales from {sells} come off the stock {inStock} within minutes, so the next buyer sees the real count."
+      },
+      {
+        "icon": "shield",
+        "title": "Report and test every action",
+        "body": "Every automatic change is posted to the team chat, and every change can run in test mode first."
+      }
     ],
     "before": [
       "Sold-out {variants} taken offline by hand after each sale",

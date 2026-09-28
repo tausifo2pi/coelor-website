@@ -1,16 +1,15 @@
-import type { ReactNode } from "react";
 import SectionHead from "@/components/SectionHead";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import Logo from "@/components/Logo";
 import { Icon } from "@/components/icons";
 import { PlatformTile } from "@/components/PlatformLogo";
-import type { CaseContent, HookItem, Role } from "@/lib/case-adapt";
+import type { CaseContent } from "@/lib/case-adapt";
 
 // The outreach case study, rendered from its content: told for one reader's own setup, or the real client's story
 // (lib/case-adapt.ts). Used by /case-studies/stock-sync, /case-studies/sneakers and the panel preview /p/<token>.
-// Each platform's logo appears once, in the hero's setup card; everything else uses names and neutral icons. No motion
-// but the "Sync running" dot.
+// Each platform's logo appears once, in the hero's setup card; the rest of the page is words. No motion but the
+// "Sync running" dot.
 
 function Header() {
   return (
@@ -105,118 +104,42 @@ function Hero({ c }: { c: CaseContent }) {
   );
 }
 
-/* ---------- "Is this you?": each card draws the hand work with neutral icons ---------- */
-
-const T = 36; // node size in the card drawings
-const ROLE_ICON: Record<Role, string> = { web: "globe", market: "bag", counter: "store", system: "warehouse", sheet: "file-spreadsheet", warehouse: "warehouse" };
-
-function Node({ role, badge, dim = false }: { role: Role | null; badge?: ReactNode; dim?: boolean }) {
-  return (
-    <span className={`relative inline-flex ${dim ? "opacity-45" : ""}`}>
-      <span
-        className={`inline-flex items-center justify-center rounded-[10px] border ${role ? "border-rule-strong bg-white/[0.05] text-ink" : "border-dashed border-rule-strong text-ink-soft"}`}
-        style={{ width: T, height: T }}
-      >
-        <Icon name={role ? ROLE_ICON[role] : "plus"} size={16} />
-      </span>
-      {badge && <span className="viz-badge">{badge}</span>}
-    </span>
-  );
-}
-
-function Glyph({ name, tone = "muted" }: { name: string; tone?: "muted" | "warn" | "accent" }) {
-  const c = tone === "warn" ? "border-warn/40 bg-warn/10 text-warn" : tone === "accent" ? "border-accent/35 bg-accent/10 text-accent" : "border-rule-strong bg-white/[0.05] text-ink-muted";
-  return (
-    <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border ${c}`} aria-hidden>
-      <Icon name={name} size={15} />
-    </span>
-  );
-}
-
-const Arrow = () => <Icon name="arrow-right" size={14} className="shrink-0 text-ink-soft" />;
-const Pill = ({ children, tone = "muted" }: { children: ReactNode; tone?: "muted" | "warn" }) => (
-  <span className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] ${tone === "warn" ? "bg-warn/10 text-warn" : "bg-white/[0.06] text-ink-muted"}`}>{children}</span>
-);
-const Col = ({ children }: { children: ReactNode }) => <span className="flex flex-col items-center gap-1.5">{children}</span>;
-
-// how the same variant gets spelled differently, in the reader's vocabulary
-function spellings(c: CaseContent) {
-  const { item, variant } = c.words;
-  if (variant === "size") return item === "pair" ? ["9W", "9M", "38,5", "(GS)"] : ["M", "Medium", "M/38", "m"];
-  if (variant === "condition") return ["NM", "Near Mint", "NM-M", "nm"];
-  return ["Black/L", "L-BLK", "black_l", "L · Black"];
-}
-
-function Viz({ it, c }: { it: HookItem; c: CaseContent }) {
-  const { a, b } = c.cast;
-  const stock = c.cast.stock ?? "warehouse";
-  const pen = <Icon name="pencil" size={9} />;
-  switch (it.viz) {
-    case "store":
-      return (<><Col><Node role="counter" /><Pill>sold</Pill></Col><Glyph name="alert" tone="warn" /><Col><Node role={a} /><Pill tone="warn">still for sale</Pill></Col></>);
-    case "unique":
-      return (<><Col><Node role={b} /><Pill>sold</Pill></Col><Glyph name="alert" tone="warn" /><Col><Node role={a} /><Pill tone="warn">still for sale</Pill></Col></>);
-    case "buyin":
-      return (<><Glyph name="package-plus" tone="accent" /><Arrow /><Glyph name="keyboard" /><Arrow /><Node role={a} badge="+1" />{b && b !== "counter" && <Node role={b} badge="+1" />}</>);
-    case "multistore":
-      return (<><Node role="counter" badge="12" /><Node role="counter" badge="9" /><Glyph name="alert" tone="warn" /><Node role={a} badge="?" /></>);
-    case "copy":
-      return (<><Node role={a} /><Arrow /><Glyph name="copy" /><Arrow /><Node role={b} badge="2×" /></>);
-    case "twice":
-      return (<><Col><Node role={a} /><Pill>1 left</Pill></Col><Glyph name="alert" tone="warn" /><Col><Node role={b} /><Pill tone="warn">sold again</Pill></Col></>);
-    case "sale":
-      return (<><Col><Node role={b} /><Pill>sold</Pill></Col><Arrow /><Glyph name="keyboard" /><Arrow /><Node role={a} badge="−1" />{c.cast.stock && <Node role={stock} badge="−1" />}</>);
-    case "edit":
-      return (<><Node role={a} badge={pen} />{b && <Node role={b} badge={pen} />}{c.cast.stock && <Node role={stock} badge={pen} />}</>);
-    case "type":
-      return (<><Col><Node role={a} /><Pill>order</Pill></Col><Arrow /><Glyph name="keyboard" /><Arrow /><Node role="system" /></>);
-    case "sheet":
-      return (<><Glyph name="file-spreadsheet" tone="accent" /><Arrow /><Node role={a} dim />{b && <Node role={b} dim />}</>);
-    case "pause":
-      return (<><Col><Node role={a} /><Pill>sold</Pill></Col><Arrow /><Node role={b} badge={<Icon name="pause" size={9} />} /><Node role={null} badge={<Icon name="pause" size={9} />} /></>);
-    case "variants":
-      return (
-        <span className="flex flex-wrap items-center justify-center gap-1.5">
-          {spellings(c).map((s) => (
-            <span key={s} className="rounded-md border border-rule-strong bg-white/[0.04] px-2 py-1 font-mono text-[11px] text-ink">{s}</span>
-          ))}
-        </span>
-      );
-    case "restock":
-      return (<><Glyph name="package-plus" tone="accent" /><Arrow /><Node role={a} badge="+" />{b && <Node role={b} badge="+" />}{c.cast.stock && <Node role={stock} badge="+" />}</>);
-    case "returns":
-      return (<><Glyph name="undo" /><Arrow /><Node role={a} badge="+1" />{b && <Node role={b} badge="+1" />}</>);
-    default:
-      return null;
-  }
-}
+/* ---------- "Is this you?": the hand work, as a checklist the reader recognises ---------- */
 
 function Hook({ c }: { c: CaseContent }) {
   const { hook } = c;
   return (
     <section id="hook" aria-labelledby="hook-title" className="scroll-mt-20 border-t border-rule bg-canvas2">
-      <div className="mx-auto flex max-w-site flex-col gap-10 px-5 py-16 md:px-10 lg:gap-12 lg:px-20 lg:py-[96px]">
-        <SectionHead id="hook-title" num={hook.num} eyebrow={hook.eyebrow} headline={hook.headline} body={hook.body} className="max-w-[720px]" />
-        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
-          {hook.items.map((it) => (
-            <li key={it.viz} className="panel flex flex-col overflow-hidden">
-              <div className="viz-stage flex h-[96px] items-center justify-center gap-2.5 border-b border-rule px-4" aria-hidden>
-                <Viz it={it} c={c} />
+      <div className="mx-auto grid max-w-site grid-cols-1 gap-10 px-5 py-16 md:px-10 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-20 lg:px-20 lg:py-[104px]">
+        <div className="flex flex-col gap-8 lg:sticky lg:top-28 lg:self-start">
+          <SectionHead id="hook-title" num={hook.num} eyebrow={hook.eyebrow} headline={hook.headline} body={hook.body} size="md" />
+          <div className="flex flex-col gap-4 border-t border-rule pt-6">
+            <p className="text-[16px] font-semibold leading-[1.45] text-ink">{hook.footer}</p>
+            <a href="#contact" className="btn-primary w-fit">
+              Book a call
+              <Icon name="arrow-right" size={15} strokeWidth={2.4} />
+            </a>
+          </div>
+        </div>
+        <ol className="self-start overflow-hidden rounded-[16px] border border-rule bg-panel">
+          {hook.items.map((it, i) => (
+            <li
+              key={it.key}
+              className={`relative grid grid-cols-[28px_1fr] gap-x-4 gap-y-3 border-rule px-5 py-6 sm:grid-cols-[32px_1fr_auto] sm:px-7 ${i ? "border-t" : "bg-warn/[0.045]"}`}
+            >
+              {i === 0 && <span className="absolute inset-y-0 left-0 w-[3px] bg-warn/80" aria-hidden />}
+              <span className={`pt-[3px] font-mono text-[12px] tabular-nums ${i ? "text-ink-soft" : "text-warn"}`}>{String(i + 1).padStart(2, "0")}</span>
+              <div className="flex flex-col gap-1.5">
+                {i === 0 && <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-warn">{hook.lead}</span>}
+                <h3 className="text-[17px] font-semibold leading-[1.3] text-ink">{it.title}</h3>
+                <p className="max-w-[560px] text-[14px] leading-[1.6] text-ink-muted md:text-[15px]">{it.body}</p>
               </div>
-              <div className="flex flex-col gap-1.5 p-5">
-                <span className="text-[16px] font-semibold leading-[1.3] text-ink">{it.title}</span>
-                <span className="text-[14px] leading-[1.55] text-ink-muted">{it.body}</span>
-              </div>
+              <span className="col-start-2 w-fit self-start whitespace-nowrap rounded-full border border-rule-strong px-2.5 py-1 font-mono text-[11px] text-ink-muted sm:col-start-3 sm:mt-0.5">
+                {it.every}
+              </span>
             </li>
           ))}
-        </ul>
-        <div className="flex flex-col items-start justify-between gap-5 rounded-[16px] border border-accent/25 bg-accent/[0.07] p-6 md:flex-row md:items-center md:p-7">
-          <p className="max-w-[560px] text-[17px] font-semibold leading-[1.4] text-ink md:text-[19px]">{hook.footer}</p>
-          <a href="#contact" className="btn-primary shrink-0">
-            Book a call
-            <Icon name="arrow-right" size={15} strokeWidth={2.4} />
-          </a>
-        </div>
+        </ol>
       </div>
     </section>
   );

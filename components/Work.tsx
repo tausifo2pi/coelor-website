@@ -1,7 +1,8 @@
 import content from "@/data/site-content.json";
 import SectionHead from "@/components/SectionHead";
 import Logo from "@/components/Logo";
-import { BrandLogo, Icon } from "@/components/icons";
+import { Icon } from "@/components/icons";
+import { BrandLogo } from "@/components/brand-logos";
 
 function Chip({ slug, name }: { slug: string; name: string }) {
   return (

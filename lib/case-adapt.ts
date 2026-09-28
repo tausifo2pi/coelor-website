@@ -10,9 +10,8 @@ import { platformInfo } from "@/lib/platforms";
 
 /** A place in a setup: a platform (slug from lib/platforms.ts, shown with its logo) or a "facet:…" stand-in (an icon). */
 export type Place = { name: string; slug: string; role?: string };
-/** what the hook card drawings show for the first place to sell, the second one and the stock (neutral icons) */
-export type Role = "web" | "market" | "counter" | "system" | "sheet" | "warehouse";
-export type HookItem = { angle: string; needs: string; viz: string; title: string; body: string };
+/** a row of hand work: `every` says how often it comes back; one row per `group` */
+export type HookItem = { key: string; angle: string; needs: string; group: string; every: string; title: string; body: string };
 
 export type CaseContent = {
   adapted: boolean;
@@ -32,9 +31,9 @@ export type CaseContent = {
     fixTitle: string;
     fix: string;
   };
-  cast: { a: Role; b: Role | null; stock: Role | null };
   words: CaseWords;
-  hook: { num: string; eyebrow: string; headline: string; body: string; footer: string; items: HookItem[] };
+  /** items[0] is where it slips most for this reader (the same gap as the hero's) */
+  hook: { num: string; eyebrow: string; headline: string; body: string; footer: string; lead: string; items: HookItem[] };
   proof: { text: string; origin: string | null };
   stats: { value: string; label: string }[];
   setup: { num: string; eyebrow: string; headline: string; body: string; beforeLabel: string; before: string[]; afterLabel: string; after: string[];
@@ -48,11 +47,14 @@ const join = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1)
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const COUNT = ["none", "one", "two", "three", "four", "five", "six"];
 
-// the items for the reader's angles (in their order), then the ones for everybody; an item about a setup the reader
-// doesn't have (buy-ins, several shops…) is never shown
-function byAngle<T extends { angle: string }>(xs: T[], angle: string[], n: number): T[] {
-  const rank = (x: T) => (angle.includes(x.angle) ? angle.indexOf(x.angle) : 50);
-  return xs.filter((x) => x.angle === "*" || angle.includes(x.angle)).sort((a, b) => rank(a) - rank(b)).slice(0, n);
+// The rows for one reader: the `first` row (where it slips most), then the reader's angles in their order, then the
+// rows for everybody. A row about a setup the reader doesn't have (buy-ins, several shops…) is never shown, and rows
+// that tell the same story (the same `group`) are shown once.
+function pickRows<T extends { key: string; angle: string; group: string }>(xs: T[], angle: string[], first: string, n: number): T[] {
+  const rank = (x: T) => (x.key === first ? -1 : angle.includes(x.angle) ? angle.indexOf(x.angle) : 50);
+  const seen = new Set<string>();
+  return xs.filter((x) => x.key === first || x.angle === "*" || angle.includes(x.angle)).sort((a, b) => rank(a) - rank(b))
+    .filter((x) => !seen.has(x.group) && !!seen.add(x.group)).slice(0, n);
 }
 
 const A = base.adaptive;
@@ -64,8 +66,8 @@ const FACET = {
   sheet: { name: "your stock sheet", slug: "facet:sheet" },
 };
 
-/** The reader's setup and the words the texts are told with. */
-function setupOf(platforms: CasePlatform[], angle: string[], words: CaseWords) {
+/** The reader's setup and the words the texts are told with. `gapItem`: the row that leads (the hero's gap). */
+function setupOf(platforms: CasePlatform[], angle: string[], words: CaseWords, gapItem: (meets: (when: string) => boolean) => string) {
   const own = platforms.filter((p) => p.own !== false);
   const sells = own.filter((p) => p.kind === "sell").slice(0, 2);
   const sys = own.find((p) => p.kind === "system") ?? null;
@@ -107,17 +109,11 @@ function setupOf(platforms: CasePlatform[], angle: string[], words: CaseWords) {
     unique_items: has.has("unique_items"), variants: !has.has("unique_items") && words.variant !== words.item,
   };
   const meets = (when: string) => when.split("+").every((k) => flags[k] ?? has.has(k));
-  const roleOf = (p: CasePlatform): Role => (platformInfo(p.slug)?.type === "marketplace" ? "market" : "web");
-  const cast = {
-    a: sells[0] ? roleOf(sells[0]) : ("web" as Role),
-    b: sells[1] ? roleOf(sells[1]) : counter ? ("counter" as Role) : null,
-    stock: sys ? ("system" as Role) : sheet ? ("sheet" as Role) : warehouse ? ("warehouse" as Role) : null,
-  };
   const headline = [...sellPlaces, ...(counter ? [FACET.counter] : []), ...(stock && !sheet ? [stock] : [])].map(({ name, slug }) => ({ name, slug }));
   const hook = base.hook;
-  const items = byAngle(hook.items.filter((it) => meets(it.needs)), angle, 8).map((it) => ({ ...it, title: f(it.title), body: f(it.body) }));
+  const items = pickRows(hook.items.filter((it) => meets(it.needs)), angle, gapItem(meets), 6).map((it) => ({ ...it, title: f(it.title), body: f(it.body) }));
   return {
-    f, meets, cast, headline,
+    f, meets, headline,
     setup: [...sellPlaces, ...(counter ? [{ ...FACET.counter, role: A.roles.counter }] : []), ...(stock ? [stock] : [])],
     hook: { ...hook, headline: f(hook.headline), body: f(hook.body), footer: f(hook.footer), items },
   };
@@ -131,14 +127,13 @@ export function adaptCase(mix: CaseMix | null): CaseContent {
 
   if (!mix) {
     // the real client's own story
-    const s = setupOf(real.platforms as CasePlatform[], real.angles, real.words);
+    const s = setupOf(real.platforms as CasePlatform[], real.angles, real.words, () => real.gapItem);
     return {
       ...common,
       adapted: false,
       seo: base.seo,
       hero: { ...base.hero, places: real.platforms.map(({ name, slug }) => ({ name, slug })), tail: "",
         setup: real.setup, gap: real.gap, fix: real.fix },
-      cast: s.cast,
       words: real.words,
       hook: s.hook,
       proof: { text: proof.sneaker, origin: null },
@@ -148,10 +143,11 @@ export function adaptCase(mix: CaseMix | null): CaseContent {
     };
   }
 
-  const s = setupOf(mix.platforms, mix.angle, mix.words);
+  const gapOf = (meets: (when: string) => boolean) => A.gaps.find((g) => meets(g.when)) ?? A.gaps[A.gaps.length - 1];
+  const s = setupOf(mix.platforms, mix.angle, mix.words, (meets) => gapOf(meets).item);
   const f = s.f;
   const sneaker = mix.words.item === "pair";
-  const gap = A.gaps.find((g) => s.meets(g.when)) ?? A.gaps[A.gaps.length - 1];
+  const gap = gapOf(s.meets);
   const one = s.headline.length < 2;
   return {
     ...common,
@@ -171,7 +167,6 @@ export function adaptCase(mix: CaseMix | null): CaseContent {
       fixTitle: A.fixTitle,
       fix: f(gap.fix),
     },
-    cast: s.cast,
     words: mix.words,
     hook: s.hook,
     proof: { text: sneaker ? proof.sneaker : proof.neutral, origin: sneaker ? null : proof.origin },

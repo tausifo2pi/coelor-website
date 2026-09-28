@@ -456,27 +456,3 @@ details[open] .faq-chevron {
   color: var(--accent);
 }
 
-.viz-stage {
-  background:
-    radial-gradient(120% 90% at 50% 0%, rgba(159, 176, 255, 0.09), transparent 70%),
-    var(--panel-2);
-}
-
-.viz-badge {
-  position: absolute;
-  right: -7px;
-  top: -7px;
-  display: inline-flex;
-  min-width: 18px;
-  height: 18px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  border-radius: 999px;
-  border: 1px solid var(--rule-strong);
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 1;
-}
