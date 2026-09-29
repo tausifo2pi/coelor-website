@@ -3,8 +3,8 @@ import { Icon } from "@/components/icons";
 
 // A platform's icon on a white rounded tile (icons in /public/platforms, see data/platforms.json): an app icon with its
 // own background fills the tile, a mark gets some air around it, and a platform without an icon gets its initial.
-// A "facet:…" slug is a part of the reader's setup that is no platform (their shop counter, warehouse, stock sheet, web
-// store): a dark tile with an icon, so it never looks like a brand.
+// A "facet:…" slug is a part of the reader's setup that is no platform (their warehouse, stock sheet, web store): a dark
+// tile with an icon, so it never looks like a brand.
 
 type Size = number | string; // px, or a CSS length such as "0.8em" to sit inside text
 
@@ -28,7 +28,7 @@ export function PlatformTile({ slug, name, size = 28, label = false, className =
   );
 }
 
-const FACET_ICON: Record<string, string> = { counter: "store", warehouse: "warehouse", sheet: "file-spreadsheet", web: "globe", market: "bag" };
+const FACET_ICON: Record<string, string> = { warehouse: "warehouse", sheet: "file-spreadsheet", web: "globe" };
 
 function FacetTile({ facet, name, size, label, className = "" }: { facet: string; name: string; size: Size; label: boolean; className?: string }) {
   const px = typeof size === "number";
@@ -36,7 +36,7 @@ function FacetTile({ facet, name, size, label, className = "" }: { facet: string
   const a11y = label ? { role: "img", "aria-label": name } : { "aria-hidden": true as const };
   return (
     <span className={`facet-tile ${className}`} style={style} {...a11y}>
-      <Icon name={FACET_ICON[facet] ?? "store"} size={px ? Math.round(size * 0.52) : 16} className="h-[52%] w-[52%]" />
+      <Icon name={FACET_ICON[facet] ?? "globe"} size={px ? Math.round(size * 0.52) : 16} className="h-[52%] w-[52%]" />
     </span>
   );
 }

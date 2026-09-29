@@ -1,5 +1,5 @@
 {
-  "_note": "The outreach case study (lead-outreach/PLAN_dynamic_case_study.md). A reader who came through their email link sees it told for their own setup: their places to sell (named platforms with logos, or 'your shop counter'), the system that counts their stock, the gap in between and what the sync does; everyone else sees the real client's story. Placeholders (lib/case-adapt.ts): {A} {onA} {B} {onB} {sells} {where} {onSells} {places} {count} {system} {System} {inStock} {andSystem} {everywhere} {item} {items} {Item} {Items} {variant} {variants} {Variants}. The real client's results always stay attributed to the real client. Never a word about the reader's own store beyond the platforms they use, and never the name or use of a competitor (connectors, listing or stock-sync tools). Each platform logo appears once, in the hero's setup card; the rest of the page uses words.",
+  "_note": "The outreach case study (lead-outreach/PLAN_dynamic_case_study.md). A reader who came through their email link sees it told for their own web store and the tools behind it (orders, shipping, stock after dispatch, returns, new stock, a verified marketplace), per the v6 subtle-offer rule (leads/outreach/drafts/v6/SUBTLE_OFFER_RULES.md): no shop counter, till or location as the gap or as something we connect, and no mechanism claims ('by itself', 'one count'). Everyone else sees the real client's story. Placeholders (lib/case-adapt.ts): {A} {B} {onSells} {where} {places} {count} {system} {andSystem} {item} {items} {Item} {Items} {variant} {variants} {Variants}. The real client's results always stay attributed to the real client. Never the name or use of a competitor. Each platform logo appears once, in the hero's setup card.",
   "seo": {
     "title": "Case study: sneaker reseller stock in sync across StockX and Alias · Coelor",
     "description": "How a Dutch sneaker reseller keeps StockX and Alias in sync with its warehouse: sold-out sizes switched off every 10 minutes, marketplace sales off the warehouse stock within minutes, 31,000+ sizes checked."
@@ -69,7 +69,8 @@
     },
     "setupTitle": "Their setup",
     "gapTitle": "Where it slipped",
-    "fixTitle": "With the sync"
+    "fixTitle": "With the sync",
+    "status": "Sync running"
   },
   "hook": {
     "num": "01",
@@ -79,40 +80,85 @@
     "footer": "Recognise two or more? That is exactly the work we automate.",
     "items": [
       {
-        "key": "store",
-        "angle": "store_and_web",
-        "needs": "counter",
+        "key": "twice",
+        "angle": "marketplace_listing",
+        "needs": "twoSells",
         "group": "double",
-        "every": "every counter sale",
-        "title": "Shop counter and web out of step",
-        "body": "Something sold at the counter stays for sale {onA} until someone takes it off by hand."
+        "every": "when stock runs low",
+        "title": "The last one sold twice",
+        "body": "The last {variant} sells on {A} while it is still live on {B}. One buyer gets a cancellation, and the platform counts it against you."
       },
       {
         "key": "unique",
         "angle": "unique_items",
-        "needs": "B",
+        "needs": "twoSells",
         "group": "double",
         "every": "every one-off sale",
         "title": "The one-off piece sold twice",
-        "body": "Each piece exists once. When it sells {onB}, it is still for sale {onA} until someone remembers to take it off."
+        "body": "Each piece exists once. When it sells on {B}, it is still for sale on {A} until someone remembers to take it off."
+      },
+      {
+        "key": "fulfil",
+        "angle": "fulfilment",
+        "needs": "",
+        "group": "orders",
+        "every": "every order",
+        "title": "Orders passed to the warehouse by hand",
+        "body": "Orders from {A} go on to the warehouse, and stock counts come back, with a person copying in between."
+      },
+      {
+        "key": "type",
+        "angle": "warehouse_system",
+        "needs": "system",
+        "group": "orders",
+        "every": "every order",
+        "title": "Orders typed into {system}",
+        "body": "Orders from {A} are copied into {system} by hand, so the stock and the picking list are right."
+      },
+      {
+        "key": "orders",
+        "angle": "*",
+        "needs": "",
+        "group": "orders",
+        "every": "every order",
+        "title": "Orders copied into another tool",
+        "body": "Each order from {A} is copied by hand into the tool that prints the label or packs the parcel."
+      },
+      {
+        "key": "dispatch",
+        "angle": "*",
+        "needs": "",
+        "group": "stock",
+        "every": "after every order",
+        "title": "Stock corrected after parcels leave",
+        "body": "When an order ships, someone checks the count on {A}{andSystem} and corrects it by hand."
+      },
+      {
+        "key": "returns",
+        "angle": "returns_tool",
+        "needs": "",
+        "group": "returns",
+        "every": "every return",
+        "title": "Returns put back by hand",
+        "body": "A returned {item} is checked, then added back to the stock on {A} by hand."
+      },
+      {
+        "key": "supplier",
+        "angle": "supplier_intake",
+        "needs": "",
+        "group": "intake",
+        "every": "every delivery",
+        "title": "New stock entered by hand",
+        "body": "A delivery from a supplier arrives, and every {item} is entered into {places} before it can sell."
       },
       {
         "key": "buyin",
         "angle": "buy_in",
         "needs": "",
-        "group": "buyin",
+        "group": "intake",
         "every": "every buy-in",
         "title": "Buy-ins listed by hand",
         "body": "Every {item} you buy in or take in trade is counted, photographed and then listed {onSells}, one by one."
-      },
-      {
-        "key": "multistore",
-        "angle": "multi_store",
-        "needs": "",
-        "group": "multistore",
-        "every": "every day",
-        "title": "Several shops, one stock",
-        "body": "Each location keeps its own count, so nobody knows what is really free to sell {onA}."
       },
       {
         "key": "copy",
@@ -121,25 +167,25 @@
         "group": "listing",
         "every": "every new product",
         "title": "Every product built twice",
-        "body": "A new {item} goes live {onA}, then someone builds the same listing again {onB}: title, photos, {variants} and price."
+        "body": "A new {item} goes live on {A}, then someone builds the same listing again on {B}: title, photos, {variants} and price."
       },
       {
-        "key": "twice",
-        "angle": "marketplace_listing",
+        "key": "pause",
+        "angle": "multi_marketplace",
         "needs": "twoSells",
-        "group": "double",
-        "every": "when stock runs low",
-        "title": "The last one sold twice",
-        "body": "The last {variant} sells {onA} while it is still live {onB}. One buyer gets a cancellation, and the platform counts it against you."
+        "group": "pause",
+        "every": "after every sale",
+        "title": "Listings paused one by one",
+        "body": "After each sale someone pauses the same {variant} on every other platform, one account at a time."
       },
       {
-        "key": "sale",
-        "angle": "*",
-        "needs": "B",
-        "group": "aftersale",
-        "every": "after every sale",
-        "title": "Stock fixed by hand after every sale",
-        "body": "Something sells {onB}, and someone lowers the count {onA}{andSystem} before the next buyer comes."
+        "key": "sheet",
+        "angle": "no_stock_system",
+        "needs": "",
+        "group": "sheet",
+        "every": "every day",
+        "title": "The real count lives in a spreadsheet",
+        "body": "The only complete stock list is a sheet someone keeps up to date, and {A} is always a little behind it."
       },
       {
         "key": "edit",
@@ -149,33 +195,6 @@
         "every": "every change",
         "title": "One product, managed in {count} places",
         "body": "A new price, a better photo or a fixed title is typed into {places}, one by one."
-      },
-      {
-        "key": "type",
-        "angle": "warehouse_system",
-        "needs": "system",
-        "group": "stock",
-        "every": "every order",
-        "title": "Orders typed into {system}",
-        "body": "Orders {onA} are copied into {system} by hand, so the stock and the picking list are right."
-      },
-      {
-        "key": "sheet",
-        "angle": "no_stock_system",
-        "needs": "",
-        "group": "stock",
-        "every": "every day",
-        "title": "The real count lives in a spreadsheet",
-        "body": "The only complete stock list is a sheet someone keeps up to date, and {A} is always a little behind it."
-      },
-      {
-        "key": "pause",
-        "angle": "multi_marketplace",
-        "needs": "twoSells",
-        "group": "aftersale",
-        "every": "after every sale",
-        "title": "Listings paused one by one",
-        "body": "After each sale someone pauses the same {variant} on every other platform, one account at a time."
       },
       {
         "key": "variants",
@@ -190,19 +209,19 @@
         "key": "restock",
         "angle": "*",
         "needs": "",
-        "group": "restock",
+        "group": "intake",
         "every": "every delivery",
         "title": "New stock entered by hand",
         "body": "A delivery arrives, and the new count has to go into {places} before it can sell."
       },
       {
-        "key": "returns",
+        "key": "returns_any",
         "angle": "*",
         "needs": "",
         "group": "returns",
         "every": "every return",
         "title": "Returns put back by hand",
-        "body": "A returned {item} is checked, then added back to the stock by hand, {everywhere}."
+        "body": "A returned {item} is checked, then added back to the stock on {A} by hand."
       }
     ],
     "lead": "Where it slips most"
@@ -343,109 +362,105 @@
     "body": "Where you sell, where you count your stock, roughly how many products. We reply within one business day."
   },
   "adaptive": {
-    "seoTitle": "Case study: one stock count across {places} · Coelor",
-    "seoDescription": "The same stock sync, set up for {places}: sold-out {variants} switched off everywhere within minutes and every sale back in one stock count.",
-    "eyebrow": "Case study · One stock count, every place you sell",
-    "leadMany": "One stock count across",
-    "leadOne": "One stock count for",
-    "tailOne": ", wherever else you sell",
-    "sub": "The sync we first built for a Dutch reseller, told for a setup like yours: sold-out {variants} taken off everywhere within minutes, and every sale back in one count.",
+    "seoTitle": "Case study: {A} and the tools behind it · Coelor",
+    "seoDescription": "How the tools behind a web store, like stock, shipping and returns, can work together so less gets typed twice.",
+    "eyebrow": "Case study · The tools behind your web store",
+    "sub": "The work we first built for a Dutch reseller, told for a shop like yours: {A} connected with the tools behind it, like stock and shipping, so less gets typed twice.",
     "setupTitle": "Your setup",
-    "gapTitle": "Where it slips",
-    "fixTitle": "With the sync",
+    "gapTitle": "Often still done by hand",
+    "fixTitle": "What we would connect",
     "roles": {
       "webshop": "your web store",
       "marketplace": "marketplace",
-      "inventory_erp": "counts the stock",
+      "inventory_erp": "where the stock is counted",
       "fulfilment_3pl": "stores and ships the stock",
-      "pos": "your till",
-      "counter": "sells from the same stock",
       "warehouse": "where the stock is",
-      "sheet": "the only full count",
+      "sheet": "the full stock list",
       "web": "where you sell online"
     },
     "gaps": [
       {
-        "when": "counter+unique_items",
-        "gap": "A one-off piece sold at the counter stays for sale {onA} until someone remembers to take it off.",
-        "fix": "A sale at the counter takes the piece off {A} within minutes. One count, nobody retyping.",
-        "item": "store"
-      },
-      {
-        "when": "counter",
-        "gap": "Something sold at the counter stays for sale {onA} until someone takes it off by hand.",
-        "fix": "A sale at the counter comes off {A} within minutes. One count, nobody retyping.",
-        "item": "store"
-      },
-      {
-        "when": "twoSells+unique_items",
-        "gap": "Each piece exists once, but it is for sale {onA} and {onB}. When it sells in one place, the other still shows it.",
-        "fix": "A sale in one place switches the piece off everywhere else within minutes.",
-        "item": "unique"
-      },
-      {
         "when": "twoSells",
-        "gap": "A sale {onA} doesn't reach {B} by itself, so the last {variant} can sell twice.",
-        "fix": "A sale in one place switches the {variant} off everywhere else within minutes.",
-        "item": "twice"
+        "item": "twice",
+        "gap": "A sale on {B} still has to be taken off {A} by hand, and the last {variant} can sell twice.",
+        "fix": "{A} and {B} connected through their APIs, so stock isn't typed twice."
+      },
+      {
+        "when": "fulfilment",
+        "item": "fulfil",
+        "gap": "Orders and stock counts go back and forth between {A} and the warehouse, often by hand.",
+        "fix": "The warehouse side connected to {A}, so orders and counts aren't typed twice."
       },
       {
         "when": "system",
-        "gap": "Orders {onA} are typed into {system} by hand before the count is right.",
-        "fix": "Orders {onA} land in {system} by themselves, with their order number.",
-        "item": "type"
+        "item": "type",
+        "gap": "Orders from {A} are copied into {system} by hand.",
+        "fix": "{A} and {system} connected, so orders aren't typed twice."
       },
       {
-        "when": "sheet",
-        "gap": "The only full stock count is a sheet, and {A} is always a little behind it.",
-        "fix": "One live count: sales, restocks and returns update {A} by themselves.",
-        "item": "sheet"
+        "when": "returns_tool",
+        "item": "returns",
+        "gap": "Returns come back, and the stock on {A} is corrected by hand.",
+        "fix": "Returns and stock connected, so a returned {item} doesn't need retyping."
+      },
+      {
+        "when": "supplier_intake",
+        "item": "supplier",
+        "gap": "New stock from suppliers is entered into {A} {item} by {item}.",
+        "fix": "New arrivals connected to {A}, so they aren't typed in twice."
+      },
+      {
+        "when": "buy_in",
+        "item": "buyin",
+        "gap": "Every {item} you buy in is counted, photographed and listed on {A} by hand.",
+        "fix": "Your intake connected to {A}, so buy-ins aren't typed twice."
       },
       {
         "when": "",
-        "gap": "Every sale, restock and return is corrected {onA} by hand.",
-        "fix": "One live count: sales, restocks and returns update {A} by themselves.",
-        "item": "sale"
+        "item": "orders",
+        "gap": "Between an online order and the parcel leaving, orders and stock are still handled by hand in more than one place.",
+        "fix": "{A} connected with the tools behind it, like stock and shipping, so less gets typed twice."
       }
     ],
-    "setupHeadline": "{System} is the single source of truth.",
-    "setupBody": "Coelor sits between {sells} on one side and {system} on the other. It reads the stock, takes sold-out {variants} off everywhere and brings every sale back, so the count stays right without anyone typing it over.",
+    "setupHeadline": "Built around the tools you already use.",
+    "setupBody": "We connect a web store with the tools behind it, like stock, shipping and returns, through their APIs. Nothing is replaced, and every change is tested next to your team first.",
     "steps": [
       {
         "icon": "git-compare",
-        "title": "Link every {variant}",
-        "body": "Every {variant} is linked across {places}, however each place spells it."
+        "title": "Map the hand work",
+        "body": "We look at where orders, stock and returns are typed over today, and which of it is worth connecting."
       },
       {
-        "icon": "refresh",
-        "title": "Switch off sold-out {variants}",
-        "body": "Every 10 minutes the whole catalogue is checked, and any {variant} with no free stock is taken off everywhere it is for sale."
-      },
-      {
-        "icon": "route",
-        "title": "Bring every sale back",
-        "body": "Sales from {sells} come off the stock {inStock} within minutes, so the next buyer sees the real count."
+        "icon": "link",
+        "title": "Connect through the APIs",
+        "body": "{A} and the tools behind it are connected through their APIs, or their exports where there is no API."
       },
       {
         "icon": "shield",
-        "title": "Report and test every action",
-        "body": "Every automatic change is posted to the team chat, and every change can run in test mode first."
+        "title": "Run it in test mode",
+        "body": "Every change runs next to your team first and logs what it would do, before it does anything."
+      },
+      {
+        "icon": "activity",
+        "title": "Report every action",
+        "body": "Every automatic change is posted where your team already talks, so nothing happens unseen."
       }
     ],
     "before": [
-      "Sold-out {variants} taken offline by hand after each sale",
-      "Stock corrected by hand after every sale, restock and return",
-      "A {variant} could sell twice before anyone noticed"
+      "Orders copied into another tool by hand",
+      "Stock corrected by hand after parcels leave and returns come back",
+      "New stock typed in {item} by {item}"
     ],
     "after": [
-      "Every {variant} linked across {places}",
-      "Sold-out {variants} taken off everywhere within 10 minutes",
-      "Sales from {sells} off the stock within minutes",
-      "Every automatic change posted to the team chat"
+      "Orders, stock and returns passed between {A} and the tools behind it",
+      "Less typed twice, and fewer mistakes from retyping",
+      "Every automatic change visible to the team"
     ],
     "faqTop": {
       "q": "Does this work with {places}?",
       "a": "Coelor connects through each platform's API where there is one, and through exports where there is not. We map your exact setup on the first call and confirm the scope in writing before anything is built."
-    }
+    },
+    "headlineOne": "{A} and the tools behind it, with less typed twice.",
+    "headlineTwo": "{A}, {B} and the tools behind them, with less typed twice."
   }
 }

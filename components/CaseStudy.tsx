@@ -9,7 +9,7 @@ import type { CaseContent } from "@/lib/case-adapt";
 // The outreach case study, rendered from its content: told for one reader's own setup, or the real client's story
 // (lib/case-adapt.ts). Used by /case-studies/stock-sync, /case-studies/sneakers and the panel preview /p/<token>.
 // Each platform's logo appears once, in the hero's setup card; the rest of the page is words. No motion but the
-// "Sync running" dot.
+// "Sync running" dot on the real client's setup.
 
 function Header() {
   return (
@@ -33,18 +33,18 @@ function Header() {
 
 /* ---------- hero: the reader's setup, where it slips, what the sync does ---------- */
 
-const joinNames = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
-
 function SetupCard({ c }: { c: CaseContent }) {
   const { hero } = c;
   return (
     <div className="glass-card flex flex-col gap-5 p-5 sm:p-6" aria-label={hero.setupTitle}>
       <div className="flex items-center justify-between">
         <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">{hero.setupTitle}</span>
-        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ok">
-          <span className="pulse h-2 w-2 rounded-full bg-ok" aria-hidden />
-          Sync running
-        </span>
+        {hero.status && (
+          <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ok">
+            <span className="pulse h-2 w-2 rounded-full bg-ok" aria-hidden />
+            {hero.status}
+          </span>
+        )}
       </div>
       <ul className="flex flex-col gap-2">
         {hero.setup.map((p, i) => (
@@ -84,8 +84,7 @@ function Hero({ c }: { c: CaseContent }) {
             {hero.eyebrow}
           </span>
           <h1 id="case-title" className="display mt-5 text-[36px] leading-[1.08] text-ink sm:text-[46px] lg:text-[54px]">
-            {hero.lead} {joinNames(hero.places.map((p) => p.name))}
-            {hero.tail}.
+            {hero.headline}
           </h1>
           <p className="mt-5 max-w-[520px] text-[16px] leading-[1.6] text-ink-muted md:text-[18px]">{hero.sub}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
