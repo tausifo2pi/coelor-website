@@ -17,15 +17,19 @@ import type { CaseContent } from "@/lib/case-adapt";
 const DEMO = "/demo/multi-platform-sync?src=case";
 const showsDemo = (c: CaseContent) => !c.adapted || c.words.item === "pair";
 
-function DemoLink() {
+// The live demo button: green like "live", a pulsing dot, the words a reader clicks on. `wide` fills its box.
+function DemoLink({ wide = true }: { wide?: boolean }) {
   return (
     <a
       href={DEMO}
-      className="group inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-accent px-5 py-3 text-center text-[15px] font-semibold leading-[1.3] text-canvas shadow-[0_8px_24px_-10px_rgba(159,176,255,0.7)] transition-[filter,transform] hover:brightness-110 active:translate-y-px"
+      className={`group relative inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#34D399] to-[#10B981] px-6 py-3 text-center text-[16px] font-bold leading-[1.25] text-[#04150d] shadow-[0_12px_32px_-10px_rgba(52,211,153,0.85)] ring-1 ring-inset ring-white/25 transition-[filter,transform,box-shadow] hover:brightness-110 hover:shadow-[0_14px_40px_-8px_rgba(52,211,153,0.95)] active:translate-y-px ${wide ? "w-full" : "w-fit shrink-0"}`}
     >
-      <span className="pulse h-2 w-2 shrink-0 rounded-full bg-canvas" aria-hidden />
-      See the sync running: orders, stock and automations
-      <Icon name="arrow-right" size={16} strokeWidth={2.4} className="shrink-0 transition-transform group-hover:translate-x-0.5" />
+      <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden>
+        <span className="absolute inset-0 animate-ping rounded-full bg-[#04150d]/60 motion-reduce:animate-none" />
+        <span className="relative h-2.5 w-2.5 rounded-full bg-[#04150d]" />
+      </span>
+      Live Demo · Real Results
+      <Icon name="arrow-right" size={17} strokeWidth={2.6} className="shrink-0 transition-transform group-hover:translate-x-1" />
     </a>
   );
 }
@@ -270,10 +274,7 @@ function Setup({ c }: { c: CaseContent }) {
               <span className="text-[17px] font-semibold text-ink">Look inside the sync</span>
               <span className="text-[14px] leading-[1.6] text-ink-muted">Orders, stock, listings and automations in one place, read-only. Customer names and order numbers are hidden.</span>
             </div>
-            <a href={DEMO} className="btn-ghost w-fit shrink-0">
-              Open the live demo
-              <Icon name="arrow-right" size={15} strokeWidth={2.4} />
-            </a>
+            <DemoLink wide={false} />
           </div>
         )}
       </div>
