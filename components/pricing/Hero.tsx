@@ -1,11 +1,11 @@
 import { Icon } from "@/components/icons";
 import { pricing } from "./content";
 
-// Headline, the two CTAs, and a spec card of what every build is (one-time, priced by connections, unlimited, yours),
-// ending in the live demo link.
+// Headline, the two CTAs, and a spec card of what every build is (one-time, priced by connections, unlimited, yours).
+// No link to the live demo or the case studies: those are for email readers only.
 
 function BuildCard() {
-  const { card, primaryCta } = pricing.hero;
+  const { card } = pricing.hero;
   return (
     <div className="glass-card flex flex-col gap-5 p-5 sm:p-6" aria-label={card.title}>
       <div className="flex items-center justify-between gap-3">
@@ -23,19 +23,6 @@ function BuildCard() {
           </div>
         ))}
       </dl>
-      <a
-        href={primaryCta.href}
-        className="group flex items-center justify-between gap-3 rounded-[12px] border border-accent/30 bg-accent/[0.07] p-4 transition-colors hover:bg-accent/[0.12]"
-      >
-        <span className="flex flex-col gap-1">
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
-            <span className="pulse h-2 w-2 rounded-full bg-accent" aria-hidden />
-            {card.demoEyebrow}
-          </span>
-          <span className="text-[14px] font-semibold leading-[1.4] text-ink">{card.demoTitle}</span>
-        </span>
-        <Icon name="arrow-right" size={16} strokeWidth={2.4} className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
-      </a>
     </div>
   );
 }

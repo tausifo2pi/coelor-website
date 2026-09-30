@@ -1,5 +1,5 @@
 {
-  "_note": "Copy and tiers of /pricing (app/pricing/page.tsx, components/pricing/*). PRICES: each tier's `from` is null until the owner fills it in. null shows 'Fixed price / after a 30-minute call'; a plain number (e.g. 4500, no currency sign, no dots or commas) shows 'From €4,500 / one-time'. `badge` (null or a short label such as 'Most common') puts a label on one card; only set it when it is true. Only true claims: one-time payment, full codebase handed over, unlimited orders and products, priced by connections, built on the existing engine. The real client stays anonymous and is told generically: no product-category words and no marketplace or warehouse brand names or logos on this page (the live demo may show them). Never name or compare with another vendor.",
+  "_note": "Copy and tiers of /pricing (app/pricing/page.tsx, components/pricing/*). PRICES: each tier's `from` is null until the owner fills it in. null shows 'Fixed price / after a 30-minute call'; a plain number (e.g. 4500, no currency sign, no dots or commas) shows 'From €4,500 / one-time'. `badge` (null or a short label such as 'Most common') puts a label on one card; only set it when it is true. Only true claims: one-time payment, full codebase handed over, unlimited orders and products, priced by connections, built on the existing engine. The real client stays anonymous and is told generically: no product-category words and no marketplace or warehouse brand names or logos on this page. Never name or compare with another vendor. The live demo and the case studies are never linked from this page (they are for email readers only).",
   "seo": {
     "title": "Pricing · Coelor",
     "description": "One-time payment, full source code handed over. Unlimited orders and products; the price is set by the number of platforms and accounts we connect."
@@ -15,21 +15,44 @@
     "eyebrow": "Pricing",
     "headline": "Pay once. Own the code.",
     "sub": "Our automation engine already exists and bends to how you work. We build your final version on your requirements, so the price stays lower and you never pay for extras you don't need.",
-    "primaryCta": { "label": "See the live demo", "href": "/demo/multi-platform-sync?src=pricing" },
-    "secondaryCta": { "label": "Book a call", "href": "#contact" },
-    "points": ["Unlimited orders", "Unlimited products", "You own the code"],
+    "primaryCta": {
+      "label": "Book a call",
+      "href": "#contact"
+    },
+    "secondaryCta": {
+      "label": "What's included",
+      "href": "#included"
+    },
+    "points": [
+      "Unlimited orders",
+      "Unlimited products",
+      "You own the code"
+    ],
     "card": {
       "title": "Every build",
       "badge": "One-time",
       "rows": [
-        { "label": "Payment", "value": "Once, no subscription" },
-        { "label": "Priced by", "value": "Connections" },
-        { "label": "Orders", "value": "Unlimited" },
-        { "label": "Products", "value": "Unlimited" },
-        { "label": "Source code", "value": "Yours, in full" }
-      ],
-      "demoEyebrow": "Live demo",
-      "demoTitle": "See the engine running for a real client"
+        {
+          "label": "Payment",
+          "value": "Once, no subscription"
+        },
+        {
+          "label": "Priced by",
+          "value": "Connections"
+        },
+        {
+          "label": "Orders",
+          "value": "Unlimited"
+        },
+        {
+          "label": "Products",
+          "value": "Unlimited"
+        },
+        {
+          "label": "Source code",
+          "value": "Yours, in full"
+        }
+      ]
     }
   },
   "how": {
@@ -57,10 +80,22 @@
       "title": "Counting connections",
       "caption": "An example setup",
       "rows": [
-        { "icon": "store", "label": "Marketplace account" },
-        { "icon": "store", "label": "Second marketplace account" },
-        { "icon": "bag", "label": "Web store" },
-        { "icon": "warehouse", "label": "Warehouse system" }
+        {
+          "icon": "store",
+          "label": "Marketplace account"
+        },
+        {
+          "icon": "store",
+          "label": "Second marketplace account"
+        },
+        {
+          "icon": "bag",
+          "label": "Web store"
+        },
+        {
+          "icon": "warehouse",
+          "label": "Warehouse system"
+        }
       ],
       "each": "1 connection",
       "totalLabel": "Total",
@@ -75,7 +110,12 @@
     "body": "The same engine in every build. What changes is how many platforms and accounts it connects.",
     "cta": "Get your fixed price",
     "exampleLabel": "For example",
-    "common": ["Unlimited orders and products", "The full source code, yours", "Only the automations you need", "Set-up and handover"],
+    "common": [
+      "Unlimited orders and products",
+      "The full source code, yours",
+      "Only the automations you need",
+      "Set-up and handover"
+    ],
     "items": [
       {
         "key": "two",
@@ -109,8 +149,14 @@
       }
     ],
     "notes": [
-      { "icon": "plus", "text": "Adding a connection later? We quote it the same way." },
-      { "icon": "phone", "text": "Not sure how many you have? We count them with you on the call." }
+      {
+        "icon": "plus",
+        "text": "Adding a connection later? We quote it the same way."
+      },
+      {
+        "icon": "phone",
+        "text": "Not sure how many you have? We count them with you on the call."
+      }
     ]
   },
   "included": {
@@ -172,19 +218,39 @@
     "proof": {
       "eyebrow": "Running today",
       "title": "Already running for a Dutch reseller.",
-      "body": "Several marketplace accounts connected to its warehouse system, built and run by us on the same engine. The live demo shows it running, read-only.",
+      "body": "Several marketplace accounts connected to its warehouse system, built and run by us on the same engine.",
       "setupLabel": "Their setup",
       "setup": [
-        { "icon": "globe", "name": "Marketplace accounts", "role": "every sale comes in" },
-        { "icon": "refresh", "name": "Our engine", "role": "keeps them in step" },
-        { "icon": "warehouse", "name": "Warehouse system", "role": "holds the stock" }
+        {
+          "icon": "globe",
+          "name": "Marketplace accounts",
+          "role": "every sale comes in"
+        },
+        {
+          "icon": "refresh",
+          "name": "Our engine",
+          "role": "keeps them in step"
+        },
+        {
+          "icon": "warehouse",
+          "name": "Warehouse system",
+          "role": "holds the stock"
+        }
       ],
       "stats": [
-        { "value": "31,000+", "label": "products checked" },
-        { "value": "Every 10 min", "label": "sold-out items switched off on every account" },
-        { "value": "Within minutes", "label": "each sale taken off the stock" }
-      ],
-      "demoCta": "Open the live demo"
+        {
+          "value": "31,000+",
+          "label": "products checked"
+        },
+        {
+          "value": "Every 10 min",
+          "label": "sold-out items switched off on every account"
+        },
+        {
+          "value": "Within minutes",
+          "label": "each sale taken off the stock"
+        }
+      ]
     }
   },
   "faq": {

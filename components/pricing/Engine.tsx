@@ -3,12 +3,11 @@ import { Icon } from "@/components/icons";
 import { pricing } from "./content";
 
 // Why the price is one-time: the engine exists, so a build pays for the client's version only. Then the proof that it
-// runs today (the real client, kept anonymous and told generically: neutral icons, no platform names or logos) with the
-// link to the live demo. The proof block is its own tracked section (id="proof").
+// runs today (the real client, kept anonymous and told generically: neutral icons, no platform names or logos). No link
+// to the live demo (email readers only). The proof block is its own tracked section (id="proof").
 
 function Proof() {
   const { proof } = pricing.engine;
-  const demo = pricing.hero.primaryCta.href;
   return (
     <article id="proof" data-track-section aria-labelledby="proof-title" className="scroll-mt-20 overflow-hidden rounded-[16px] border border-rule bg-panel">
       <div className="grid grid-cols-1 gap-8 p-6 md:p-8 lg:grid-cols-[1fr_360px] lg:gap-12 lg:p-10">
@@ -21,10 +20,6 @@ function Proof() {
             {proof.title}
           </h3>
           <p className="max-w-[560px] text-[15px] leading-[1.6] text-ink-muted">{proof.body}</p>
-          <a href={demo} className="btn-primary mt-2 w-fit">
-            {proof.demoCta}
-            <Icon name="arrow-right" size={15} strokeWidth={2.4} />
-          </a>
         </div>
         <ul className="flex flex-col gap-2 self-start" aria-label={proof.setupLabel}>
           {proof.setup.map((p) => (

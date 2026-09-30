@@ -1,0 +1,72 @@
+import type { Metadata } from "next";
+import Logo from "@/components/Logo";
+import { Icon } from "@/components/icons";
+
+// The short page an email can link to (coelor.com/r/<token>?to=/demo): what the live demo shows and the link to it.
+// Static and small (no data, no client code of its own); the site Tracker logs the visit, the sections seen and the
+// click on the live link, tied to the lead by the email cookie. Email readers only: never linked from the site, not
+// indexed (robots.ts disallows /demo).
+
+export const metadata: Metadata = {
+  title: "Live demo · Coelor",
+  description: "A multi-platform sync at work: orders, stock, listings and automations, live and read-only.",
+  robots: { index: false, follow: false },
+  alternates: { canonical: "/demo" },
+};
+
+const LIVE = "/demo/multi-platform-sync?src=live";
+
+const SEES = [
+  { icon: "activity", text: "Orders coming in from every channel, and what the sync did with the stock" },
+  { icon: "warehouse", text: "One stock count behind every marketplace, web store and account" },
+  { icon: "refresh", text: "The automations that run on their own, with their last run" },
+];
+
+export default function DemoIntro() {
+  return (
+    <main id="main" className="relative flex min-h-screen flex-col overflow-hidden">
+      <div className="pointer-events-none absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/10 blur-3xl" aria-hidden />
+      <header className="relative mx-auto flex w-full max-w-[720px] items-center px-5 pt-8 md:pt-12">
+        <a href="/" aria-label="Coelor home" className="py-2">
+          <Logo height={26} priority />
+        </a>
+      </header>
+
+      <section id="intro" className="relative mx-auto flex w-full max-w-[720px] flex-1 flex-col justify-center gap-8 px-5 py-14">
+        <div className="flex flex-col gap-5">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
+            <span className="pulse h-2 w-2 rounded-full bg-accent" aria-hidden />
+            Live demo
+          </span>
+          <h1 className="display text-balance text-[34px] leading-[1.1] text-ink sm:text-[44px]">A real store&apos;s sync, running right now.</h1>
+          <p className="max-w-[560px] text-[16px] leading-[1.6] text-ink-muted md:text-[18px]">
+            Look inside the sync we built and run for a reseller: read-only, nothing you click changes the store. We set up the
+            same for yours.
+          </p>
+        </div>
+
+        <ul className="flex flex-col gap-2.5">
+          {SEES.map((s) => (
+            <li key={s.text} className="flex items-start gap-3 text-[15px] leading-[1.5] text-ink">
+              <span className="facet-tile mt-0.5 h-8 w-8 shrink-0 rounded-[8px]" aria-hidden>
+                <Icon name={s.icon} size={15} />
+              </span>
+              <span className="pt-1">{s.text}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <a href={LIVE} className="btn-primary w-fit">
+            Open the live demo
+            <Icon name="arrow-right" size={15} strokeWidth={2.4} />
+          </a>
+          <a href="mailto:contact@coelor.com?subject=Live%20demo" className="btn-ghost w-fit">
+            Ask a question
+          </a>
+        </div>
+        <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft">Customer names and order numbers are hidden</p>
+      </section>
+    </main>
+  );
+}
