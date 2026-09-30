@@ -132,7 +132,7 @@ test("the overview counts the last 24 hours and marks a full page as more", () =
     sx: page([stockxOrder, { ...stockxOrder, _id: "b", createdAt: "2026-09-28T10:00:00Z" }], 38768),
     al: page([aliasOrder], 16829), sxListings: page([], 14821), alListings: page([], 9095),
   }, now);
-  assert.deepEqual(o.kpis.sales24h, { stockx: 1, alias: 1, more: false });
+  assert.deepEqual(o.kpis.sales24h, { stockx: 1, alias: 1, shopify: 0, whatnot: 0, more: false });
   assert.equal(o.kpis.lastSale?.storeLabel, "StockX EU");
   assert.deepEqual(o.kpis.products, { total: 31671, linked: 11970 });
   assert.equal(o.feed.length, 3);

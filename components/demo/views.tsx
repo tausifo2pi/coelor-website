@@ -1,13 +1,17 @@
 "use client";
 
-// The sections of the live demo. Every number and row is read live from the running sync (app/api/demo). Anything that
-// would change the store (connect, sync now, link, pull a listing, reports) opens the "view only" dialog instead.
+// The sections of the live demo, read from the running sync (app/api/demo). Names, logos and accounts of the channels
+// come from CHANNELS / STORES only, and every channel looks the same (a channel's `sample` flag is never shown).
+// Anything that would change the store (connect, sync now, link, pull a listing, reports) opens the "view only" dialog.
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowLeftRight, ArrowRight, Check, CircleCheck, Lock, Plus, Settings2, TriangleAlert } from "lucide-react";
-import { SiDiscord } from "@icons-pack/react-simple-icons";
-import type { Job, Linked, Listing, Overview, Page, Sale, Step, StoreId } from "@/lib/demo/shape";
+import { ArrowLeftRight, ArrowRight, Check, Lock, Plus, Settings2, TriangleAlert } from "lucide-react";
+import { CHANNELS, PICQER, fromApi, type Channel as ChannelInfo } from "@/lib/demo/channels";
+import { STORES, type Connection, type Job, type Linked, type Listing, type Overview, type Page, type Platform, type Sale, type SellPlatform, type Step, type StoreId } from "@/lib/demo/shape";
 import type { DemoTracker } from "@/lib/demo/track";
-import { Badge, Button, Card, CardHead, Empty, LOGO_SLUG, Logo, Pager, SearchInput, Skeleton, Tabs, Td, Th, ago, clock, fmt, lag, type Tone } from "@/components/demo/ui";
+import {
+  Badge, BrandMark, Button, Card, CardHead, Empty, Logo, Pager, SearchInput, Skeleton, Tabs, Td, Th,
+  ago, brandOf, clock, fmt, lag, type Tone,
+} from "@/components/demo/ui";
 
 export type Live<T> = { data: T; at: string; stale: boolean };
 export type Ctx = {
@@ -16,10 +20,16 @@ export type Ctx = {
   t: DemoTracker | null;
   open: (id: string) => void;
   locked: (what: string, text?: string) => void;
-  connect: (slug: string, name: string) => void;
+  /** the view-only "Connect" dialog; `body` replaces the default text (a sales channel's) */
+  connect: (slug: string, name: string, body?: string) => void;
   go: (section: SectionId) => void;
 };
-export type SectionId = "dashboard" | "connections" | "orders" | "products" | "listings" | "automations";
+export type SectionId = "dashboard" | "connections" | "orders" | "products" | "listings" | "automations" | "extra";
+
+// the client's own channels (StockX, Alias), which have rules of their own on the automations page
+const REAL = CHANNELS.filter((c) => fromApi(c.id));
+// the other channels get the general rules
+const OTHER = CHANNELS.filter((c) => !fromApi(c.id));
 
 /* ---------- data ---------- */
 
@@ -55,11 +65,11 @@ function useDebounced(v: string, ms = 450) {
   return d;
 }
 
-const PLATFORM = {
-  stockx: { name: "StockX", slug: LOGO_SLUG.stockx },
-  alias: { name: "Alias", slug: LOGO_SLUG.alias },
-  picqer: { name: "Picqer", slug: LOGO_SLUG.picqer },
-} as const;
+/** A platform's logo by its id (a channel of CHANNELS, or Picqer). */
+function PLogo({ platform, size, className }: { platform: string; size: number; className?: string }) {
+  const b = brandOf(platform);
+  return <Logo slug={b.slug} name={b.name} size={size} className={className} />;
+}
 
 const STEP_TONE: Record<Step["kind"], Tone> = { stock: "green", pulled: "violet", restock: "blue", flag: "amber" };
 
@@ -87,33 +97,103 @@ function Failed({ children = "Live data could not be loaded just now. It retries
 
 /* ---------- dashboard ---------- */
 
-function FlowNode({ platform, sub, big = false }: { platform: keyof typeof PLATFORM; sub: string; big?: boolean }) {
-  const p = PLATFORM[platform];
+/** "StockX EU · StockX US", or "1 store" when the only account is the channel itself */
+function accountsText(c: ChannelInfo): string {
+  if (c.accounts.length === 1 && c.accounts[0].label === c.name) return `1 ${/store|shop/i.test(c.role) ? "store" : "account"}`;
+  return c.accounts.map((a) => a.label).join(" · ");
+}
+
+const connOf = (ov: Overview, platform: string): Connection | undefined => ov.connections.find((c) => c.platform === platform);
+
+function HubChannel({ c, conn, cadence = false }: { c: ChannelInfo; conn?: Connection; cadence?: boolean }) {
+  const healthy = conn ? conn.healthy : true;
   return (
-    <div className={`flex min-w-0 items-center gap-3 rounded-xl border bg-white p-4 lg:flex-1 lg:flex-col lg:gap-2 lg:py-5 lg:text-center ${big ? "border-[#bfdbfe] bg-[#f8fbff]" : "border-[#e3e6eb]"}`}>
-      <Logo slug={p.slug} name={p.name} size={big ? 56 : 48} />
-      <div className="min-w-0 flex-1 lg:flex-none">
-        <div className="flex flex-wrap items-center gap-2 lg:justify-center">
-          <span className="text-[16px] font-semibold">{p.name}</span>
-          <Badge tone="green" dot>Connected</Badge>
+    <div className="flex min-w-0 flex-col gap-2.5 rounded-xl border border-[#e3e6eb] bg-white p-3.5">
+      <div className="flex min-w-0 items-center gap-3">
+        <Logo slug={c.logo} name={c.name} size={40} />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-[15px] font-semibold">{c.name}</span>
+            <Badge tone={healthy ? "green" : "amber"} dot>{healthy ? "Connected" : "Catching up"}</Badge>
+          </div>
+          <p className="mt-0.5 truncate text-[12.5px] text-[#64748b]">{accountsText(c)}</p>
         </div>
-        <p className="mt-0.5 text-[13px] text-[#64748b]">{sub}</p>
+      </div>
+      {cadence && (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] font-semibold">
+          <ArrowLeftRight size={13} className="text-[#94a3b8]" />
+          <span className="text-[#15803d]">Orders in · {c.ordersEvery}</span>
+          <span className="text-[#cbd5e1]">·</span>
+          <span className="text-[#6d28d9]">Sold out → pulled</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Spoke({ c }: { c: ChannelInfo }) {
+  return (
+    <div className="flex min-w-0 flex-col items-center justify-center gap-1 px-1.5">
+      <span className="whitespace-nowrap text-[11.5px] font-semibold text-[#15803d]">Orders · {c.ordersEvery}</span>
+      <span className="flex w-full items-center text-[#94a3b8]">
+        <span className="h-0 flex-1 border-t-2 border-dashed border-[#cbd5e1]" />
+        <ArrowLeftRight size={14} className="mx-1 shrink-0" />
+        <span className="h-0 flex-1 border-t-2 border-dashed border-[#cbd5e1]" />
+      </span>
+      <span className="whitespace-nowrap text-[11.5px] font-semibold text-[#6d28d9]">Sold out → pulled</span>
+    </div>
+  );
+}
+
+function PicqerHub({ ov, wide }: { ov: Overview; wide: boolean }) {
+  const conn = connOf(ov, "picqer");
+  const healthy = conn ? conn.healthy : true;
+  return (
+    <div className={`flex min-w-0 rounded-xl border border-[#bfdbfe] bg-[#f8fbff] p-4 ${wide ? "h-full flex-col items-center justify-center gap-2 text-center" : "items-center gap-3"}`}>
+      <Logo slug={PICQER.logo} name={PICQER.name} size={wide ? 56 : 48} />
+      <div className="min-w-0">
+        <div className={`flex flex-wrap items-center gap-2 ${wide ? "justify-center" : ""}`}>
+          <span className="text-[16px] font-semibold">{PICQER.name}</span>
+          <Badge tone={healthy ? "green" : "amber"} dot>{healthy ? "Connected" : "Catching up"}</Badge>
+        </div>
+        <p className="mt-0.5 text-[13px] text-[#64748b]">Warehouse · counts the stock</p>
+        <p className="text-[13px] text-[#64748b]">{fmt(ov.kpis.products.total)} products · 1 warehouse</p>
       </div>
     </div>
   );
 }
 
-function FlowLink({ top, bottom }: { top: string; bottom: string }) {
+function Hub({ ov }: { ov: Overview }) {
+  const half = Math.ceil(CHANNELS.length / 2);
+  const left = CHANNELS.slice(0, half);
+  const right = CHANNELS.slice(half);
+  const rows = Math.max(left.length, right.length, 1);
   return (
-    <div className="flex shrink-0 items-center gap-3 py-2 pl-7 lg:w-[140px] lg:flex-col lg:gap-1 lg:py-0 lg:pl-0">
-      <span className="flex items-center text-[#94a3b8] lg:order-2">
-        <span className="hidden h-px w-9 border-t-2 border-dashed border-[#cbd5e1] lg:block" />
-        <ArrowLeftRight size={16} className="rotate-90 lg:mx-1 lg:rotate-0" />
-        <span className="hidden h-px w-9 border-t-2 border-dashed border-[#cbd5e1] lg:block" />
-      </span>
-      <span className="text-[12px] font-semibold text-[#15803d] lg:order-1">{top}</span>
-      <span className="text-[12px] font-semibold text-[#6d28d9] lg:order-3">{bottom}</span>
-    </div>
+    <>
+      {/* wide screens: Picqer in the middle, the channels around it */}
+      <div className="hidden grid-cols-[minmax(0,1fr)_132px_minmax(210px,0.85fr)_132px_minmax(0,1fr)] gap-y-3 xl:grid">
+        {left.map((c, i) => (
+          <div key={c.id} className="contents">
+            <div style={{ gridColumn: 1, gridRow: i + 1 }} className="flex flex-col justify-center"><HubChannel c={c} conn={connOf(ov, c.id)} /></div>
+            <div style={{ gridColumn: 2, gridRow: i + 1 }} className="flex"><Spoke c={c} /></div>
+          </div>
+        ))}
+        <div style={{ gridColumn: 3, gridRow: `1 / span ${rows}` }}><PicqerHub ov={ov} wide /></div>
+        {right.map((c, i) => (
+          <div key={c.id} className="contents">
+            <div style={{ gridColumn: 4, gridRow: i + 1 }} className="flex"><Spoke c={c} /></div>
+            <div style={{ gridColumn: 5, gridRow: i + 1 }} className="flex flex-col justify-center"><HubChannel c={c} conn={connOf(ov, c.id)} /></div>
+          </div>
+        ))}
+      </div>
+      {/* smaller screens: Picqer first, then the channels */}
+      <div className="flex flex-col gap-3 xl:hidden">
+        <PicqerHub ov={ov} wide={false} />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {CHANNELS.map((c) => <HubChannel key={c.id} c={c} conn={connOf(ov, c.id)} cadence />)}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -122,20 +202,20 @@ function Kpi({ label, value, sub, children }: { label: string; value: ReactNode;
     <Card className="flex flex-col gap-1">
       <span className="text-[13px] font-medium text-[#64748b]">{label}</span>
       <span className="text-[28px] font-bold leading-tight tracking-[-0.02em] tabular-nums">{value}</span>
-      {sub && <span className="text-[13px] text-[#64748b]">{sub}</span>}
+      {sub && <span className="text-[13px] leading-[1.5] text-[#64748b]">{sub}</span>}
       {children}
     </Card>
   );
 }
 
 function SaleRow({ s, ctx }: { s: Sale; ctx: Ctx }) {
-  const p = PLATFORM[s.platform];
+  const b = brandOf(s.platform);
   const body = (
     <>
-      <Logo slug={p.slug} name={p.name} size={36} />
+      <Logo slug={b.slug} name={b.name} size={36} />
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
-          <span className="truncate text-[14px] font-semibold">{s.product}</span>
+          <span className="min-w-0 truncate text-[14px] font-semibold">{s.product}</span>
           <span className="shrink-0 text-[12.5px] text-[#64748b]">{ago(s.soldAt, ctx.now)}</span>
         </div>
         <p className="mt-0.5 text-[13px] text-[#64748b]">
@@ -160,26 +240,26 @@ function SaleRow({ s, ctx }: { s: Sale; ctx: Ctx }) {
 const JOB_TONE: Record<Job["status"], Tone> = { ok: "green", running: "blue", late: "amber", error: "red" };
 const JOB_TEXT: Record<Job["status"], string> = { ok: "On schedule", running: "Running now", late: "Late", error: "Retrying" };
 
+const n0 = (r: Partial<Record<SellPlatform, number>>, id: SellPlatform) => r[id] ?? 0;
+
 export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) {
   if (!ov) return <Card pad={false}><Skeleton rows={8} /></Card>;
   const k = ov.data.kpis;
-  const day = k.sales24h.stockx + k.sales24h.alias;
+  const day = CHANNELS.reduce((n, c) => n + n0(k.sales24h, c.id), 0);
   const linkedPct = k.products.total ? Math.round((k.products.linked / k.products.total) * 100) : 0;
   return (
     <div className="flex flex-col gap-5">
       <Card>
-        <CardHead title="Your connected channels" sub="One stock count in Picqer, kept in step with every marketplace account." />
-        <div className="flex flex-col items-stretch lg:flex-row lg:items-center">
-          <FlowNode platform="stockx" sub="StockX EU and StockX US" />
-          <FlowLink top="Sales in · every 5 min" bottom="Sold out → pulled" />
-          <FlowNode platform="picqer" sub={`Counts the stock · ${fmt(k.products.total)} products`} big />
-          <FlowLink top="Sales in · every 7 min" bottom="Last pair → pulled" />
-          <FlowNode platform="alias" sub="Alias and Alias USA" />
-        </div>
+        <CardHead title="Your connected channels" sub="One stock count in Picqer, kept in step with every channel." />
+        <Hub ov={ov.data} />
       </Card>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi label="Orders synced, last 24 h" value={`${fmt(day)}${k.sales24h.more ? "+" : ""}`} sub={`${fmt(k.sales24h.stockx)} StockX · ${fmt(k.sales24h.alias)} Alias`} />
+        <Kpi
+          label="Orders synced, last 24 h"
+          value={`${fmt(day)}${k.sales24h.more ? "+" : ""}`}
+          sub={CHANNELS.map((c) => `${fmt(n0(k.sales24h, c.id))} ${c.name}`).join(" · ")}
+        />
         <Kpi label="Last order synced" value={ago(k.lastSale?.soldAt ?? null, ctx.now)} sub={k.lastSale ? `${k.lastSale.storeLabel} · ${k.lastSale.product}` : undefined} />
         <Kpi label="Products linked" value={fmt(k.products.linked)} sub={`of ${fmt(k.products.total)} in Picqer`}>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#eef0f3]">
@@ -189,10 +269,10 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
         <Kpi label="Automations" value={`${k.jobs.ok}/${k.jobs.total}`} sub="running on schedule" />
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Card pad={false}>
           <div className="px-5 pt-5">
-            <CardHead title="Latest orders" sub="Sold on a marketplace, then what the sync did" right={<Button small onClick={() => ctx.go("orders")}>All orders <ArrowRight size={14} /></Button>} />
+            <CardHead title="Latest orders" sub="Sold on a channel, then what the sync did" right={<Button small onClick={() => ctx.go("orders")}>All orders <ArrowRight size={14} /></Button>} />
           </div>
           <div className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
             {ov.data.feed.slice(0, 8).map((s) => (
@@ -208,7 +288,7 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
             <ul className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
               {ov.data.jobs.slice(0, 6).map((j) => (
                 <li key={j.key} className="flex items-center gap-3 px-5 py-3">
-                  <Logo slug={PLATFORM[j.platform].slug} name={PLATFORM[j.platform].name} size={26} />
+                  <PLogo platform={j.platform} size={26} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13.5px] font-medium">{j.name}</p>
                     <p className="text-[12.5px] text-[#64748b]">{j.every} · {ago(j.lastRun, ctx.now)}</p>
@@ -218,14 +298,30 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
               ))}
             </ul>
           </Card>
-          <Card>
-            <CardHead title="Since the sync started" />
-            <dl className="grid grid-cols-2 gap-4">
-              <Stat label="StockX orders synced" value={fmt(k.salesTotal.stockx)} />
-              <Stat label="Alias orders synced" value={fmt(k.salesTotal.alias)} />
-              <Stat label="StockX listings watched" value={fmt(k.listings.stockx)} />
-              <Stat label="Alias listings watched" value={fmt(k.listings.alias)} />
-            </dl>
+          <Card pad={false}>
+            <div className="px-5 pt-5">
+              <CardHead title="Since the sync started" />
+            </div>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr><Th>Channel</Th><Th className="text-right">Orders</Th><Th className="text-right">Listings</Th></tr>
+              </thead>
+              <tbody>
+                {CHANNELS.map((c) => (
+                  <tr key={c.id}>
+                    <Td className="!py-2.5">
+                      <span className="flex min-w-0 items-center gap-2">
+                        <Logo slug={c.logo} name={c.name} size={22} />
+                        <span className="truncate font-medium">{c.name}</span>
+                      </span>
+                    </Td>
+                    <Td className="!py-2.5 text-right font-semibold tabular-nums">{fmt(n0(k.salesTotal, c.id))}</Td>
+                    <Td className="!py-2.5 text-right tabular-nums text-[#475569]">{fmt(n0(k.listings, c.id))}</Td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="px-5 py-3 text-[12.5px] text-[#64748b]">Orders synced into Picqer, and listings the sync watches.</p>
           </Card>
         </div>
       </div>
@@ -233,130 +329,184 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+/* ---------- connections: one list of integrations, the connected ones first in each group ---------- */
+
+type Tile = {
+  slug: string;
+  name: string;
+  role: string;
+  detail?: string;
+  last?: string | null;
+  state: "on" | "catching" | "off";
+  /** the button on a connected tile (default: its settings, locked) */
+  action?: { label: string; run: () => void };
+  /** the Connect dialog's text */
+  body?: string;
+};
+
+// one more sales channel to connect: the first of these that is not one of CHANNELS already
+const MORE_CHANNELS = [
+  { slug: "ebay", name: "eBay", role: "Marketplace" },
+  { slug: "shopify", name: "Shopify", role: "Web store" },
+  { slug: "whatnot", name: "Whatnot", role: "Live selling" },
+  { slug: "woocommerce", name: "WooCommerce", role: "Web store" },
+].filter((m) => !CHANNELS.some((c) => c.logo === m.slug));
+
+const SHIP_BODY = (name: string) =>
+  `We connect ${name} for your store: labels are made from the order in Picqer, and the tracking code goes back to the channel it sold on.`;
+const AGENT_BODY = (name: string) =>
+  `We set up an AI Sales Agent on ${name} for your store: it answers buyers from your live Picqer stock, and every sale it makes comes off the same stock count.`;
+
+function IntegrationTile({ t, ctx }: { t: Tile; ctx: Ctx }) {
+  const on = t.state !== "off";
+  const status = on ? (
+    <Badge tone={t.state === "on" ? "green" : "amber"} dot>{t.state === "on" ? "Connected" : "Catching up"}</Badge>
+  ) : (
+    <span className="min-w-0 truncate text-[12.5px] text-[#94a3b8]">Not connected</span>
+  );
+  const action =
+    on && t.action ? (
+      <Button small onClick={t.action.run}>{t.action.label}<ArrowRight size={14} /></Button>
+    ) : on ? (
+      <button
+        type="button"
+        onClick={() => ctx.locked(`settings:${t.slug}`, `${t.name} settings`)}
+        title={`${t.name} settings`}
+        aria-label={`${t.name} settings`}
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#d9dde3] bg-white text-[#475569] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+      >
+        <Settings2 size={15} />
+      </button>
+    ) : (
+      <Button small primary onClick={() => ctx.connect(t.slug, t.name, t.body)}><Plus size={14} />Connect</Button>
+    );
+  const details = (t.detail || t.last) && (
+    <>
+      {t.detail && <p className="text-[#334155]">{t.detail}</p>}
+      {t.last && <p className="text-[#64748b]">Last sync {ago(t.last, ctx.now)}</p>}
+    </>
+  );
+  // phones (one column): a compact row, the button at the right of the text. Wider: a tile, the status and button at
+  // its foot. The text always has its own space (min-w-0), so a button never sits on it.
   return (
-    <div>
-      <dt className="text-[12.5px] text-[#64748b]">{label}</dt>
-      <dd className="mt-0.5 text-[20px] font-bold tabular-nums">{value}</dd>
+    <div className="flex min-w-0 flex-col rounded-xl border border-[#e3e6eb] bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] min-[480px]:p-4">
+      <div className="flex min-w-0 items-start gap-3">
+        <BrandMark slug={t.slug} name={t.name} size={40} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[14.5px] font-semibold leading-tight">{t.name}</p>
+          <p className="mt-0.5 text-[12.5px] leading-snug text-[#64748b]">{t.role}</p>
+          <div className="mt-1.5 flex flex-col gap-0.5 text-[12.5px] leading-snug min-[480px]:hidden">
+            {details}
+            {on && <div className="mt-1">{status}</div>}
+          </div>
+        </div>
+        <div className="shrink-0 min-[480px]:hidden">{action}</div>
+      </div>
+      {details && <div className="mt-2.5 hidden flex-col gap-1 text-[12.5px] leading-snug min-[480px]:flex">{details}</div>}
+      <div className="mt-auto hidden pt-3 min-[480px]:block">
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 border-t border-[#f1f3f5] pt-3">
+          {status}
+          {action}
+        </div>
+      </div>
     </div>
   );
 }
 
-/* ---------- connections ---------- */
-
-const ADD = [
-  { slug: "whatnot", name: "Whatnot", type: "Live selling" },
-  { slug: "ebay", name: "eBay", type: "Marketplace" },
-  { slug: "shopify", name: "Shopify", type: "Web store" },
-  { slug: "woocommerce", name: "WooCommerce", type: "Web store" },
-  { slug: "tiktok-shop", name: "TikTok Shop", type: "Marketplace" },
-  { slug: "stadium-goods", name: "Stadium Goods", type: "Marketplace" },
-  { slug: "grailed", name: "Grailed", type: "Marketplace" },
-  { slug: "vinted", name: "Vinted", type: "Marketplace" },
-  { slug: "depop", name: "Depop", type: "Marketplace" },
-  { slug: "amazon", name: "Amazon", type: "Marketplace" },
-  { slug: "bol", name: "Bol", type: "Marketplace" },
-];
-
 export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) {
   if (!ov) return <Card pad={false}><Skeleton rows={8} /></Card>;
+  const state = (platform: Platform): Tile["state"] => {
+    const c = connOf(ov.data, platform);
+    return !c || c.healthy ? "on" : "catching";
+  };
+  // a channel's last sync: its connection's, or the newest run of its own jobs
+  const last = (platform: Platform): string | null => {
+    const c = connOf(ov.data, platform);
+    if (c) return c.lastSync;
+    return ov.data.jobs.filter((j) => j.platform === platform).reduce<string | null>((a, j) => (!a || j.lastRun > a ? j.lastRun : a), null);
+  };
+
+  const groups: { title: string; sub: string; tiles: Tile[] }[] = [
+    {
+      title: "Sales channels",
+      sub: "Every sale comes off one stock count",
+      tiles: [
+        ...CHANNELS.map<Tile>((c) => ({
+          slug: c.logo, name: c.name, role: c.role, detail: accountsText(c), last: last(c.id), state: state(c.id),
+        })),
+        ...MORE_CHANNELS.slice(0, 1).map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off" })),
+      ],
+    },
+    {
+      title: "Warehouse & shipping",
+      sub: "Where the pairs are, and how they go out",
+      tiles: [
+        { slug: PICQER.logo, name: PICQER.name, role: "Warehouse, counts the stock", detail: `1 warehouse · ${fmt(ov.data.kpis.products.total)} products`, last: last("picqer"), state: state("picqer") },
+        { slug: "ups", name: "UPS", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("UPS") },
+        { slug: "dhl", name: "DHL", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("DHL") },
+        { slug: "fedex", name: "FedEx", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("FedEx") },
+      ],
+    },
+    {
+      title: "AI sales agents",
+      sub: "Sell in DMs and chats from the same stock",
+      tiles: [
+        { slug: "instagram", name: "Instagram", role: "AI Sales Agent", detail: "Answers buyers in DMs with the sizes in stock", state: "off", body: AGENT_BODY("Instagram") },
+        { slug: "tiktok-shop", name: "TikTok Shop", role: "AI Sales Agent", detail: "Answers buyers in chat with the sizes in stock", state: "off", body: AGENT_BODY("TikTok Shop") },
+      ],
+    },
+    {
+      title: "Tools",
+      sub: "Sheets, alerts and AI the sync works with",
+      tiles: [
+        {
+          slug: "google-sheets", name: "Google Sheets", role: "Live stock sheet + consignment report", state: "on",
+          action: { label: "View", run: () => { ctx.t?.action("open_extra", "connections"); ctx.go("extra"); } },
+        },
+        { slug: "discord", name: "Discord", role: "Alerts", detail: "Sold-out sizes, cancellations and the not-listed report", state: "on" },
+        { slug: "openai", name: "OpenAI", role: "GPT reads product names", detail: "Finds the size and colour in every Picqer name", state: "on" },
+        {
+          slug: "slack", name: "Slack", role: "Alerts", state: "off",
+          body: "We send the sync's alerts to Slack for your team: sold-out sizes pulled, cancelled orders put back, and the not-listed report.",
+        },
+        {
+          slug: "claude", name: "Claude", role: "AI assistant", state: "off",
+          body: "We connect Claude to the sync for your store: it can read product names for sizes and colours, or answer your team's questions about stock and sales.",
+        },
+      ],
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-6">
-      <section>
-        <h2 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.06em] text-[#64748b]">Connected</h2>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {ov.data.connections.map((c) => {
-            const p = PLATFORM[c.platform];
-            return (
-              <Card key={c.platform} className="flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                  <Logo slug={p.slug} name={p.name} size={48} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[17px] font-semibold">{c.name}</p>
-                    <p className="text-[13px] text-[#64748b]">{c.role}</p>
-                  </div>
-                  <Badge tone={c.healthy ? "green" : "amber"} dot>{c.healthy ? "Connected" : "Catching up"}</Badge>
-                </div>
-                <ul className="flex flex-col gap-2">
-                  {c.accounts.map((a) => (
-                    <li key={a} className="flex items-center gap-2.5 rounded-lg border border-[#eef0f3] bg-[#fafbfc] px-3 py-2 text-[13.5px]">
-                      <Logo slug={p.slug} name={p.name} size={20} />
-                      <span className="flex-1 font-medium">{a}</span>
-                      <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#15803d]"><span className="h-1.5 w-1.5 rounded-full bg-current" />Active</span>
-                    </li>
-                  ))}
-                </ul>
-                <ul className="flex flex-col gap-1.5">
-                  {c.syncs.map((s) => (
-                    <li key={s} className="flex gap-2 text-[13.5px] text-[#334155]">
-                      <CircleCheck size={16} className="mt-[2px] shrink-0 text-[#16a34a]" />
-                      {s}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-[#f1f3f5] pt-3">
-                  <span className="text-[12.5px] text-[#64748b]">Last sync {ago(c.lastSync, ctx.now)}</span>
-                  <div className="flex gap-2">
-                    {c.platform !== "picqer" && (
-                      <Button small onClick={() => ctx.locked(`add_account:${c.platform}`, `Adding another ${c.name} account`)}><Plus size={14} />Account</Button>
-                    )}
-                    <Button small onClick={() => ctx.locked(`settings:${c.platform}`, `${c.name} settings`)}><Settings2 size={14} />Settings</Button>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.06em] text-[#64748b]">Alerts</h2>
-        <Card className="flex flex-wrap items-center gap-4">
-          <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#5865F2] text-white"><SiDiscord size={24} color="currentColor" /></span>
-          <div className="min-w-0 flex-1">
-            <p className="text-[15px] font-semibold">Team chat (Discord)</p>
-            <p className="text-[13px] text-[#64748b]">Sold-out sizes pulled, cancelled orders put back, and the not-listed report arrive here.</p>
+    <div className="flex flex-col gap-7">
+      {groups.map((g) => (
+        <section key={g.title}>
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <h2 className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[#64748b]">{g.title}</h2>
+            <span className="text-[12.5px] text-[#94a3b8]">{g.sub}</span>
           </div>
-          <Badge tone="green" dot>Connected</Badge>
-        </Card>
-      </section>
-
-      <section>
-        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[#64748b]">Add a channel</h2>
-          <span className="text-[13px] text-[#64748b]">Sell the same stock on more channels</span>
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {ADD.map((a) => (
-            <Card key={a.slug} className="flex items-center gap-3 !p-4">
-              <Logo slug={a.slug} name={a.name} size={40} />
-              <div className="min-w-0 flex-1">
-                <p className="text-[14.5px] font-semibold">{a.name}</p>
-                <p className="text-[12.5px] text-[#64748b]">{a.type}</p>
-              </div>
-              <Button small onClick={() => ctx.connect(a.slug, a.name)}>Connect</Button>
-            </Card>
-          ))}
-        </div>
-      </section>
+          <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1400px]:grid-cols-5">
+            {g.tiles.map((t) => <IntegrationTile key={t.slug} t={t} ctx={ctx} />)}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
 
 /* ---------- orders ---------- */
 
-type PlatformFilter = "all" | "stockx" | "alias";
+type PlatformFilter = "all" | SellPlatform;
 const PLATFORM_TABS: { id: PlatformFilter; label: string; logo?: string }[] = [
   { id: "all", label: "All" },
-  { id: "stockx", label: "StockX", logo: LOGO_SLUG.stockx },
-  { id: "alias", label: "Alias", logo: LOGO_SLUG.alias },
+  ...CHANNELS.map((c) => ({ id: c.id, label: c.name, logo: c.logo })),
 ];
 
-function Channel({ platform, label }: { platform: "stockx" | "alias"; label: string }) {
-  const p = PLATFORM[platform];
+function Channel({ platform, label }: { platform: string; label: string }) {
+  const b = brandOf(platform);
   return (
     <span className="inline-flex items-center gap-2 whitespace-nowrap">
-      <Logo slug={p.slug} name={p.name} size={22} />
+      <Logo slug={b.slug} name={b.name} size={22} />
       {label}
     </span>
   );
@@ -405,7 +555,7 @@ export function Orders({ ctx }: { ctx: Ctx }) {
         <Tabs value={f.platform} options={PLATFORM_TABS} onChange={f.setPlatform} />
         <SearchInput value={f.q} onChange={f.setQ} placeholder="Search product or style code" />
       </div>
-      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Every marketplace order, as it came in, and what the sync did with the stock. Click one for the product.</p>
+      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Every order, as it came in, and what the sync did with the stock. Click one for the product.</p>
       {loading && !data ? <Skeleton /> : failed && !data ? <Failed /> : !rows.length ? <Empty>No orders match this search.</Empty> : (
         <>
           <div className="hidden overflow-x-auto md:block">
@@ -416,12 +566,12 @@ export function Orders({ ctx }: { ctx: Ctx }) {
               <tbody className={loading ? "opacity-60" : ""}>
                 {rows.map((s) => (
                   <tr key={s.id} onClick={s.detail ? () => ctx.open(s.id) : undefined} className={s.detail ? "cursor-pointer hover:bg-[#f8fafc]" : ""}>
-                    <Td><div className="font-medium tabular-nums">{s.ref || "–"}</div><div className="text-[12.5px] text-[#64748b]">{clock(s.soldAt)}</div></Td>
+                    <Td><div className="font-medium tabular-nums">{s.ref || "–"}</div><div className="whitespace-nowrap text-[12.5px] text-[#64748b]">{clock(s.soldAt)}</div></Td>
                     <Td><div className="max-w-[300px] truncate font-medium">{s.product}</div><div className="text-[12.5px] text-[#64748b]">{s.style} · US {s.size}</div></Td>
                     <Td><Channel platform={s.platform} label={s.storeLabel} /></Td>
                     <Td><Badge tone={stateTone(s.state)}>{s.state}</Badge></Td>
                     <Td><Steps steps={s.steps} /></Td>
-                    <Td className="text-right text-[13px] text-[#64748b]">{lag(s.soldAt, s.syncedAt) ? `${lag(s.soldAt, s.syncedAt)} later` : "–"}</Td>
+                    <Td className="whitespace-nowrap text-right text-[13px] text-[#64748b]">{lag(s.soldAt, s.syncedAt) ? `${lag(s.soldAt, s.syncedAt)} later` : "–"}</Td>
                   </tr>
                 ))}
               </tbody>
@@ -437,17 +587,37 @@ export function Orders({ ctx }: { ctx: Ctx }) {
   );
 }
 
-/* ---------- products (links between Picqer and the marketplace accounts) ---------- */
+/* ---------- products (links between Picqer and the channel accounts) ---------- */
 
-const STORE_TABS: { id: StoreId; label: string; logo: string }[] = [
-  { id: "sx-eu", label: "StockX EU", logo: LOGO_SLUG.stockx },
-  { id: "sx-us", label: "StockX US", logo: LOGO_SLUG.stockx },
-  { id: "al-main", label: "Alias", logo: LOGO_SLUG.alias },
-  { id: "al-usa", label: "Alias USA", logo: LOGO_SLUG.alias },
-];
+const STORE_TABS: { id: StoreId; label: string; logo: string }[] = STORES.map((s) => ({ id: s.id, label: s.label, logo: brandOf(s.platform).slug }));
+
+const GPT_TIP = "Size and colour read from the Picqer name by GPT";
+/** GPT read the size or colour from the Picqer product's name */
+const gptParsed = (r: { us?: string; eu?: string; color?: string }) => !!(r.us || r.eu || r.color);
+
+function GptTag() {
+  return (
+    <span title={GPT_TIP} className="inline-flex h-5 shrink-0 cursor-help items-center gap-1 whitespace-nowrap rounded-md bg-[#f5f3ff] px-1.5 text-[11px] font-semibold text-[#6d28d9] ring-1 ring-inset ring-[#ddd6fe]">
+      <span aria-hidden>✦</span>GPT
+    </span>
+  );
+}
+
+function LinkChips({ links }: { links: Linked["links"] }) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {links.map((l) => (
+        <span key={l.store} className="inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#e3e6eb] bg-white pl-1 pr-2.5 text-[12.5px] font-medium">
+          <PLogo platform={l.platform} size={20} className="!rounded-full" />
+          {l.storeLabel}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export function Products({ ctx }: { ctx: Ctx }) {
-  const [store, setStore] = useState<StoreId>("sx-eu");
+  const [store, setStore] = useState<StoreId>(STORE_TABS[0].id);
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
   const dq = useDebounced(q.trim());
@@ -472,10 +642,13 @@ export function Products({ ctx }: { ctx: Ctx }) {
           <Button onClick={() => ctx.locked("link_listing", "Linking a listing by hand")}><Plus size={15} />Link</Button>
         </div>
       </div>
-      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Each Picqer product is one size of one sneaker. The sync links it to the same size on every account, so one sale counts everywhere.</p>
+      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">
+        Each Picqer product is one size of one sneaker. The sync links it to the same size on every account, so one sale counts everywhere.
+        <span className="mt-1.5 flex items-center gap-2"><GptTag /><span>GPT read the size and colour from the product name.</span></span>
+      </p>
       {loading && !data ? <Skeleton /> : failed && !data ? <Failed /> : !rows.length ? <Empty>No linked products match this search.</Empty> : (
         <>
-          <div className="overflow-x-auto">
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[640px] border-collapse">
               <thead>
                 <tr><Th>Picqer product</Th><Th className="hidden xl:table-cell">Colour</Th><Th>Size</Th><Th>Linked to</Th><Th className="text-right">Linked</Th></tr>
@@ -485,30 +658,50 @@ export function Products({ ctx }: { ctx: Ctx }) {
                   <tr key={r.id} onClick={r.detail ? () => ctx.open(r.id) : undefined} className={r.detail ? "cursor-pointer hover:bg-[#f8fafc]" : ""}>
                     <Td>
                       <div className="flex items-center gap-2.5">
-                        <Logo slug={LOGO_SLUG.picqer} name="Picqer" size={24} />
+                        <Logo slug={PICQER.logo} name={PICQER.name} size={24} />
                         <div className="min-w-0">
-                          <div className="font-medium tabular-nums">{r.code}</div>
+                          <div className="flex items-center gap-2">
+                            <span className="whitespace-nowrap font-medium tabular-nums">{r.code}</span>
+                            {gptParsed(r) && <GptTag />}
+                          </div>
                           {r.name && <div className="max-w-[260px] truncate text-[12.5px] text-[#64748b]">{r.name}</div>}
                         </div>
                       </div>
                     </Td>
-                    <Td className="hidden text-[13.5px] text-[#334155] xl:table-cell">{r.color || "–"}</Td>
+                    <Td className="hidden whitespace-nowrap text-[13.5px] text-[#334155] xl:table-cell">{r.color || "–"}</Td>
                     <Td className="whitespace-nowrap text-[13.5px]">US {r.us || "–"} · EU {r.eu || "–"}</Td>
-                    <Td>
-                      <div className="flex flex-wrap gap-1.5">
-                        {r.links.map((l) => (
-                          <span key={l.store} className="inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#e3e6eb] bg-white pl-1 pr-2.5 text-[12.5px] font-medium">
-                            <Logo slug={PLATFORM[l.platform].slug} name={l.storeLabel} size={20} className="!rounded-full" />
-                            {l.storeLabel}
-                          </span>
-                        ))}
-                      </div>
-                    </Td>
+                    <Td><LinkChips links={r.links} /></Td>
                     <Td className="whitespace-nowrap text-right text-[13px] text-[#64748b]">{ago(r.linkedAt, ctx.now)}</Td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+          {/* phones: one card per product */}
+          <div className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5] md:hidden">
+            {rows.map((r) => {
+              const body = (
+                <>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold tabular-nums">{r.code}</span>
+                        {gptParsed(r) && <GptTag />}
+                      </div>
+                      {r.name && <p className="truncate text-[12.5px] text-[#64748b]">{r.name}</p>}
+                    </div>
+                    <span className="shrink-0 text-[12.5px] text-[#64748b]">{ago(r.linkedAt, ctx.now)}</span>
+                  </div>
+                  <p className="mt-1 text-[13px] text-[#334155]">US {r.us || "–"} · EU {r.eu || "–"}{r.color && ` · ${r.color}`}</p>
+                  <div className="mt-2"><LinkChips links={r.links} /></div>
+                </>
+              );
+              return r.detail ? (
+                <button key={r.id} type="button" onClick={() => ctx.open(r.id)} className="block w-full px-5 py-3.5 text-left text-[14px] hover:bg-[#f8fafc]">{body}</button>
+              ) : (
+                <div key={r.id} className="px-5 py-3.5 text-[14px]">{body}</div>
+              );
+            })}
           </div>
           <Pager page={page} pages={data?.data.pages ?? 1} total={data?.data.total ?? 0} onPage={(p) => { setPage(p); ctx.t?.action("products_page", String(p)); }} noun="products linked to this account" />
         </>
@@ -533,10 +726,10 @@ export function Listings({ ctx }: { ctx: Ctx }) {
           <Button onClick={() => ctx.locked("not_listed_report", "The not-listed report (a spreadsheet of stock in Picqer that is not listed yet, sent to your team chat)")}>Not-listed report</Button>
         </div>
       </div>
-      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Listings on the marketplace accounts the sync watches. When a size sells out in Picqer, its listings come down.</p>
+      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Listings on the channel accounts the sync watches. When a size sells out in Picqer, its listings come down.</p>
       {loading && !data ? <Skeleton /> : failed && !data ? <Failed /> : !rows.length ? <Empty>No listings match this search.</Empty> : (
         <>
-          <div className="overflow-x-auto">
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[640px] border-collapse">
               <thead>
                 <tr><Th>Product</Th><Th>Style</Th><Th>Size</Th><Th>Channel</Th><Th className="text-right">Picked up</Th></tr>
@@ -554,6 +747,24 @@ export function Listings({ ctx }: { ctx: Ctx }) {
               </tbody>
             </table>
           </div>
+          {/* phones: one line per listing */}
+          <ul className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5] md:hidden">
+            {rows.map((l) => {
+              const b = brandOf(l.platform);
+              return (
+                <li key={l.id} className="flex gap-3 px-5 py-3">
+                  <Logo slug={b.slug} name={b.name} size={32} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 truncate text-[14px] font-medium">{l.product}</span>
+                      <span className="shrink-0 text-[12.5px] text-[#64748b]">{ago(l.at, ctx.now)}</span>
+                    </div>
+                    <p className="mt-0.5 text-[12.5px] text-[#64748b]">{l.style} · US {l.size} · {l.storeLabel}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
           <Pager page={f.page} pages={data?.data.pages ?? 1} total={data?.data.total ?? 0} onPage={f.setPage} noun="listings" />
         </>
       )}
@@ -563,32 +774,37 @@ export function Listings({ ctx }: { ctx: Ctx }) {
 
 /* ---------- automations ---------- */
 
-type Ends = "stockx" | "alias" | "picqer" | "both" | "chat";
-const AUTOMATIONS: { id: string; job: string | null; from: Ends; to: Ends; when: string; then: string; every?: string }[] = [
+// "real" = the client's live channels together; "chat" = the team chat (Discord)
+type Ends = Platform | "real" | "chat";
+type Rule = { id: string; job: string | null; from: Ends; to: Ends; when: string; then: string; every?: string };
+
+const AUTOMATIONS: Rule[] = [
   { id: "stockx-sale", job: "stockx-orders", from: "stockx", to: "picqer", when: "A pair sells on StockX", then: "Take one off the Picqer stock, from the bin with the most free stock" },
   { id: "alias-sale", job: "alias-orders", from: "alias", to: "picqer", when: "A pair sells on Alias", then: "Take one off the Picqer stock and confirm the order on Alias" },
+  ...OTHER.map<Rule>((c) => ({ id: `${c.id}-sale`, job: `${c.id}-orders`, from: c.id, to: "picqer", when: `A sale comes in on ${c.name}`, then: "Take one off the Picqer stock, so every other channel sees it" })),
   { id: "last-pair", job: "alias-orders", from: "alias", to: "stockx", when: "The last pair sells on Alias", then: "Pull that size from StockX EU and StockX US" },
-  { id: "sold-out", job: "zero-stock", from: "picqer", to: "both", when: "A size is sold out in Picqer", then: "Pull its listings on StockX and Alias, and tell the team chat" },
+  { id: "sold-out", job: "zero-stock", from: "picqer", to: "real", when: "A size is sold out in Picqer", then: "Pull its listings on StockX and Alias, and tell the team chat" },
+  ...OTHER.map<Rule>((c) => ({ id: `${c.id}-sold-out`, job: "zero-stock", from: "picqer", to: c.id, when: "A size sells out in Picqer", then: `Take it off ${c.name}, so it can't be sold twice` })),
+  ...OTHER.map<Rule>((c) => ({ id: `${c.id}-stock`, job: `${c.id}-stock`, from: "picqer", to: c.id, when: "The Picqer stock changes", then: `Send the new stock level to ${c.name}` })),
   { id: "restock", job: "alias-restock", from: "alias", to: "picqer", when: "An Alias buyer cancels", then: "Put the pair back into stock, in the bin it came from" },
-  { id: "new-product", job: "picqer-products", from: "picqer", to: "both", when: "A new product is added in Picqer", then: "Link it to the same size on StockX and Alias, by style code and size" },
+  { id: "new-product", job: "picqer-products", from: "picqer", to: "real", when: "A new product is added in Picqer", then: "Link it to the same size on StockX and Alias, by style code and size" },
   { id: "sx-listings", job: "stockx-products", from: "stockx", to: "picqer", when: "New listings on StockX", then: "Pick them up and link them to their Picqer product" },
   { id: "al-listings", job: "alias-listings", from: "alias", to: "picqer", when: "New listings on Alias", then: "Keep the active listings current, so a sold-out size can be pulled" },
   { id: "photos", job: "picqer-images", from: "picqer", to: "picqer", when: "A Picqer product has no photo", then: "Find the sneaker's product photo and add it in Picqer" },
-  { id: "unmatched", job: null, from: "both", to: "picqer", when: "An order can't be matched to a product", then: "Flag it in the orders list for a look, and leave the stock as it is", every: "with every order" },
+  { id: "unmatched", job: null, from: "real", to: "picqer", when: "An order can't be matched to a product", then: "Flag it in the orders list for a look, and leave the stock as it is", every: "with every order" },
   { id: "not-listed", job: null, from: "picqer", to: "chat", when: "You ask for the not-listed report", then: "Send a spreadsheet of stock in Picqer that is not listed on StockX or Alias yet", every: "on demand" },
 ];
 
 function End({ e }: { e: Ends }) {
-  if (e === "chat") return <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#5865F2] text-white"><SiDiscord size={17} color="currentColor" /></span>;
-  if (e === "both") {
+  if (e === "chat") return <BrandMark slug="discord" name="Discord" size={32} />;
+  if (e === "real") {
     return (
       <span className="flex -space-x-2">
-        <Logo slug={LOGO_SLUG.stockx} name="StockX" size={32} className="ring-2 ring-white" />
-        <Logo slug={LOGO_SLUG.alias} name="Alias" size={32} className="ring-2 ring-white" />
+        {REAL.map((c) => <Logo key={c.id} slug={c.logo} name={c.name} size={32} className="ring-2 ring-white" />)}
       </span>
     );
   }
-  return <Logo slug={PLATFORM[e].slug} name={PLATFORM[e].name} size={32} />;
+  return <PLogo platform={e} size={32} />;
 }
 
 export function Automations({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) {
@@ -596,36 +812,43 @@ export function Automations({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
   const jobs = new Map(ov.data.jobs.map((j) => [j.key, j]));
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[13.5px] text-[#64748b]">What the sync does on its own. The times are the real last runs.</p>
+      <p className="text-[13.5px] text-[#64748b]">What the sync does on its own, and when each rule last ran.</p>
       {AUTOMATIONS.map((a) => {
         const j = a.job ? jobs.get(a.job) : undefined;
         if (a.job && !j) return null;
+        const toggle = (cls: string) => (
+          <button
+            type="button"
+            onClick={() => ctx.locked(`toggle:${a.id}`, "Switching an automation off")}
+            className={`relative h-6 w-11 shrink-0 rounded-full bg-[#16a34a] ${cls}`}
+            role="switch"
+            aria-checked="true"
+            aria-label={`${a.when}: on`}
+          >
+            <span className="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" />
+          </button>
+        );
         return (
           <Card key={a.id} className="flex flex-col gap-3 !p-4 xl:flex-row xl:items-center xl:gap-5">
-            <div className="flex min-w-0 flex-1 items-center gap-4">
-              <div className="flex shrink-0 items-center gap-2">
-                <End e={a.from} />
-                <ArrowRight size={16} className="text-[#94a3b8]" />
-                <End e={a.to} />
+            <div className="flex min-w-0 flex-1 flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-4">
+              {/* phones: the two ends and the switch on one row, the rule under them at full width */}
+              <div className="flex shrink-0 items-center justify-between gap-2 sm:w-[124px]">
+                <div className="flex items-center gap-2">
+                  <End e={a.from} />
+                  <ArrowRight size={16} className="text-[#94a3b8]" />
+                  <End e={a.to} />
+                </div>
+                {toggle("sm:hidden")}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[14.5px] font-semibold"><span className="text-[#64748b]">When</span> {a.when.charAt(0).toLowerCase() + a.when.slice(1)}</p>
                 <p className="mt-0.5 text-[13.5px] text-[#334155]"><span className="font-semibold text-[#64748b]">Then</span> {a.then.charAt(0).toLowerCase() + a.then.slice(1)}</p>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-3 border-t border-[#f1f3f5] pt-3 xl:justify-end xl:border-0 xl:pt-0">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[#f1f3f5] pt-3 xl:justify-end xl:border-0 xl:pt-0">
               <span className="text-[12.5px] text-[#64748b]">{j ? `${j.every} · ran ${ago(j.lastRun, ctx.now)}` : a.every}</span>
               {j && <Badge tone={JOB_TONE[j.status]} dot>{JOB_TEXT[j.status]}</Badge>}
-              <button
-                type="button"
-                onClick={() => ctx.locked(`toggle:${a.id}`, "Switching an automation off")}
-                className="relative h-6 w-11 shrink-0 rounded-full bg-[#16a34a]"
-                role="switch"
-                aria-checked="true"
-                aria-label={`${a.when}: on`}
-              >
-                <span className="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" />
-              </button>
+              {toggle("hidden sm:block")}
             </div>
           </Card>
         );

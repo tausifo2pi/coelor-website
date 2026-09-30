@@ -9,15 +9,15 @@ import { overview } from "@/lib/demo/ak";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Live demo: StockX, Alias and Picqer in sync · Coelor",
-  description: "A sneaker reseller's running sync between StockX, Alias and Picqer: orders, stock, listings and automations, live and read-only.",
+  title: "Live demo: multi-platform sync · Coelor",
+  description: "A multi-platform sync at work: marketplaces, web store and warehouse on one stock count. Orders, stock, listings and automations, read-only.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/demo/multi-platform-sync" },
 };
 
 export const viewport: Viewport = { themeColor: "#0f172a", colorScheme: "light" };
 
-const SECTIONS: SectionId[] = ["dashboard", "connections", "orders", "products", "listings", "automations"];
+const SECTIONS: SectionId[] = ["dashboard", "connections", "orders", "products", "listings", "automations", "extra"];
 
 export default async function DemoPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;

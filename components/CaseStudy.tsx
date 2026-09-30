@@ -27,7 +27,7 @@ function DemoLink() {
           <span className="pulse h-2 w-2 rounded-full bg-accent" aria-hidden />
           Live demo
         </span>
-        <span className="text-[14px] font-semibold leading-[1.4] text-ink">See the sync running, with real orders</span>
+        <span className="text-[14px] font-semibold leading-[1.4] text-ink">See the sync running: orders, stock and automations</span>
       </span>
       <Icon name="arrow-right" size={16} strokeWidth={2.4} className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
     </a>
@@ -239,8 +239,8 @@ function Setup({ c }: { c: CaseContent }) {
         {showsDemo(c) && (
           <div className="flex flex-col gap-4 rounded-[14px] border border-rule bg-white/[0.02] p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-1">
-              <span className="text-[17px] font-semibold text-ink">Look inside the running sync</span>
-              <span className="text-[14px] leading-[1.6] text-ink-muted">The live orders, stock and automations, read-only. Names and order numbers are hidden.</span>
+              <span className="text-[17px] font-semibold text-ink">Look inside the sync</span>
+              <span className="text-[14px] leading-[1.6] text-ink-muted">Orders, stock, listings and automations in one place, read-only. Customer names and order numbers are hidden.</span>
             </div>
             <a href={DEMO} className="btn-ghost w-fit shrink-0">
               Open the live demo
