@@ -1,19 +1,17 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
 
 /**
  * Hero backdrop: a Stripe-style mesh gradient.
  *
- * One fullscreen quad, one fragment shader. A base colour plus three colour
- * layers, each revealed by its own drifting 3D simplex-noise field, with a
- * low-frequency domain warp so the layers fold over each other like cloth.
- * The soft dissolve into the page comes from a CSS mask on the wrapper;
- * the shader itself is a plain rectangle.
+ * One fullscreen quad, one fragment shader, drawn with plain WebGL (no 3D library: this is the page's only WebGL and a
+ * library would add ~150 KB of JavaScript). A base colour plus three colour layers, each revealed by its own drifting
+ * 3D simplex-noise field, with a low-frequency domain warp so the layers fold over each other like cloth.
+ * The soft dissolve into the page comes from a CSS mask on the wrapper; the shader itself is a plain rectangle.
  *
- * Pauses when scrolled off screen. Renders one static frame under
- * prefers-reduced-motion. No pointer interaction.
+ * Pauses when scrolled off screen. Renders one static frame under prefers-reduced-motion. No pointer interaction.
+ * Without WebGL the band stays dark (the page background).
  */
 
 /** Seconds into the loop at which the page starts; picked so the first frame already shows the blue/rose composition. */
@@ -25,15 +23,20 @@ export const HERO_COLORS = {
 } as const;
 
 const VERT = /* glsl */ `
+attribute vec2 aPos;
 varying vec2 vUv;
 void main() {
-  vUv = uv;
-  gl_Position = vec4(position, 1.0);
+  vUv = aPos * 0.5 + 0.5;
+  gl_Position = vec4(aPos, 0.0, 1.0);
 }
 `;
 
 const FRAG = /* glsl */ `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
+#else
+precision mediump float;
+#endif
 varying vec2 vUv;
 uniform float uTime;
 uniform vec2 uRes;
@@ -142,7 +145,13 @@ void main() {
 }
 `;
 
-const hex = (h: string) => new THREE.Color(h);
+// The colours go in as linear RGB (sRGB hex decoded), and the shader writes its result without converting back: the
+// look was tuned that way (it is what three.js did with these values), so keep it.
+const srgbToLinear = (c: number) => (c < 0.04045 ? c * 0.0773993808 : Math.pow(c * 0.9478672986 + 0.0521327014, 2.4));
+const linear = (hex: string): [number, number, number] => {
+  const n = parseInt(hex.slice(1), 16);
+  return [srgbToLinear(((n >> 16) & 255) / 255), srgbToLinear(((n >> 8) & 255) / 255), srgbToLinear((n & 255) / 255)];
+};
 
 export default function HeroScene() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -153,45 +162,81 @@ export default function HeroScene() {
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: "high-performance" });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-    renderer.domElement.style.display = "block";
-    renderer.domElement.style.width = "100%";
-    renderer.domElement.style.height = "100%";
-    wrap.appendChild(renderer.domElement);
+    const canvas = document.createElement("canvas");
+    canvas.style.display = "block";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    const attrs: WebGLContextAttributes = { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: "high-performance" };
+    const gl = (canvas.getContext("webgl2", attrs) ?? canvas.getContext("webgl", attrs)) as WebGLRenderingContext | null;
+    if (!gl) return;
 
-    const uniforms = {
-      uTime: { value: 0 },
-      uRes: { value: new THREE.Vector2(1, 1) },
-      uBase: { value: hex(HERO_COLORS.base) },
-      uC1: { value: hex(HERO_COLORS.layers[0]) },
-      uC2: { value: hex(HERO_COLORS.layers[1]) },
-      uC3: { value: hex(HERO_COLORS.layers[2]) },
-      uDim: { value: 0.9 },
+    const shader = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    };
+    const vs = shader(gl.VERTEX_SHADER, VERT);
+    const fs = shader(gl.FRAGMENT_SHADER, FRAG);
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    const buf = gl.createBuffer();
+    const release = () => {
+      gl.deleteBuffer(buf);
+      gl.deleteProgram(prog);
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+    };
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      release();
+      return;
+    }
+    gl.useProgram(prog);
+
+    // Two triangles covering clip space; uv = (0,0) bottom-left to (1,1) top-right.
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const aPos = gl.getAttribLocation(prog, "aPos");
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    const loc = (name: string) => gl.getUniformLocation(prog, name);
+    const uTime = loc("uTime");
+    const uRes = loc("uRes");
+    gl.uniform3fv(loc("uBase"), linear(HERO_COLORS.base));
+    gl.uniform3fv(loc("uC1"), linear(HERO_COLORS.layers[0]));
+    gl.uniform3fv(loc("uC2"), linear(HERO_COLORS.layers[1]));
+    gl.uniform3fv(loc("uC3"), linear(HERO_COLORS.layers[2]));
+    gl.uniform1f(loc("uDim"), 0.9);
+
+    const start = performance.now();
+    const draw = () => {
+      gl.uniform1f(uTime, HERO_START + (performance.now() - start) / 1000);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms, depthTest: false, depthWrite: false });
-    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
-
+    const pr = Math.min(window.devicePixelRatio, 1.5);
     const resize = () => {
       const w = wrap.clientWidth || 1;
       const h = wrap.clientHeight || 1;
-      renderer.setSize(w, h, false);
-      uniforms.uRes.value.set(w * renderer.getPixelRatio(), h * renderer.getPixelRatio());
+      canvas.width = Math.floor(w * pr);
+      canvas.height = Math.floor(h * pr);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(uRes, w * pr, h * pr);
+      if (reduced) draw(); // resizing clears the canvas; the animated loop repaints on its next frame anyway
     };
+    wrap.appendChild(canvas);
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(wrap);
 
     let raf = 0;
     let visible = true;
-    const offset = HERO_START;
-    const start = performance.now();
     const frame = () => {
-      uniforms.uTime.value = offset + (performance.now() - start) / 1000;
-      renderer.render(scene, camera);
+      draw();
       if (!reduced && visible) raf = requestAnimationFrame(frame);
     };
 
@@ -207,16 +252,14 @@ export default function HeroScene() {
     });
     io.observe(wrap);
 
-    uniforms.uTime.value = offset + (reduced ? 18 : 0);
     frame();
 
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();
-      mat.dispose();
-      renderer.dispose();
-      wrap.removeChild(renderer.domElement);
+      release();
+      canvas.remove();
     };
   }, []);
 

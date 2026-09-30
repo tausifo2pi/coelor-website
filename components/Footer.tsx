@@ -1,7 +1,7 @@
 import content from "@/data/site-content.json";
 import Logo from "@/components/Logo";
 
-/** `base` prefixes the section links (e.g. "/") when the footer sits on a page other than home. */
+/** `base` prefixes the section links ("#…", e.g. with "/") when the footer sits on a page other than home; page links ("/pricing") stay as they are. */
 export default function Footer({ base = "" }: { base?: string }) {
   const { footer, brand } = content;
   return (
@@ -14,7 +14,7 @@ export default function Footer({ base = "" }: { base?: string }) {
         </div>
         <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-7 gap-y-3">
           {footer.links.map((l) => (
-            <a key={l.href} href={base + l.href} className="py-1.5 text-[14px] text-ink-muted transition-colors hover:text-ink">
+            <a key={l.href} href={l.href.startsWith("#") ? base + l.href : l.href} className="py-1.5 text-[14px] text-ink-muted transition-colors hover:text-ink">
               {l.label}
             </a>
           ))}

@@ -2,21 +2,16 @@ import content from "@/data/site-content.json";
 import SectionHead from "@/components/SectionHead";
 import { Icon } from "@/components/icons";
 
+/** How it works: three steps on a timeline (a sweeping rail on desktop, a vertical line on phones). */
 export default function Process() {
   const { process } = content;
   const last = process.steps.length - 1;
   return (
     <section id="process" aria-labelledby="process-title" className="scroll-mt-16">
       <div className="mx-auto flex max-w-site flex-col gap-10 px-5 py-16 md:px-10 lg:gap-14 lg:px-20 lg:py-[104px]">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
-          <SectionHead id="process-title" num={process.num} eyebrow={process.eyebrow} headline={process.headline} className="max-w-[640px]" />
-          <p className="inline-flex items-center gap-2 rounded-full border border-rule bg-panel px-3.5 py-2 text-[13px] text-ink-muted lg:mb-1">
-            <Icon name="calendar-clock" size={15} className="text-accent" />
-            {process.timeline}
-          </p>
-        </div>
+        <SectionHead id="process-title" num={process.num} eyebrow={process.eyebrow} headline={process.headline} className="max-w-[640px]" />
 
-        <ol className="timeline relative grid grid-cols-1 gap-8 lg:grid-cols-4 lg:gap-6">
+        <ol className="timeline relative grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-6">
           {/* horizontal rail (desktop) */}
           <div className="rail pointer-events-none absolute left-6 right-6 top-6 hidden h-[2px] rounded-full lg:block" aria-hidden />
           {process.steps.map((s, i) => (
@@ -33,8 +28,8 @@ export default function Process() {
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="inline-flex w-fit items-center rounded-md bg-accent/10 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.08em] text-accent">{s.when}</span>
-                <span className="text-[20px] font-semibold text-ink">{s.title}</span>
-                <span className="text-[14px] leading-[1.6] text-ink-muted">{s.body}</span>
+                <h3 className="text-[20px] font-semibold text-ink">{s.title}</h3>
+                <p className="text-[14px] leading-[1.6] text-ink-muted md:text-[15px]">{s.body}</p>
               </div>
             </li>
           ))}

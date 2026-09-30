@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import content from "@/data/site-content.json";
 
 import { Icon } from "@/components/icons";
 import Logo from "@/components/Logo";
 
+type NavLink = { label: string; href: string };
+
 const Arrow = () => <Icon name="arrow-right" size={14} strokeWidth={2.4} />;
 
-export default function Navbar() {
+/** Copy comes in as props from the page (a server component), so the content file never ships to the browser. */
+export default function Navbar({ brand, links, cta }: { brand: string; links: NavLink[]; cta: NavLink }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -31,10 +33,12 @@ export default function Navbar() {
     };
   }, [open]);
 
-  const go = (id: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
+  // "#id" scrolls smoothly on this page; any other href ("/pricing") is a normal link.
+  const go = (href: string) => (e: React.MouseEvent) => {
     setOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!href.startsWith("#")) return;
+    e.preventDefault();
+    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -49,25 +53,25 @@ export default function Navbar() {
         }}
       >
       <div className="mx-auto flex h-[68px] max-w-site items-center justify-between px-5 md:h-[76px] md:px-10 lg:px-20">
-        <a href="#top" onClick={go("top")} aria-label={`${content.brand.name} home`} className="flex items-center py-2">
+        <a href="#hero" onClick={go("#hero")} aria-label={`${brand} home`} className="flex items-center py-2">
           <Logo height={26} priority className="md:hidden" />
           <Logo height={32} priority className="hidden md:block" />
         </a>
 
         <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
-          {content.nav.map((n) => (
-            <a key={n.id} href={`#${n.id}`} onClick={go(n.id)} className="py-1.5 text-[15px] font-medium text-ink/85 transition-colors hover:text-ink">
+          {links.map((n) => (
+            <a key={n.href} href={n.href} onClick={go(n.href)} className="py-1.5 text-[15px] font-medium text-ink/85 transition-colors hover:text-ink">
               {n.label}
             </a>
           ))}
         </nav>
 
         <a
-          href={content.navCta.href}
-          onClick={go("contact")}
+          href={cta.href}
+          onClick={go(cta.href)}
           className="hidden h-10 items-center gap-2 rounded-full border border-rule-strong bg-white/10 px-[18px] text-[15px] font-medium text-ink transition-colors hover:bg-white/15 lg:inline-flex"
         >
-          {content.navCta.label}
+          {cta.label}
           <Arrow />
         </a>
 
@@ -106,15 +110,15 @@ export default function Navbar() {
       >
         <div className="h-[68px] shrink-0" />
         <nav aria-label="Mobile" className="flex flex-1 flex-col justify-center gap-7 px-8">
-          {content.nav.map((n) => (
-            <a key={n.id} href={`#${n.id}`} onClick={go(n.id)} className="text-[32px] font-semibold tracking-tight text-ink">
+          {links.map((n) => (
+            <a key={n.href} href={n.href} onClick={go(n.href)} className="text-[32px] font-semibold tracking-tight text-ink">
               {n.label}
             </a>
           ))}
         </nav>
         <div className="shrink-0 border-t border-rule px-8 py-8">
-          <a href="#contact" onClick={go("contact")} className="btn-primary w-full">
-            {content.navCta.label}
+          <a href={cta.href} onClick={go(cta.href)} className="btn-primary w-full">
+            {cta.label}
             <Arrow />
           </a>
         </div>

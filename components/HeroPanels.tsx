@@ -1,32 +1,47 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import content from "@/data/site-content.json";
 import { Icon } from "@/components/icons";
 
 const VISIBLE = 4;
 const ROW_H = 56; // px, including gap
 const INTERVAL_MS = 3200;
 
+export type HeroFeed = {
+  title: string;
+  badge: string;
+  footer: string;
+  /** "HH:MM" of the newest row on first paint; each later row is STEP_MIN minutes newer */
+  clock: string;
+  events: Array<{ id: string; icon: string; title: string; detail: string; state?: string }>;
+};
+
+const STEP_MIN = 2;
+
 /**
- * One translucent card over the hero gradient: a live feed of automation
- * events. Rows keep stable keys and slide to their new slot with a CSS
- * transition, so a new event pushes the list down instead of re-rendering it.
- * Stops rotating under prefers-reduced-motion.
+ * One translucent card over the hero gradient: a feed of automation events (an illustration, not live data). Rows keep
+ * stable keys and slide to their new slot with a CSS transition, so a new event pushes the list down instead of
+ * re-rendering it. Stops rotating under prefers-reduced-motion.
  */
-export default function HeroPanels() {
-  const { feed } = content.hero;
+export default function HeroPanels({ feed }: { feed: HeroFeed }) {
   const n = feed.events.length;
-  const [head, setHead] = useState(0);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setInterval(() => setHead((h) => (h + 1) % n), INTERVAL_MS);
+    const id = window.setInterval(() => setTick((t) => t + 1), INTERVAL_MS);
     return () => window.clearInterval(id);
-  }, [n]);
+  }, []);
 
   // rank 0 = newest (top). Ranks >= VISIBLE sit below the fold, faded out.
+  const head = tick % n;
   const rank = (i: number) => (head - i + n) % n;
+  // A row's time is the step it last came in at, so the times always run newest-first down the card.
+  const [hh, mm] = feed.clock.split(":").map(Number);
+  const timeOf = (i: number) => {
+    const m = (((hh * 60 + mm + (tick - rank(i)) * STEP_MIN) % 1440) + 1440) % 1440;
+    return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+  };
 
   return (
     <div className="mx-auto w-full max-w-[440px] lg:ml-auto lg:mr-0">
@@ -38,7 +53,7 @@ export default function HeroPanels() {
           </span>
           <span className="inline-flex h-6 items-center gap-2 rounded-full border border-ok/25 bg-ok/10 px-2.5 text-[11px] font-medium text-[#8fe7c2]">
             <span className="pulse h-1.5 w-1.5 rounded-full bg-ok" />
-            Live
+            {feed.badge}
           </span>
         </div>
 
@@ -66,18 +81,17 @@ export default function HeroPanels() {
                   <span className="truncate text-[13px] font-semibold text-ink">{e.title}</span>
                   <span className="truncate text-[12px] text-ink/60">{e.detail}</span>
                 </span>
-                <span className="font-mono text-[11px] tabular-nums text-ink/45">{e.time}</span>
+                <span className="font-mono text-[11px] tabular-nums text-ink/45">{timeOf(i)}</span>
               </li>
             );
           })}
         </ul>
 
-        <div className="flex items-center justify-between border-t border-white/[0.08] px-5 py-3 text-[12px] text-ink/60">
-          <span className="inline-flex items-center gap-2">
-            <Icon name="check" size={13} strokeWidth={2.4} className="text-ok" />
-            {feed.footer}
+        <div className="flex items-center border-t border-white/[0.08] px-5 py-3 text-[12px] text-ink/60">
+          <span className="inline-flex min-w-0 items-center gap-2">
+            <Icon name="check" size={13} strokeWidth={2.4} className="shrink-0 text-ok" />
+            <span className="truncate">{feed.footer}</span>
           </span>
-          <span className="font-mono text-[11px] text-ink/40">UTC+1</span>
         </div>
       </div>
     </div>

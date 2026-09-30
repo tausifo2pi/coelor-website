@@ -1,0 +1,226 @@
+{
+  "_note": "Copy and tiers of /pricing (app/pricing/page.tsx, components/pricing/*). PRICES: each tier's `from` is null until the owner fills it in. null shows 'Fixed price / after a 30-minute call'; a plain number (e.g. 4500, no currency sign, no dots or commas) shows 'From €4,500 / one-time'. `badge` (null or a short label such as 'Most common') puts a label on one card; only set it when it is true. Only true claims: one-time payment, full codebase handed over, unlimited orders and products, priced by connections, built on the existing engine. The real client stays anonymous and is told generically: no product-category words and no marketplace or warehouse brand names or logos on this page (the live demo may show them). Never name or compare with another vendor.",
+  "seo": {
+    "title": "Pricing · Coelor",
+    "description": "One-time payment, full source code handed over. Unlimited orders and products; the price is set by the number of platforms and accounts we connect."
+  },
+  "currency": "EUR",
+  "price": {
+    "fromLabel": "From",
+    "unit": "one-time",
+    "unsetTitle": "Fixed price",
+    "unsetUnit": "after a 30-minute call"
+  },
+  "hero": {
+    "eyebrow": "Pricing",
+    "headline": "Pay once. Own the code.",
+    "sub": "Our automation engine already exists and bends to how you work. We build your final version on your requirements, so the price stays lower and you never pay for extras you don't need.",
+    "primaryCta": { "label": "See the live demo", "href": "/demo/multi-platform-sync?src=pricing" },
+    "secondaryCta": { "label": "Book a call", "href": "#contact" },
+    "points": ["Unlimited orders", "Unlimited products", "You own the code"],
+    "card": {
+      "title": "Every build",
+      "badge": "One-time",
+      "rows": [
+        { "label": "Payment", "value": "Once, no subscription" },
+        { "label": "Priced by", "value": "Connections" },
+        { "label": "Orders", "value": "Unlimited" },
+        { "label": "Products", "value": "Unlimited" },
+        { "label": "Source code", "value": "Yours, in full" }
+      ],
+      "demoEyebrow": "Live demo",
+      "demoTitle": "See the engine running for a real client"
+    }
+  },
+  "how": {
+    "num": "01",
+    "eyebrow": "How the price works",
+    "headline": "One price, set by what we connect.",
+    "items": [
+      {
+        "icon": "receipt",
+        "title": "A one-time payment",
+        "body": "You pay once for the build. No monthly subscription for the software, and no fee per order or per product."
+      },
+      {
+        "icon": "link",
+        "title": "Priced by connections",
+        "body": "A connection is one platform or account we connect: a marketplace account, a web store, your warehouse system. The price follows how many there are."
+      },
+      {
+        "icon": "wrench",
+        "title": "Built on our engine",
+        "body": "The engine is already built. We shape your version on your requirements, so you pay for your setup, not for the basics, and never for extras."
+      }
+    ],
+    "example": {
+      "title": "Counting connections",
+      "caption": "An example setup",
+      "rows": [
+        { "icon": "store", "label": "Marketplace account" },
+        { "icon": "store", "label": "Second marketplace account" },
+        { "icon": "bag", "label": "Web store" },
+        { "icon": "warehouse", "label": "Warehouse system" }
+      ],
+      "each": "1 connection",
+      "totalLabel": "Total",
+      "total": "4 connections",
+      "note": "Every account counts once: two accounts on the same marketplace are two connections."
+    }
+  },
+  "tiers": {
+    "num": "02",
+    "eyebrow": "Pricing",
+    "headline": "Priced by the number of connections.",
+    "body": "The same engine in every build. What changes is how many platforms and accounts it connects.",
+    "cta": "Get your fixed price",
+    "exampleLabel": "For example",
+    "common": ["Unlimited orders and products", "The full source code, yours", "Only the automations you need", "Set-up and handover"],
+    "items": [
+      {
+        "key": "two",
+        "connections": "2 connections",
+        "title": "Two systems in step",
+        "body": "One sales channel and the system behind it, working together.",
+        "example": "A web store and your warehouse system.",
+        "connectionsLine": "2 platforms or accounts connected",
+        "from": null,
+        "badge": null
+      },
+      {
+        "key": "three-four",
+        "connections": "3–4 connections",
+        "title": "Selling in several places",
+        "body": "Several sales channels or accounts kept in step with your stock.",
+        "example": "Two marketplace accounts, a web store and your warehouse system.",
+        "connectionsLine": "3 to 4 platforms or accounts connected",
+        "from": null,
+        "badge": null
+      },
+      {
+        "key": "five-plus",
+        "connections": "5+ connections",
+        "title": "The whole operation",
+        "body": "Every channel, region and back-office system on one engine.",
+        "example": "Marketplace accounts in several regions, more than one web store and your warehouse system.",
+        "connectionsLine": "5 or more platforms or accounts connected",
+        "from": null,
+        "badge": null
+      }
+    ],
+    "notes": [
+      { "icon": "plus", "text": "Adding a connection later? We quote it the same way." },
+      { "icon": "phone", "text": "Not sure how many you have? We count them with you on the call." }
+    ]
+  },
+  "included": {
+    "num": "03",
+    "eyebrow": "Included",
+    "headline": "In every build, whatever its size.",
+    "items": [
+      {
+        "icon": "shield",
+        "title": "The full codebase",
+        "body": "The complete source code is handed over. It is yours to keep, run and change. No licence to renew."
+      },
+      {
+        "icon": "route",
+        "title": "Unlimited orders",
+        "body": "No fee per order, however much you sell. Busy months cost the same as quiet ones."
+      },
+      {
+        "icon": "tag",
+        "title": "Unlimited products",
+        "body": "No fee per product or variant, however large the catalogue grows."
+      },
+      {
+        "icon": "refresh",
+        "title": "Automations set to your rules",
+        "body": "The engine's automations for stock, orders and listings, tailored to how you work. Only the ones you need."
+      },
+      {
+        "icon": "link",
+        "title": "Every connection set up",
+        "body": "We connect each platform and account in your setup and match it to your data."
+      },
+      {
+        "icon": "power",
+        "title": "Handover",
+        "body": "When it runs, we hand over the build and the code, and walk you through how it works."
+      }
+    ]
+  },
+  "engine": {
+    "num": "04",
+    "eyebrow": "Why one-time",
+    "headline": "The engine exists. You pay for your version.",
+    "body": "We built an automation engine that is flexible by design. Because the groundwork is done, your build starts from a working engine, not a blank page. That is what keeps the price down, and why there is nothing to pay each month.",
+    "notLabel": "Not in your price",
+    "not": [
+      "A monthly subscription for the software",
+      "A fee per order or per product",
+      "Building the basics from scratch",
+      "Features you will not use"
+    ],
+    "yesLabel": "What you pay for",
+    "yes": [
+      "Connecting your platforms and accounts",
+      "The automations your operation needs, set to your rules",
+      "Set-up and handover",
+      "The full codebase, yours to keep"
+    ],
+    "proof": {
+      "eyebrow": "Running today",
+      "title": "Already running for a Dutch reseller.",
+      "body": "Several marketplace accounts connected to its warehouse system, built and run by us on the same engine. The live demo shows it running, read-only.",
+      "setupLabel": "Their setup",
+      "setup": [
+        { "icon": "globe", "name": "Marketplace accounts", "role": "every sale comes in" },
+        { "icon": "refresh", "name": "Our engine", "role": "keeps them in step" },
+        { "icon": "warehouse", "name": "Warehouse system", "role": "holds the stock" }
+      ],
+      "stats": [
+        { "value": "31,000+", "label": "products checked" },
+        { "value": "Every 10 min", "label": "sold-out items switched off on every account" },
+        { "value": "Within minutes", "label": "each sale taken off the stock" }
+      ],
+      "demoCta": "Open the live demo"
+    }
+  },
+  "faq": {
+    "num": "05",
+    "eyebrow": "Questions",
+    "headline": "About the price.",
+    "items": [
+      {
+        "q": "What counts as a connection?",
+        "a": "One platform or account we connect: a marketplace account, a web store, your warehouse system. Each account counts once, so two accounts on the same marketplace are two connections."
+      },
+      {
+        "q": "Do we own the code?",
+        "a": "Yes. You get the full codebase with the build. It is yours to keep, run and change, with no licence to renew."
+      },
+      {
+        "q": "Are there limits on orders or products?",
+        "a": "No. There is no fee per order or per product. The price is set by the connections, not by how much you sell or how big your catalogue is."
+      },
+      {
+        "q": "Can we add a connection later?",
+        "a": "Yes. We quote it the same way: a fixed price for the extra connection, agreed before we start."
+      },
+      {
+        "q": "How long does a build take?",
+        "a": "It depends on the connections. We tell you the time together with the fixed price, after the call."
+      },
+      {
+        "q": "Where does it run?",
+        "a": "You can run it on your own server. We can also set it up for you."
+      }
+    ]
+  },
+  "contact": {
+    "num": "06",
+    "headline": "Get your fixed price.",
+    "body": "Tell us which platforms and accounts should work together. We go through them with you on a call, then send a fixed, one-time price."
+  }
+}

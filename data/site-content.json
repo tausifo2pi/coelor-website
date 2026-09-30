@@ -2,36 +2,32 @@
   "brand": {
     "name": "Coelor",
     "wordmark": "coelor",
-    "tagline": "Automation for the work between your systems",
+    "tagline": "Your sales channels, stock and tools, connected",
     "email": "contact@coelor.com",
     "address": "Road 5, Block A, Bashundhara, Dhaka, Bangladesh"
   },
   "seo": {
-    "title": "Coelor — Business automation and systems integration",
-    "description": "Coelor connects the systems your business runs on and automates the work between them. Orders, stock, documents and reports move on their own; your team steps in only when a decision is needed.",
-    "openGraphTitle": "Coelor — Automation infrastructure for growing businesses",
-    "openGraphDescription": "We connect the systems your business runs on and automate the work between them."
+    "title": "Coelor — Connect your sales channels, stock and tools",
+    "description": "Coelor connects your web store, marketplaces, warehouse system and tools in one automation that runs by itself. Built on our reusable engine to your requirements. One-time price, and you own the code.",
+    "openGraphTitle": "Coelor — Your sales channels, stock and tools, connected",
+    "openGraphDescription": "One automation that runs by itself, built on our reusable engine to your requirements. Pay once, own the code."
   },
   "nav": [
     {
-      "id": "problem",
-      "label": "Why"
+      "label": "How it works",
+      "href": "#process"
     },
     {
-      "id": "services",
-      "label": "Services"
+      "label": "Client work",
+      "href": "#proof"
     },
     {
-      "id": "process",
-      "label": "Process"
+      "label": "Pricing",
+      "href": "/pricing"
     },
     {
-      "id": "work",
-      "label": "Work"
-    },
-    {
-      "id": "faq",
-      "label": "FAQ"
+      "label": "FAQ",
+      "href": "#faq"
     }
   ],
   "navCta": {
@@ -39,373 +35,257 @@
     "href": "#contact"
   },
   "hero": {
-    "headline": "Automation built for growing businesses.",
-    "sub": "We connect the systems you run and automate the work between them.",
+    "headline": "Your sales channels, stock and tools, connected.",
+    "sub": "One automation that runs by itself. Built on our reusable engine to your requirements, for a one-time price. You own the code.",
     "primaryCta": {
       "label": "Book a call",
       "href": "#contact"
     },
     "secondaryCta": {
-      "label": "See how it works",
-      "href": "#process"
+      "label": "See pricing",
+      "href": "/pricing"
     },
     "feed": {
-      "title": "Live activity",
-      "footer": "4 jobs healthy · runs every 5 min",
+      "title": "Activity",
+      "badge": "Running",
+      "footer": "All connections healthy · checks every 10 min",
+      "clock": "14:20",
       "events": [
         {
           "id": "e1",
           "icon": "refresh",
-          "title": "Stock synced",
-          "detail": "StockX · eBay · 3 listings paused",
-          "time": "14:20"
+          "title": "Stock updated",
+          "detail": "Shopify · Amazon · Zalando"
         },
         {
           "id": "e2",
           "icon": "route",
-          "title": "Order M-77120 routed",
-          "detail": "Shopify → Picqer",
-          "time": "14:19"
+          "title": "Order #10482 imported",
+          "detail": "Shopify → warehouse"
         },
         {
           "id": "e3",
-          "icon": "receipt",
-          "title": "Invoice INV-2291 booked",
-          "detail": "Xero",
-          "time": "14:18"
+          "icon": "pause",
+          "title": "3 sold-out listings paused",
+          "detail": "eBay · Etsy"
         },
         {
           "id": "e4",
-          "icon": "link",
-          "title": "12 products matched",
-          "detail": "Shopify · Picqer · StockX",
-          "time": "14:15"
+          "icon": "receipt",
+          "title": "Invoice INV-2291 booked",
+          "detail": "Exact Online"
         },
         {
           "id": "e5",
-          "icon": "bell-off",
-          "title": "Order M-77118 held",
-          "detail": "eBay · needs review",
-          "time": "14:12",
+          "icon": "alert",
+          "title": "Order #10479 held",
+          "detail": "Amazon · needs review",
           "state": "review"
         },
         {
           "id": "e6",
-          "icon": "package-x",
-          "title": "Shipment created",
-          "detail": "Picqer → DHL",
-          "time": "14:11"
+          "icon": "link",
+          "title": "24 new products matched",
+          "detail": "WooCommerce · warehouse"
         },
         {
           "id": "e7",
           "icon": "calendar-clock",
-          "title": "Daily report sent",
-          "detail": "Google Sheets",
-          "time": "14:10"
+          "title": "Daily stock report sent",
+          "detail": "Google Sheets"
         },
         {
           "id": "e8",
-          "icon": "refresh",
-          "title": "Stock levels pushed",
-          "detail": "WooCommerce",
-          "time": "14:08"
+          "icon": "tag",
+          "title": "Prices updated",
+          "detail": "Bol · Kaufland"
         }
       ]
     }
   },
-  "integrations": {
-    "label": "Connects to the platforms you already sell and ship on",
+  "connect": {
+    "label": "We connect web stores, marketplaces, warehouse systems and the tools around them",
     "items": [
       {
-        "name": "Shopify",
-        "file": "/brands/shopify.svg",
-        "h": 28
+        "slug": "shopify",
+        "name": "Shopify"
       },
       {
-        "name": "WooCommerce",
-        "file": "/brands/woocommerce.svg",
-        "h": 27
+        "slug": "amazon",
+        "name": "Amazon"
       },
       {
-        "name": "eBay",
-        "file": "/brands/ebay.svg",
-        "h": 70
+        "slug": "woocommerce",
+        "name": "WooCommerce"
       },
       {
-        "name": "StockX",
-        "file": "/brands/stockx.svg",
-        "h": 32
+        "slug": "ebay",
+        "name": "eBay"
       },
       {
-        "name": "Picqer",
-        "file": "/brands/picqer.svg",
-        "h": 28
+        "slug": "odoo",
+        "name": "Odoo"
       },
       {
-        "name": "Odoo",
-        "file": "/brands/odoo.svg",
-        "h": 88
-      }
-    ]
-  },
-  "problem": {
-    "num": "01",
-    "eyebrow": "Why",
-    "headline": "Most operational work is copying data between systems.",
-    "body": "Webshop, warehouse, marketplaces, accounting, spreadsheets. Each does its job. None of them talk to each other, so your team bridges the gap by hand.",
-    "items": [
-      {
-        "icon": "copy",
-        "title": "Double entry",
-        "body": "The same order or product is typed into two or three systems. Every entry is a chance for a mismatch.",
-        "tag": "typos · mismatches"
+        "slug": "etsy",
+        "name": "Etsy"
       },
       {
-        "icon": "package-x",
-        "title": "Stock out of sync",
-        "body": "An item sells in one channel and stays live in another. The second buyer gets a cancellation.",
-        "tag": "oversells · penalties"
+        "slug": "zalando",
+        "name": "Zalando"
       },
       {
-        "icon": "file-spreadsheet",
-        "title": "Spreadsheets as glue",
-        "body": "Exports downloaded, cleaned and re-uploaded on a schedule someone has to remember.",
-        "tag": "hours every week"
+        "slug": "google-sheets",
+        "name": "Google Sheets"
       },
       {
-        "icon": "bell-off",
-        "title": "Silent failures",
-        "body": "An import stops or a file never arrives, and the gap surfaces days later in a report.",
-        "tag": "found too late"
-      }
-    ]
-  },
-  "services": {
-    "num": "02",
-    "eyebrow": "Services",
-    "headline": "The work between a sale and a closed book.",
-    "body": "Six automations we build most often. Each runs on a schedule or a webhook, logs what it did, and asks for a person only when it needs one.",
-    "items": [
-      {
-        "icon": "refresh",
-        "title": "Inventory sync",
-        "body": "Stock levels checked across every channel. Sold-out items paused everywhere, automatically.",
-        "meta": "every 10 min"
+        "slug": "kaufland",
+        "name": "Kaufland"
       },
       {
-        "icon": "route",
-        "title": "Order routing",
-        "body": "Orders pulled from marketplaces and webshops, matched to the right variant, created in your warehouse or ERP.",
-        "meta": "every 5 min"
+        "slug": "bigcommerce",
+        "name": "BigCommerce"
       },
       {
-        "icon": "link",
-        "title": "Record matching",
-        "body": "Products, variants and customers reconciled across systems by code, name and attributes. Matched once, reused forever.",
-        "meta": "on every new record"
+        "slug": "otto",
+        "name": "Otto"
       },
       {
-        "icon": "calendar-clock",
-        "title": "Reports and exports",
-        "body": "Stock, sales and exception reports delivered to Sheets, Excel or email, in the layout your team already uses.",
-        "meta": "daily · weekly"
+        "slug": "xero",
+        "name": "Xero"
       },
       {
-        "icon": "receipt",
-        "title": "Documents and finance",
-        "body": "Invoices, credit notes and payment updates generated from orders and booked into accounting.",
-        "meta": "on order events"
+        "slug": "tiktok-shop",
+        "name": "TikTok Shop"
       },
       {
-        "icon": "shield",
-        "title": "Retries, logs, alerts",
-        "body": "Rate limits, outages and bad data handled with backoff. Every action logged. Dry-run before anything changes.",
-        "meta": "always on"
+        "slug": "shopware",
+        "name": "Shopware"
+      },
+      {
+        "slug": "prestashop",
+        "name": "PrestaShop"
+      },
+      {
+        "slug": "quickbooks",
+        "name": "QuickBooks"
+      },
+      {
+        "slug": "warehouse",
+        "name": "Your warehouse system"
       }
     ]
   },
   "process": {
-    "num": "03",
-    "eyebrow": "Process",
-    "headline": "From first call to running automation.",
-    "timeline": "Typical build: 3 to 6 weeks.",
+    "num": "01",
+    "eyebrow": "How it works",
+    "headline": "Three steps. Then it runs by itself.",
     "steps": [
       {
         "icon": "phone",
-        "when": "Week 0",
-        "title": "Audit",
-        "body": "A 30-minute call. We map your systems and the data that moves between them. You get a written scope and a fixed quote."
+        "when": "30 minutes",
+        "title": "Call",
+        "body": "We map your sales channels, stock and tools, and agree what should run by itself. You get a fixed, one-time price."
       },
       {
         "icon": "wrench",
-        "when": "Weeks 1–4",
+        "when": "On our engine",
         "title": "Build",
-        "body": "We connect the APIs, reconcile your data and run everything in dry-run next to your team. You see each action before it happens."
+        "body": "We shape our engine to your requirements: what you need, nothing extra. It runs in test mode next to your team before it goes live."
       },
       {
         "icon": "power",
-        "when": "Week 5",
-        "title": "Go live",
-        "body": "Dry-run off. Orders, stock and documents move on their own. Alerts go to the channel your team already watches."
-      },
-      {
-        "icon": "activity",
-        "when": "Ongoing",
-        "title": "Operate",
-        "body": "We monitor runs, absorb API changes and add automations as the operation grows."
+        "when": "Yours",
+        "title": "Run",
+        "body": "Stock, orders and listings stay in step without anyone typing them over. You get the full codebase."
       }
     ]
   },
-  "work": {
-    "num": "04",
-    "eyebrow": "Work",
-    "headline": "Automation underneath. AI on top.",
-    "body": "Two recent builds: the plumbing that keeps a multi-channel retailer's stock and orders in sync, and an AI sales agent that sells inside the chat apps customers already use.",
-    "ops": {
-      "label": "Operations automation",
-      "title": "A retailer selling through a warehouse, a webshop and two marketplace regions.",
-      "beforeLabel": "Before",
-      "before": [
-        "Sold-out listings paused by hand after each sale",
-        "Marketplace orders retyped into the warehouse system",
-        "An item could sell twice before anyone noticed"
-      ],
-      "afterLabel": "After",
-      "after": [
-        "31,000+ products matched across systems",
-        "Stock checked every 10 minutes on every channel",
-        "Orders imported every 5 minutes, warehouse order created",
-        "Every action logged; dry-run verified before go-live"
-      ],
-      "flowFrom": [
-        {
-          "name": "Shopify",
-          "slug": "shopify"
-        },
-        {
-          "name": "StockX",
-          "slug": "stockx"
-        },
-        {
-          "name": "eBay",
-          "slug": "ebay"
-        }
-      ],
-      "flowTo": [
-        {
-          "name": "Picqer",
-          "slug": "picqer"
-        },
-        {
-          "name": "Xero",
-          "slug": "xero"
-        },
-        {
-          "name": "Google Sheets",
-          "slug": "google-sheets"
-        }
-      ]
-    },
-    "ai": {
-      "label": "AI sales agent",
-      "title": "A sales agent that answers, finds the product and closes the order inside the chat.",
-      "body": "Built for a social-commerce store on Messenger, WhatsApp and Instagram. The agent understands the customer's language, matches photos to products, collects the order and books the courier. A human takes over with one click.",
-      "chat": [
-        {
-          "from": "customer",
-          "text": "Do you have this one in 42?",
-          "image": true
-        },
-        {
-          "from": "agent",
-          "text": "Found it: Runner Low, size 42, in stock at €129. Two similar pairs below. Deliver to your usual address?",
-          "image": false
-        },
-        {
-          "from": "customer",
-          "text": "Yes, cash on delivery.",
-          "image": false
-        },
-        {
-          "from": "agent",
-          "text": "Order #1042 placed. Courier booked, arrives tomorrow. Tracking link sent.",
-          "image": false
-        }
-      ],
-      "caps": [
-        {
-          "icon": "route",
-          "title": "Social sales agent",
-          "body": "Messenger, WhatsApp and Instagram in one inbox, with human handoff."
-        },
-        {
-          "icon": "link",
-          "title": "Shopify sales agent",
-          "body": "The same agent on your Shopify store: answers, recommends, converts."
-        },
-        {
-          "icon": "refresh",
-          "title": "AI visual search",
-          "body": "Customer sends a photo, gets the matching product and size."
-        },
-        {
-          "icon": "activity",
-          "title": "Similar-product recommendations",
-          "body": "Every reply shows the next best options, which lifts basket size."
-        }
-      ]
-    },
+  "proof": {
+    "num": "02",
+    "eyebrow": "Client work",
+    "headline": "Running today for a Dutch reseller.",
+    "body": "Two international marketplaces, with EU and US accounts, connected to the reseller's warehouse system on our engine.",
+    "from": [
+      {
+        "icon": "store",
+        "name": "Marketplace 1",
+        "note": "EU and US accounts"
+      },
+      {
+        "icon": "store",
+        "name": "Marketplace 2",
+        "note": ""
+      }
+    ],
+    "to": [
+      {
+        "icon": "warehouse",
+        "name": "Warehouse system",
+        "note": ""
+      }
+    ],
     "stats": [
       {
+        "value": "Minutes",
+        "label": "for a sale to come off the stock"
+      },
+      {
+        "value": "Every 10 min",
+        "label": "sold-out items switched off on every account"
+      },
+      {
         "value": "31,000+",
-        "label": "products in sync"
-      },
-      {
-        "value": "3",
-        "label": "chat platforms, one inbox"
-      },
-      {
-        "value": "24/7",
-        "label": "replies and order intake"
-      },
-      {
-        "value": "0",
-        "label": "manual steps per order"
+        "label": "products checked"
       }
     ]
   },
+  "pricing": {
+    "num": "03",
+    "eyebrow": "Pricing",
+    "headline": "Pay once. Own the code.",
+    "body": "Our engine is already built and reusable. We shape it to your requirements, so the price stays low and you never pay for extras you don't need.",
+    "points": [
+      "One-time payment, no monthly software fee",
+      "Unlimited orders and products",
+      "Price set by the number of connections",
+      "The full codebase, yours to keep"
+    ],
+    "note": "A connection is one platform or account: a web store, a marketplace account, your warehouse system.",
+    "cta": {
+      "label": "See pricing",
+      "href": "/pricing"
+    }
+  },
   "faq": {
-    "num": "05",
+    "num": "04",
     "eyebrow": "Questions",
-    "headline": "Before the first call.",
+    "headline": "Short answers.",
     "items": [
       {
         "q": "Do we have to change the systems we use?",
-        "a": "No. Coelor connects to what you already run through its API. If a system has no API, we work from its exports."
+        "a": "No. We connect to what you already use through its API. If a system has no API, we work from its exports."
       },
       {
-        "q": "What kind of work can be automated?",
-        "a": "Anything that follows rules and moves data between systems: orders, stock, invoices, reports, customer records, notifications."
+        "q": "Why is the price low?",
+        "a": "The engine is already built and reusable. We shape it to your requirements, so you pay for your setup, not for the basics or for extras you don't need."
       },
       {
-        "q": "What happens when one of our systems goes down?",
-        "a": "Runs retry with backoff and resume where they stopped. Nothing is applied twice. You get an alert if a run fails twice in a row."
+        "q": "Is there a monthly fee?",
+        "a": "No monthly software fee. You pay once, get the full codebase, and there is no limit on orders or products. You can run it on your own server, or we set it up for you."
       },
       {
-        "q": "Can we see what it will do before it changes anything?",
-        "a": "Yes. Every automation ships with a dry-run mode that logs each action it would take without taking it."
+        "q": "How long does a build take?",
+        "a": "It depends on the connections. You get the time together with the fixed price, after the call."
       },
       {
-        "q": "How long until it is live?",
-        "a": "Most builds take 3 to 6 weeks from the audit call, depending on how many systems are involved."
-      },
-      {
-        "q": "Who owns the code?",
-        "a": "You do. It runs in your cloud account or ours, with documentation and handover included."
+        "q": "What if one of our platforms is down?",
+        "a": "It retries and picks up where it stopped. Nothing is applied twice, every action is logged, and you get an alert if a run keeps failing."
       }
     ]
   },
   "contact": {
+    "num": "05",
     "eyebrow": "Contact",
     "headline": "Tell us what runs by hand today.",
     "body": "Three fields. We reply within one business day.",
@@ -421,15 +301,14 @@
       "title": "What happens next",
       "items": [
         "We reply within one business day",
-        "A 30-minute call to map your systems",
-        "A written scope and a fixed quote"
+        "A 30-minute call about your channels, stock and tools",
+        "A fixed, one-time price"
       ]
     },
-    "num": "06",
     "placeholders": {
       "name": "Your name",
       "email": "you@company.com",
-      "message": "e.g. orders from our webshop are typed into the warehouse system by hand"
+      "message": "e.g. orders from our web store are typed into the warehouse system by hand"
     },
     "success": {
       "title": "Message received.",
@@ -437,26 +316,26 @@
       "refLabel": "Reference",
       "next": [
         "We reply within one business day",
-        "A 30-minute call to map your systems",
-        "A written scope and a fixed quote"
+        "A 30-minute call about your channels, stock and tools",
+        "A fixed, one-time price"
       ],
       "again": "Send another message"
     }
   },
   "footer": {
-    "tagline": "Automation for the work between your systems.",
+    "tagline": "Your sales channels, stock and tools, connected.",
     "links": [
       {
-        "label": "Services",
-        "href": "#services"
-      },
-      {
-        "label": "Process",
+        "label": "How it works",
         "href": "#process"
       },
       {
-        "label": "Work",
-        "href": "#work"
+        "label": "Pricing",
+        "href": "/pricing"
+      },
+      {
+        "label": "FAQ",
+        "href": "#faq"
       },
       {
         "label": "Contact",
