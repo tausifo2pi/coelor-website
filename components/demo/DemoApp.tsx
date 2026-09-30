@@ -132,8 +132,8 @@ export default function DemoApp({ initial, first }: { initial: Live<Overview> | 
             Live demo
           </span>
           <p className="order-3 w-full text-[12.5px] leading-[1.5] text-[#cbd5e1] xl:order-2 xl:w-auto xl:min-w-0 xl:flex-1 xl:text-[13px]">
-            <span className="sm:hidden">Read-only: nothing you click changes the store.</span>
-            <span className="hidden sm:inline">Read-only: nothing you click changes the store. Customer names and order numbers are hidden.</span>
+            <span className="sm:hidden">This is a real store&apos;s sync. Read-only.</span>
+            <span className="hidden sm:inline">This is a real store&apos;s sync. We set up the same for yours. Read-only: nothing you click changes the store.</span>
           </p>
           <div className="order-2 ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1.5 xl:order-3">
             <a href={CASE} onClick={() => tRef.current?.cta("back_case", "Case study")} className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
