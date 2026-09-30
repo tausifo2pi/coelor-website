@@ -9,7 +9,7 @@ export type PriceLine = { title: string; unit: string; set: boolean };
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: data.currency, maximumFractionDigits: 0 });
 
-/** "From $1,000 · one-time" when a price is filled in; "Fixed price · after a 30-minute call" while it is null. */
+/** "From $1,200 · one-time" when a price is filled in; "Fixed price · after a 30-minute call" while it is null. */
 export function priceLine(from: number | string | null | undefined): PriceLine {
   const { price } = data;
   const amount = typeof from === "number" && Number.isFinite(from) && from > 0 ? money.format(from) : typeof from === "string" && from.trim() ? from.trim() : "";

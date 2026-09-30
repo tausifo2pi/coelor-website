@@ -1,8 +1,8 @@
 {
-  "_note": "Copy and tiers of /pricing (app/pricing/page.tsx, components/pricing/*). PRICES (USD): the entry tier starts at 1000 (user, 2026-10-01); a tier whose `from` is null shows 'Fixed price / after a 30-minute call'. null shows 'Fixed price / after a 30-minute call'; a plain number (e.g. 4500, no currency sign, no dots or commas) shows 'From €4,500 / one-time'. `badge` (null or a short label such as 'Most common') puts a label on one card; only set it when it is true. Only true claims: one-time payment, full codebase handed over, unlimited orders and products, priced by connections, built on the existing engine. The real client stays anonymous and is told generically: no product-category words and no marketplace or warehouse brand names or logos on this page. Never name or compare with another vendor. The live demo and the case studies are never linked from this page (they are for email readers only).",
+  "_note": "Copy and tiers of /pricing (app/pricing/page.tsx, components/pricing/*). PRICES (USD): the entry tier starts at 1200 (user, 2026-10-01); a tier whose `from` is null shows 'Fixed price / after a 30-minute call'. null shows 'Fixed price / after a 30-minute call'; a plain number (e.g. 4500, no currency sign, no dots or commas) shows 'From $4,500 / one-time'. `badge` (null or a short label such as 'Most common') puts a label on one card; only set it when it is true. Only true claims: one-time payment, full codebase handed over, unlimited orders and products, priced by connections, built on the existing engine. The real client stays anonymous and is told generically: no product-category words and no marketplace or warehouse brand names or logos on this page. Never name or compare with another vendor. The live demo and the case studies are never linked from this page (they are for email readers only).",
   "seo": {
     "title": "Pricing · Coelor",
-    "description": "One-time price from $1,000, full codebase included, unlimited orders and products. Built on our integration engine, so you only pay for your connections."
+    "description": "One-time price from $1,200, full codebase included, unlimited orders and products. Built on our integration engine, so you only pay for your connections."
   },
   "currency": "USD",
   "price": {
@@ -14,7 +14,7 @@
   "hero": {
     "eyebrow": "Pricing",
     "headline": "Pay once. Own the code.",
-    "sub": "Builds start at $1,000, one-time. The price stays low because our integration engine is already built: we shape your version on your requirements, so you never pay for extras you don't need.",
+    "sub": "Builds start at $1,200, one-time. The price stays low because our integration engine is already built: we shape your version on your requirements, so you never pay for extras you don't need.",
     "primaryCta": {
       "label": "Book a call",
       "href": "#contact"
@@ -24,7 +24,7 @@
       "href": "#included"
     },
     "points": [
-      "From $1,000, one-time",
+      "From $1,200, one-time",
       "Unlimited orders and products",
       "You own the code"
     ],
@@ -34,7 +34,7 @@
       "rows": [
         {
           "label": "Starts at",
-          "value": "$1,000, one-time"
+          "value": "$1,200, one-time"
         },
         {
           "label": "Payment",
@@ -128,7 +128,7 @@
         "body": "One sales channel and the system behind it, working together.",
         "example": "A web store and your warehouse system.",
         "connectionsLine": "2 platforms or accounts connected",
-        "from": 1000,
+        "from": 1200,
         "badge": null
       },
       {
