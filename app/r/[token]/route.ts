@@ -1,7 +1,9 @@
-// Email link: https://coelor.com/r/<token>[?to=/some/path]; without ?to it opens the case study (a neutral address; the page
-// adapts to the platform mix of this email, see lib/case-page.ts). Short links read better in plain-text mail. Logs the click, remembers the
-// token in a first-party cookie so later pageviews are attributed, then redirects on-site.
+// Email link: https://coelor.com/r/<token>[?to=/some/path]. Without ?to a sneaker reader (their mix speaks of pairs, the
+// same test as the case page's demo button) opens the live demo; everyone else the case study (a neutral address; the
+// page adapts to the platform mix of this email, see lib/case-page.ts). Short links read better in plain-text mail. Logs
+// the click, remembers the token in a first-party cookie so later pageviews are attributed, then redirects on-site.
 import { NextResponse, type NextRequest } from "next/server";
+import { fetchCaseMix } from "@/lib/case-mix";
 import {
   TOKEN_COOKIE,
   VISITOR_COOKIE,
@@ -15,6 +17,9 @@ import {
 export const dynamic = "force-dynamic";
 
 const DEFAULT_TARGET = "/case-studies/stock-sync";
+const DEMO_TARGET = "/demo/multi-platform-sync?src=email";
+// a slow lookup must not hold the click long: after 1.5 s the reader gets the case study (the mix is cached and kept warm)
+const LOOKUP_MS = 1500;
 
 // Only same-site paths, so the link can never be used as an open redirect.
 function safeTarget(to: string | null): string {
@@ -23,9 +28,15 @@ function safeTarget(to: string | null): string {
   return to.slice(0, 300);
 }
 
+async function targetFor(token: string, to: string | null): Promise<string> {
+  if (to || !validToken(token)) return safeTarget(to);
+  const mix = await fetchCaseMix(token, LOOKUP_MS);
+  return mix?.words.item === "pair" ? DEMO_TARGET : DEFAULT_TARGET;
+}
+
 export async function GET(req: NextRequest, ctx: RouteContext<"/r/[token]">) {
   const { token } = await ctx.params;
-  const target = safeTarget(req.nextUrl.searchParams.get("to"));
+  const target = await targetFor(token, req.nextUrl.searchParams.get("to"));
   // Relative Location: behind nginx, nextUrl.origin is the internal container address.
   const res = new NextResponse(null, {
     status: 302,

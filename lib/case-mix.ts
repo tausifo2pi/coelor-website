@@ -55,13 +55,13 @@ function remember(token: string, mix: CaseMix) {
 }
 
 /** null = no email token (the real client's story); otherwise the reader's mix, or the neutral one. */
-export async function fetchCaseMix(token: string | null | undefined): Promise<CaseMix | null> {
+export async function fetchCaseMix(token: string | null | undefined, timeoutMs = TIMEOUT_MS): Promise<CaseMix | null> {
   if (!token || !TOKEN.test(token)) return null;
   startKeepWarm();
   const hit = cache.get(token);
   if (hit && Date.now() - hit.at < FRESH_MS) return hit.mix;
   try {
-    const res = await fetch(`${BASE}/internal/case/${encodeURIComponent(token)}`, { cache: "no-store", signal: AbortSignal.timeout(TIMEOUT_MS) });
+    const res = await fetch(`${BASE}/internal/case/${encodeURIComponent(token)}`, { cache: "no-store", signal: AbortSignal.timeout(timeoutMs) });
     if (res.ok || res.status === 404) {
       // 404: a token the service doesn't know (the neutral page, and no need to ask again for a while)
       const mix = (res.ok ? valid(await res.json()) : null) ?? NEUTRAL_MIX;
