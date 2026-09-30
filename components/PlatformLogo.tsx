@@ -8,7 +8,8 @@ import { Icon } from "@/components/icons";
 
 type Size = number | string; // px, or a CSS length such as "0.8em" to sit inside text
 
-export function PlatformTile({ slug, name, size = 28, label = false, className = "" }: { slug: string; name: string; size?: Size; label?: boolean; className?: string }) {
+/** `eager`: load the icon right away (the hero's setup card; lazy icons were missing when a page opened in a background tab) */
+export function PlatformTile({ slug, name, size = 28, label = false, eager = false, className = "" }: { slug: string; name: string; size?: Size; label?: boolean; eager?: boolean; className?: string }) {
   const px = typeof size === "number";
   if (slug.startsWith("facet:") || slug === "warehouse") return <FacetTile facet={slug.replace("facet:", "")} name={name} size={size} label={label} className={className} />;
   const p = platformInfo(slug);
@@ -18,7 +19,7 @@ export function PlatformTile({ slug, name, size = 28, label = false, className =
     <span className={`platform-tile ${className}`} style={style} {...a11y}>
       {p?.logo ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.logo} alt="" className={p.bleed ? "is-bleed" : ""} loading="lazy" decoding="async" />
+        <img src={p.logo} alt="" className={p.bleed ? "is-bleed" : ""} loading={eager ? "eager" : "lazy"} decoding="async" />
       ) : (
         <span className="font-semibold leading-none text-[#12151c]" style={{ fontSize: px ? Math.round(size * 0.46) : "0.46em" }}>
           {name.slice(0, 1)}

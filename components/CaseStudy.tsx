@@ -101,7 +101,7 @@ function SetupCard({ c }: { c: CaseContent }) {
       <ul className="flex flex-col gap-2">
         {hero.setup.map((p, i) => (
           <li key={`${p.slug}-${i}`} className="flex items-center gap-3 rounded-[12px] border border-rule bg-white/[0.03] p-2 pr-3">
-            <PlatformTile slug={p.slug} name={p.name} size={34} />
+            <PlatformTile slug={p.slug} name={p.name} size={34} eager />
             <span className="min-w-0 flex-1 text-[14px] font-medium text-ink">{p.name}</span>
             {p.role && <span className="text-right text-[12px] text-ink-soft">{p.role}</span>}
           </li>
@@ -113,7 +113,7 @@ function SetupCard({ c }: { c: CaseContent }) {
           <ul className="grid grid-cols-2 gap-2">
             {ALSO.map((p) => (
               <li key={p.slug} className="flex items-center gap-2.5 rounded-[12px] border border-rule bg-white/[0.03] p-2 pr-3">
-                <PlatformTile slug={p.slug} name={p.name} size={30} />
+                <PlatformTile slug={p.slug} name={p.name} size={30} eager />
                 <span className="flex min-w-0 flex-col">
                   <span className="text-[14px] font-medium leading-tight text-ink">{p.name}</span>
                   <span className="text-[12px] leading-tight text-ink-soft">{p.role}</span>
