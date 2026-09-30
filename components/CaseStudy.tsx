@@ -9,8 +9,9 @@ import type { CaseContent } from "@/lib/case-adapt";
 // The outreach case study, rendered from its content: told for one reader's own setup, or the real client's story
 // (lib/case-adapt.ts). Used by /case-studies/stock-sync, /case-studies/sneakers and the panel preview /p/<token>.
 // Each platform's logo appears once, in the hero's setup card; the rest of the page is words. No motion but the
-// "Sync running" dot on the real client's setup. Sneaker readers (and the real story) also get a link to the live demo of
-// that sync (/demo/multi-platform-sync): in the setup card and after "What we built". It is a plain link (a full page
+// "Sync running" dot on the real client's setup (and on the demo button). Sneaker readers (and the real story) also get a
+// button to the live demo of that sync (/demo/multi-platform-sync): in the setup card and after "What we built". The real
+// story also shows the other channels the same engine runs (Shopify, Whatnot), as the demo does. It is a plain link (a full page
 // load), so the site Tracker logs it as a click.
 
 const DEMO = "/demo/multi-platform-sync?src=case";
@@ -20,17 +21,41 @@ function DemoLink() {
   return (
     <a
       href={DEMO}
-      className="group flex items-center justify-between gap-3 rounded-[12px] border border-accent/30 bg-accent/[0.07] p-4 transition-colors hover:bg-accent/[0.12]"
+      className="group inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-accent px-5 py-3 text-center text-[15px] font-semibold leading-[1.3] text-canvas shadow-[0_8px_24px_-10px_rgba(159,176,255,0.7)] transition-[filter,transform] hover:brightness-110 active:translate-y-px"
     >
-      <span className="flex flex-col gap-1">
-        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
-          <span className="pulse h-2 w-2 rounded-full bg-accent" aria-hidden />
-          Live demo
-        </span>
-        <span className="text-[14px] font-semibold leading-[1.4] text-ink">See the sync running: orders, stock and automations</span>
-      </span>
-      <Icon name="arrow-right" size={16} strokeWidth={2.4} className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
+      <span className="pulse h-2 w-2 shrink-0 rounded-full bg-canvas" aria-hidden />
+      See the sync running: orders, stock and automations
+      <Icon name="arrow-right" size={16} strokeWidth={2.4} className="shrink-0 transition-transform group-hover:translate-x-0.5" />
     </a>
+  );
+}
+
+// the other channels the same engine runs (shown on the real story, next to its setup, like the live demo shows them)
+const ALSO = [
+  { slug: "shopify", name: "Shopify", role: "web store" },
+  { slug: "whatnot", name: "Whatnot", role: "live selling" },
+];
+
+/** Where it slipped / with the sync: under the hero, side by side. */
+function SlipFix({ c }: { c: CaseContent }) {
+  const { hero } = c;
+  return (
+    <div className="relative mx-auto grid max-w-site grid-cols-1 gap-3 px-5 pb-14 md:grid-cols-2 md:gap-4 md:px-10 lg:px-20 lg:pb-20">
+      <div className="flex flex-col gap-1.5 rounded-[12px] border border-warn/25 bg-warn/[0.06] p-5">
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-warn">
+          <Icon name="alert" size={13} />
+          {hero.gapTitle}
+        </span>
+        <p className="text-[15px] leading-[1.55] text-ink">{hero.gap}</p>
+      </div>
+      <div className="flex flex-col gap-1.5 rounded-[12px] border border-ok/25 bg-ok/[0.06] p-5">
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-[#8fe7c2]">
+          <Icon name="check" size={13} strokeWidth={2.4} />
+          {hero.fixTitle}
+        </span>
+        <p className="text-[15px] leading-[1.55] text-ink">{hero.fix}</p>
+      </div>
+    </div>
   );
 }
 
@@ -54,7 +79,7 @@ function Header() {
   );
 }
 
-/* ---------- hero: the reader's setup, where it slips, what the sync does ---------- */
+/* ---------- hero: the reader's setup and the live demo; under it where it slips and what the sync does ---------- */
 
 function SetupCard({ c }: { c: CaseContent }) {
   const { hero } = c;
@@ -78,20 +103,22 @@ function SetupCard({ c }: { c: CaseContent }) {
           </li>
         ))}
       </ul>
-      <div className="flex flex-col gap-1.5 rounded-[12px] border border-warn/25 bg-warn/[0.06] p-4">
-        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-warn">
-          <Icon name="alert" size={13} />
-          {hero.gapTitle}
-        </span>
-        <p className="text-[14px] leading-[1.55] text-ink">{hero.gap}</p>
-      </div>
-      <div className="flex flex-col gap-1.5 rounded-[12px] border border-ok/25 bg-ok/[0.06] p-4">
-        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-[#8fe7c2]">
-          <Icon name="check" size={13} strokeWidth={2.4} />
-          {hero.fixTitle}
-        </span>
-        <p className="text-[14px] leading-[1.55] text-ink">{hero.fix}</p>
-      </div>
+      {!c.adapted && (
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">Also on the same engine</span>
+          <ul className="grid grid-cols-2 gap-2">
+            {ALSO.map((p) => (
+              <li key={p.slug} className="flex items-center gap-2.5 rounded-[12px] border border-rule bg-white/[0.03] p-2 pr-3">
+                <PlatformTile slug={p.slug} name={p.name} size={30} />
+                <span className="flex min-w-0 flex-col">
+                  <span className="text-[14px] font-medium leading-tight text-ink">{p.name}</span>
+                  <span className="text-[12px] leading-tight text-ink-soft">{p.role}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {showsDemo(c) && <DemoLink />}
     </div>
   );
@@ -102,7 +129,7 @@ function Hero({ c }: { c: CaseContent }) {
   return (
     <section id="top" aria-labelledby="case-title" className="relative overflow-hidden">
       <div className="pointer-events-none absolute -right-40 -top-40 h-[560px] w-[560px] rounded-full bg-accent/10 blur-3xl" aria-hidden />
-      <div className="relative mx-auto grid max-w-site grid-cols-1 gap-12 px-5 pb-14 pt-12 md:px-10 md:pt-20 lg:grid-cols-[minmax(0,600px)_1fr] lg:items-center lg:gap-14 lg:px-20 lg:pb-20 lg:pt-24">
+      <div className="relative mx-auto grid max-w-site grid-cols-1 gap-12 px-5 pb-8 pt-12 md:px-10 md:pt-20 lg:grid-cols-[minmax(0,600px)_1fr] lg:items-center lg:gap-14 lg:px-20 lg:pb-10 lg:pt-24">
         <div className="flex flex-col">
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
             {hero.eyebrow}
@@ -123,6 +150,7 @@ function Hero({ c }: { c: CaseContent }) {
         </div>
         <SetupCard c={c} />
       </div>
+      <SlipFix c={c} />
     </section>
   );
 }
