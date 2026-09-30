@@ -9,7 +9,30 @@ import type { CaseContent } from "@/lib/case-adapt";
 // The outreach case study, rendered from its content: told for one reader's own setup, or the real client's story
 // (lib/case-adapt.ts). Used by /case-studies/stock-sync, /case-studies/sneakers and the panel preview /p/<token>.
 // Each platform's logo appears once, in the hero's setup card; the rest of the page is words. No motion but the
-// "Sync running" dot on the real client's setup.
+// "Sync running" dot on the real client's setup. Sneaker readers (and the real story) also get a link to the live demo of
+// that sync (/demo/multi-platform-sync): in the setup card and after "What we built". It is a plain link (a full page
+// load), so the site Tracker logs it as a click.
+
+const DEMO = "/demo/multi-platform-sync?src=case";
+const showsDemo = (c: CaseContent) => !c.adapted || c.words.item === "pair";
+
+function DemoLink() {
+  return (
+    <a
+      href={DEMO}
+      className="group flex items-center justify-between gap-3 rounded-[12px] border border-accent/30 bg-accent/[0.07] p-4 transition-colors hover:bg-accent/[0.12]"
+    >
+      <span className="flex flex-col gap-1">
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
+          <span className="pulse h-2 w-2 rounded-full bg-accent" aria-hidden />
+          Live demo
+        </span>
+        <span className="text-[14px] font-semibold leading-[1.4] text-ink">See the sync running, with real orders</span>
+      </span>
+      <Icon name="arrow-right" size={16} strokeWidth={2.4} className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
+    </a>
+  );
+}
 
 function Header() {
   return (
@@ -69,6 +92,7 @@ function SetupCard({ c }: { c: CaseContent }) {
         </span>
         <p className="text-[14px] leading-[1.55] text-ink">{hero.fix}</p>
       </div>
+      {showsDemo(c) && <DemoLink />}
     </div>
   );
 }
@@ -211,6 +235,19 @@ function Setup({ c }: { c: CaseContent }) {
             </ul>
           </div>
         </div>
+
+        {showsDemo(c) && (
+          <div className="flex flex-col gap-4 rounded-[14px] border border-rule bg-white/[0.02] p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="text-[17px] font-semibold text-ink">Look inside the running sync</span>
+              <span className="text-[14px] leading-[1.6] text-ink-muted">The live orders, stock and automations, read-only. Names and order numbers are hidden.</span>
+            </div>
+            <a href={DEMO} className="btn-ghost w-fit shrink-0">
+              Open the live demo
+              <Icon name="arrow-right" size={15} strokeWidth={2.4} />
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );

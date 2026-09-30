@@ -66,9 +66,10 @@ export default function Tracker() {
     window.addEventListener("scroll", onScroll, { passive: true });
 
     // CTA / link clicks
+    // (not inside data-track="off": the live demo sends its own events, and every cta_click is a phone notification)
     const onClick = (ev: MouseEvent) => {
       const el = (ev.target as HTMLElement | null)?.closest("a, button");
-      if (!el) return;
+      if (!el || el.closest('[data-track="off"]')) return;
       const label = (el.getAttribute("aria-label") || el.textContent || "").trim().slice(0, 80);
       const href = el instanceof HTMLAnchorElement ? el.getAttribute("href") ?? undefined : undefined;
       push({ type: "cta_click", path, value: href, label });

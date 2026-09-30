@@ -25,6 +25,13 @@ export const EVENT_TYPES = [
   "cta_click",
   "form_submit",
   "unsubscribe",
+  // the live demo (/demo/multi-platform-sync, lib/demo/track.ts)
+  "demo_view",
+  "demo_dwell",
+  "demo_action",
+  "demo_connect",
+  "demo_cta",
+  "demo_error",
 ] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 

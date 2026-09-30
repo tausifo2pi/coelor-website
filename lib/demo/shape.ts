@@ -1,0 +1,391 @@
+// The live demo's data (/demo/multi-platform-sync), shaped from the client's sync API (ak-api) for a public page.
+// Only the fields the demo shows leave the server: the client's store keys become neutral ids, and no database ids,
+// listing ids, bin names, barcodes, prices or full order numbers are passed on. Pure functions (no I/O, no "@/"
+// imports), so `node --test lib/demo/shape.test.mts` can check them.
+
+export type SellPlatform = "stockx" | "alias";
+export type StoreId = "sx-eu" | "sx-us" | "al-main" | "al-usa";
+export type Store = { id: StoreId; platform: SellPlatform; label: string };
+
+export const STORES: Store[] = [
+  { id: "sx-eu", platform: "stockx", label: "StockX EU" },
+  { id: "sx-us", platform: "stockx", label: "StockX US" },
+  { id: "al-main", platform: "alias", label: "Alias" },
+  { id: "al-usa", platform: "alias", label: "Alias USA" },
+];
+const BY_ID = new Map(STORES.map((s) => [s.id, s]));
+export const storeById = (id: unknown): Store | null => (typeof id === "string" && BY_ID.get(id as StoreId)) || null;
+
+/** The store behind one of the API's store keys. Alias has one USA account; the other Alias account is the main one
+ * (its key carries the client's name, so it is never written here: the API's /alias/stores gives it at run time). */
+export function storeOf(key: unknown): Store | null {
+  if (key === "stockx_eu") return BY_ID.get("sx-eu")!;
+  if (key === "stockx_us") return BY_ID.get("sx-us")!;
+  if (key === "alias_USA") return BY_ID.get("al-usa")!;
+  if (typeof key === "string" && /^alias_[A-Za-z0-9_]+$/.test(key)) return BY_ID.get("al-main")!;
+  return null;
+}
+
+type Obj = Record<string, unknown>;
+const obj = (v: unknown): Obj => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : {});
+const text = (v: unknown, max = 120) => (typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, max) : "");
+const iso = (v: unknown) => {
+  const t = typeof v === "string" ? Date.parse(v) : NaN;
+  return Number.isFinite(t) ? new Date(t).toISOString() : null;
+};
+const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+const join = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
+
+/** A short, stable row key that says nothing about the record (FNV-1a of its id). */
+export function rowId(...parts: unknown[]): string {
+  let h = 0x811c9dc5;
+  for (const ch of parts.map(String).join("|")) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(36);
+}
+
+/** "04-K0XWGJAFSG" → "•••FSG": enough to look like an order, not enough to find one. */
+export function maskRef(orderNumber: unknown): string {
+  const s = text(String(orderNumber ?? ""), 40).replace(/[^A-Za-z0-9]/g, "");
+  return s.length >= 6 ? `•••${s.slice(-3).toUpperCase()}` : "";
+}
+
+/** Alias names some products by their URL slug ("air-jordan-4-retro-bred-fv5029-006"): make it readable. */
+export function prettySlug(slug: string, style = ""): string {
+  let s = slug.toLowerCase();
+  const st = style.toLowerCase().trim().replace(/\s+/g, "-");
+  if (st && s.endsWith(`-${st}`)) s = s.slice(0, -(st.length + 1));
+  return s
+    .split("-")
+    .filter(Boolean)
+    .map((w) => (w === "x" ? "x" : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(" ");
+}
+
+// a readable URL slug, not an id (StockX product ids are UUIDs, which also look like one)
+const isSlug = (s: string) => /^[a-z0-9]+(-[a-z0-9]+)+$/.test(s) && /[a-z]{3,}/.test(s) && !/^[0-9a-f]{8}-[0-9a-f]{4}/.test(s);
+function productName(p: Obj): string {
+  const name = text(p.productName);
+  const style = text(p.styleId, 40);
+  if (name && !isSlug(name)) return name;
+  const slug = name || text(p.productId);
+  return isSlug(slug) ? prettySlug(slug, style) : style;
+}
+
+/* ---------- sales ---------- */
+
+/** What the sync did for one sale, as the demo tells it. */
+export type Step = { kind: "stock" | "pulled" | "restock" | "flag"; text: string };
+
+export function stepsOf(o: Obj, store: Store): Step[] {
+  const steps: Step[] = [];
+  const log = text(o.picqerStockLog, 400);
+  if (/stock updated -1/i.test(log)) steps.push({ kind: "stock", text: "Picqer stock −1" });
+  else if (/failed to match/i.test(log)) steps.push({ kind: "flag", text: "Not linked in Picqer yet, flagged" });
+  else if (/no stock left/i.test(log)) steps.push({ kind: "flag", text: "Picqer had 0 left, flagged" });
+
+  // the last pair: its listings are taken down on the other accounts (Alias sales record this)
+  const pulled: string[] = [];
+  for (const m of text(o.stockxLog, 300).matchAll(/(stockx_[a-z]+):\s*deactivated/gi)) {
+    const s = storeOf(m[1].toLowerCase());
+    if (s && !pulled.includes(s.label)) pulled.push(s.label);
+  }
+  const alias = obj(o.aliasLog);
+  if (alias.action === true && /deactivated\s+\d+\s+listing/i.test(text(alias.message, 300)) && !pulled.includes(store.label)) {
+    pulled.push(store.label);
+  }
+  if (pulled.length) steps.push({ kind: "pulled", text: `Last pair: pulled from ${join(pulled)}` });
+
+  if (/stock updated \+1/i.test(log) || iso(o.restockedAt)) steps.push({ kind: "restock", text: "Buyer cancelled, stock +1 back" });
+  return steps;
+}
+
+export type Sale = {
+  id: string;
+  platform: SellPlatform;
+  store: StoreId;
+  storeLabel: string;
+  product: string;
+  style: string;
+  size: string;
+  ref: string;
+  state: string;
+  soldAt: string | null;
+  syncedAt: string | null;
+  steps: Step[];
+  /** the product can be opened (set by lib/demo/ak.ts once it knows the Picqer product) */
+  detail: boolean;
+};
+
+function stateOf(status: string): string {
+  const s = status.toUpperCase();
+  if (s === "CREATED" || s.endsWith("_SOLD") || s.endsWith("COMPLETED")) return "Sold";
+  if (s.includes("CANCEL")) return "Cancelled";
+  if (s.includes("REVIEW") || s.includes("AUTHENTICAT")) return "Being checked";
+  if (s.includes("SHIP")) return "Shipped";
+  return "Sold";
+}
+
+export function saleOf(raw: unknown, platform: SellPlatform): Sale | null {
+  const o = obj(raw);
+  const store = storeOf(o.store);
+  if (!store || store.platform !== platform) return null;
+  const p = obj(o.product);
+  return {
+    id: rowId(platform, o._id, o.orderNumber),
+    platform,
+    store: store.id,
+    storeLabel: store.label,
+    product: productName(p) || "Sneaker",
+    style: text(p.styleId, 40),
+    size: text(obj(o.variant).variantValue, 12),
+    ref: maskRef(o.orderNumber),
+    state: stateOf(text(o.status, 60)),
+    soldAt: iso(o.createdAt),
+    syncedAt: iso(o.dateCreated),
+    steps: stepsOf(o, store),
+    detail: false,
+  };
+}
+
+/* ---------- listings and linked products ---------- */
+
+export type Listing = { id: string; platform: SellPlatform; store: StoreId; storeLabel: string; product: string; style: string; size: string; at: string | null };
+
+export function listingOf(raw: unknown, platform: SellPlatform): Listing | null {
+  const o = obj(raw);
+  const store = storeOf(o.store);
+  if (!store || store.platform !== platform) return null;
+  const p = obj(o.product);
+  return {
+    id: rowId(platform, o._id, o.identifier),
+    platform,
+    store: store.id,
+    storeLabel: store.label,
+    product: productName(p) || "Sneaker",
+    style: text(p.styleId, 40),
+    size: text(obj(o.variant).variantValue, 12),
+    at: iso(o.createdAt) ?? iso(o.dateInserted),
+  };
+}
+
+export type Linked = {
+  id: string;
+  code: string;
+  name: string;
+  color: string;
+  us: string;
+  eu: string;
+  links: { store: StoreId; storeLabel: string; platform: SellPlatform; style: string; size: string }[];
+  linkedAt: string | null;
+  detail: boolean;
+};
+
+export function linkedOf(raw: unknown): Linked {
+  const o = obj(raw);
+  const links: Linked["links"] = [];
+  let name = "";
+  let linkedAt: string | null = null;
+  for (const m of Array.isArray(o.matches) ? o.matches.map(obj) : []) {
+    const s = storeOf(m.source);
+    if (!s || links.some((l) => l.store === s.id)) continue;
+    links.push({ store: s.id, storeLabel: s.label, platform: s.platform, style: text(m.styleId, 40), size: text(m.variantValue, 12) });
+    const at = iso(m.matchedAt);
+    if (at && (!linkedAt || at > linkedAt)) linkedAt = at;
+    const pid = text(m.productId);
+    if (!name && s.platform === "alias" && isSlug(pid)) name = prettySlug(pid, text(m.styleId, 40));
+  }
+  links.sort((a, b) => STORES.findIndex((s) => s.id === a.store) - STORES.findIndex((s) => s.id === b.store));
+  return {
+    id: rowId("match", o._id, o.picqerProductId),
+    code: text(o.productcode, 40),
+    name,
+    color: text(o.color, 60),
+    us: text(o.usSize, 12),
+    eu: text(o.euSize, 12),
+    links,
+    linkedAt,
+    detail: false,
+  };
+}
+
+/** One product as the drawer shows it: Picqer's record, its live stock, the stores it is linked to, its Alias listings. */
+export type Product = {
+  name: string;
+  code: string;
+  color: string;
+  us: string;
+  eu: string;
+  image: string | null;
+  photoAt: string | null;
+  stock: { free: number; total: number; reserved: number } | null;
+  links: { store: StoreId; storeLabel: string; platform: SellPlatform; name: string; style: string; size: string; at: string | null }[];
+  aliasListings: { storeLabel: string; count: number }[];
+};
+
+// product photos come from the image job (KicksDB → Picqer); only these hosts are shown
+const IMAGE_HOSTS = /^https:\/\/(images\.stockx\.com|[a-z0-9-]+\.picqer\.(com|net))\//i;
+
+export function productOf(i: { product: unknown; stock: unknown; matches: unknown; aliasListings: unknown }): Product {
+  const p = obj(obj(i.product).data);
+  const s = obj(obj(i.stock).data);
+  const m = obj(obj(i.matches).data);
+  const links: Product["links"] = [];
+  for (const x of Array.isArray(m.matches) ? m.matches.map(obj) : []) {
+    const st = storeOf(x.source);
+    if (!st || links.some((l) => l.store === st.id)) continue;
+    links.push({ store: st.id, storeLabel: st.label, platform: st.platform, name: productName(x), style: text(x.styleId, 40), size: text(x.variantValue, 12), at: iso(x.matchedAt) });
+  }
+  links.sort((a, b) => STORES.findIndex((z) => z.id === a.store) - STORES.findIndex((z) => z.id === b.store));
+  const counts = new Map<string, number>();
+  for (const l of Array.isArray(obj(i.aliasListings).data) ? (obj(i.aliasListings).data as unknown[]).map(obj) : []) {
+    const st = storeOf(l.store);
+    if (st) counts.set(st.label, (counts.get(st.label) ?? 0) + 1);
+  }
+  const image = Array.isArray(p.images) ? p.images.find((u): u is string => typeof u === "string" && IMAGE_HOSTS.test(u)) ?? null : null;
+  const hasStock = typeof s.freestock === "number";
+  return {
+    // Picqer's name ends in the size ("… - EU44 (US10)", "… | EU28"): the drawer shows the sizes on their own
+    name: text(p.name, 160).replace(/\s*[-|]\s*EU\s?[\d.,/ ]+(\s*\(US[^)]*\))?\s*$/i, "") || links.find((l) => l.name)?.name || text(p.productcode, 40),
+    code: text(p.productcode, 40),
+    color: text(p.color, 60),
+    us: text(p.usSize, 12),
+    eu: text(p.euSize, 12),
+    image,
+    photoAt: image ? iso(p.imagePicqerAt) : null,
+    stock: hasStock ? { free: num(s.freestock), total: num(s.stock), reserved: num(s.reserved) } : null,
+    links,
+    aliasListings: [...counts].map(([storeLabel, count]) => ({ storeLabel, count })),
+  };
+}
+
+/** A Picqer product id as the API uses it (digits only), or null. */
+export const picqerId = (v: unknown): string | null => (typeof v === "string" || typeof v === "number") && /^\d{1,12}$/.test(String(v)) ? String(v) : null;
+
+/* ---------- jobs and connections ---------- */
+
+export type JobStatus = "ok" | "running" | "late" | "error";
+export type Job = { key: string; name: string; platform: "stockx" | "alias" | "picqer"; every: string; lastRun: string; status: JobStatus };
+
+// Known jobs only (an unknown one is left out): the demo's name, which platform it serves, how often it runs.
+const JOBS: Record<string, { name: string; platform: Job["platform"]; min: number; every: string }> = {
+  "stockx-orders": { name: "StockX sales into Picqer", platform: "stockx", min: 5, every: "every 5 min" },
+  "alias-orders": { name: "Alias sales into Picqer", platform: "alias", min: 7, every: "every 7 min" },
+  "zero-stock": { name: "Sold-out sizes pulled from StockX and Alias", platform: "picqer", min: 10, every: "every 10 min" },
+  "stockx-products": { name: "StockX listings checked", platform: "stockx", min: 8, every: "every 8 min" },
+  "alias-listings": { name: "Alias active listings checked", platform: "alias", min: 10, every: "every 10 min" },
+  "alias-restock": { name: "Alias cancellations back into stock", platform: "alias", min: 480, every: "every 8 hours" },
+  "picqer-products": { name: "New Picqer products linked", platform: "picqer", min: 540, every: "every 9 hours" },
+  "picqer-images": { name: "Product photos added in Picqer", platform: "picqer", min: 360, every: "every 6 hours" },
+  "alias-products": { name: "Alias catalogue refreshed", platform: "alias", min: 1440, every: "daily" },
+};
+
+export function jobsOf(raw: unknown, now = Date.now()): Job[] {
+  const jobs: Job[] = [];
+  for (const j of Array.isArray(obj(raw).jobs) ? (obj(raw).jobs as unknown[]).map(obj) : []) {
+    const meta = JOBS[text(j.key, 40)];
+    const lastRun = iso(j.lastRun);
+    if (!meta || !lastRun) continue; // never ran: not part of the running setup
+    const late = now - Date.parse(lastRun) > (meta.min * 3 + 5) * 60_000;
+    const status: JobStatus = j.running === true ? "running" : j.lastStatus === "error" ? "error" : late ? "late" : "ok";
+    jobs.push({ key: text(j.key, 40), name: meta.name, platform: meta.platform, every: meta.every, lastRun, status });
+  }
+  const order = Object.keys(JOBS);
+  return jobs.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+}
+
+export type Connection = {
+  platform: "stockx" | "alias" | "picqer";
+  name: string;
+  role: string;
+  accounts: string[];
+  syncs: string[];
+  lastSync: string | null;
+  healthy: boolean;
+};
+
+export function connectionsOf(jobs: Job[]): Connection[] {
+  const of = (p: Job["platform"]) => jobs.filter((j) => j.platform === p);
+  const last = (js: Job[]) => js.reduce<string | null>((a, j) => (!a || j.lastRun > a ? j.lastRun : a), null);
+  const ok = (js: Job[]) => js.length > 0 && js.every((j) => j.status === "ok" || j.status === "running");
+  const sx = of("stockx");
+  const al = of("alias");
+  const pq = of("picqer");
+  return [
+    { platform: "stockx", name: "StockX", role: "Marketplace", accounts: ["StockX EU", "StockX US"], lastSync: last(sx), healthy: ok(sx),
+      syncs: ["Sales come in every 5 minutes", "Sold-out sizes pulled every 10 minutes", "Listings checked every 8 minutes"] },
+    { platform: "alias", name: "Alias", role: "Marketplace (GOAT)", accounts: ["Alias", "Alias USA"], lastSync: last(al), healthy: ok(al),
+      syncs: ["Sales come in every 7 minutes", "Last pair sold: pulled from StockX too", "Cancelled orders back into stock"] },
+    { platform: "picqer", name: "Picqer", role: "Warehouse, counts the stock", accounts: ["1 warehouse"], lastSync: last([...pq, ...sx, ...al]), healthy: ok(pq),
+      syncs: ["Every sale takes one off the stock", "New products linked to StockX and Alias", "Product photos filled in"] },
+  ];
+}
+
+/* ---------- pages ---------- */
+
+export type Page<T> = { rows: T[]; total: number; page: number; pages: number };
+
+/** The API's paginated answer: `{ data: { page: { totalIndex, … }, data: [...] } }`. */
+export function listOf(raw: unknown): { rows: unknown[]; total: number } {
+  const d = obj(obj(raw).data);
+  return { rows: Array.isArray(d.data) ? d.data : [], total: num(obj(d.page).totalIndex) };
+}
+
+export function pageOf<T>(rows: T[], total: number, page: number, per: number): Page<T> {
+  return { rows, total, page, pages: Math.max(1, Math.ceil(total / per)) };
+}
+
+/* ---------- the overview ---------- */
+
+export type Overview = {
+  at: string;
+  kpis: {
+    sales24h: { stockx: number; alias: number; more: boolean };
+    salesTotal: { stockx: number; alias: number };
+    products: { total: number; linked: number };
+    listings: { stockx: number; alias: number };
+    lastSale: Sale | null;
+    jobs: { ok: number; total: number };
+  };
+  connections: Connection[];
+  jobs: Job[];
+  feed: Sale[];
+};
+
+/** `limit`: how many recent sales were asked for per platform (a full page from the last day means there were more) */
+export type OverviewInput = { cron: unknown; stats: unknown; sx: unknown; al: unknown; sxListings: unknown; alListings: unknown; limit?: number };
+
+export function overviewOf(i: OverviewInput, now = Date.now()): Overview {
+  const sxl = listOf(i.sx);
+  const all = listOf(i.al);
+  const sx = sxl.rows.map((r) => saleOf(r, "stockx")).filter((s): s is Sale => !!s);
+  const al = all.rows.map((r) => saleOf(r, "alias")).filter((s): s is Sale => !!s);
+  const day = (s: Sale) => !!s.soldAt && now - Date.parse(s.soldAt) < 86_400_000;
+  const newest = (a: Sale, b: Sale) => (b.soldAt ?? "").localeCompare(a.soldAt ?? "");
+  const feed = [...sx, ...al].sort(newest);
+  const stats = obj(obj(i.stats).data);
+  const jobs = jobsOf(i.cron, now);
+  const limit = i.limit ?? 120;
+  const more = (xs: Sale[], n: number) => n >= limit && xs.every(day);
+  return {
+    at: new Date(now).toISOString(),
+    kpis: {
+      sales24h: { stockx: sx.filter(day).length, alias: al.filter(day).length, more: more(sx, sxl.rows.length) || more(al, all.rows.length) },
+      salesTotal: { stockx: sxl.total, alias: all.total },
+      products: { total: num(stats.total), linked: num(stats.withMatches) },
+      listings: { stockx: listOf(i.sxListings).total, alias: listOf(i.alListings).total },
+      lastSale: feed[0] ?? null,
+      jobs: { ok: jobs.filter((j) => j.status === "ok" || j.status === "running").length, total: jobs.length },
+    },
+    connections: connectionsOf(jobs),
+    jobs,
+    feed: feed.slice(0, 12),
+  };
+}
+
+/** A search term for the API (it builds a regex from it): letters, digits, spaces and dashes only, 40 characters. */
+export function searchTerm(q: unknown): string {
+  return typeof q === "string" ? q.replace(/[^A-Za-z0-9 \-]/g, " ").replace(/\s+/g, " ").trim().slice(0, 40) : "";
+}
