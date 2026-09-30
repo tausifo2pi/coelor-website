@@ -344,13 +344,21 @@ type Tile = {
   body?: string;
 };
 
-// one more sales channel to connect: the first of these that is not one of CHANNELS already
+// more sales channels to connect: the first three of these that are not one of CHANNELS already
 const MORE_CHANNELS = [
   { slug: "ebay", name: "eBay", role: "Marketplace" },
+  { slug: "woocommerce", name: "WooCommerce", role: "Web store" },
+  { slug: "wix", name: "Wix", role: "Web store" },
   { slug: "shopify", name: "Shopify", role: "Web store" },
   { slug: "whatnot", name: "Whatnot", role: "Live selling" },
-  { slug: "woocommerce", name: "WooCommerce", role: "Web store" },
 ].filter((m) => !CHANNELS.some((c) => c.logo === m.slug));
+
+// other systems a reseller counts stock in (an ERP, a warehouse app, a fulfilment warehouse)
+const MORE_STOCK = [
+  { slug: "odoo", name: "Odoo", role: "ERP, stock and orders", body: "We connect Odoo as your stock count: every sale on every channel comes off it, and a size that sells out comes down everywhere." },
+  { slug: "shiphero", name: "ShipHero", role: "Warehouse app", body: "We connect ShipHero for your store: orders from every channel go to the warehouse, and the stock it counts goes back to every channel." },
+  { slug: "shipbob", name: "ShipBob", role: "Fulfilment warehouse", body: "We connect ShipBob for your store: orders from every channel go to their warehouse, and the stock they hold goes back to every channel." },
+];
 
 const SHIP_BODY = (name: string) =>
   `We connect ${name} for your store: labels are made from the order in Picqer, and the tracking code goes back to the channel it sold on.`;
@@ -434,14 +442,21 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
         ...CHANNELS.map<Tile>((c) => ({
           slug: c.logo, name: c.name, role: c.role, detail: accountsText(c), last: last(c.id), state: state(c.id),
         })),
-        ...MORE_CHANNELS.slice(0, 1).map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off" })),
+        ...MORE_CHANNELS.slice(0, 3).map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off" })),
       ],
     },
     {
-      title: "Warehouse & shipping",
-      sub: "Where the pairs are, and how they go out",
+      title: "Warehouse & stock",
+      sub: "Where the stock is counted",
       tiles: [
         { slug: PICQER.logo, name: PICQER.name, role: "Warehouse, counts the stock", detail: `1 warehouse · ${fmt(ov.data.kpis.products.total)} products`, last: last("picqer"), state: state("picqer") },
+        ...MORE_STOCK.map<Tile>((m) => ({ ...m, state: "off" })),
+      ],
+    },
+    {
+      title: "Shipping",
+      sub: "How the orders go out",
+      tiles: [
         { slug: "ups", name: "UPS", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("UPS") },
         { slug: "dhl", name: "DHL", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("DHL") },
         { slug: "fedex", name: "FedEx", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("FedEx") },
