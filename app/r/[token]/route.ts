@@ -1,9 +1,10 @@
 // Email link: https://coelor.com/r/<token>[?to=/some/path]. Without ?to a sneaker reader (their mix speaks of pairs, the
-// same test as the case page's demo button) opens the live demo; everyone else the case study (a neutral address; the
-// page adapts to the platform mix of this email, see lib/case-page.ts). Short links read better in plain-text mail. Logs
+// same test as the case page's demo button) opens the live demo; a reader whose mix names other goods gets the case study
+// (a neutral address; the page adapts to the platform mix of this email, see lib/case-page.ts). When the lookup is slow
+// or fails the reader gets the demo: almost every email goes to sneaker sellers (user 2026-10-01, "direct demo link"). Short links read better in plain-text mail. Logs
 // the click, remembers the token in a first-party cookie so later pageviews are attributed, then redirects on-site.
 import { NextResponse, type NextRequest } from "next/server";
-import { fetchCaseMix } from "@/lib/case-mix";
+import { NEUTRAL_MIX, fetchCaseMix } from "@/lib/case-mix";
 import {
   TOKEN_COOKIE,
   VISITOR_COOKIE,
@@ -18,7 +19,7 @@ export const dynamic = "force-dynamic";
 
 const DEFAULT_TARGET = "/case-studies/stock-sync";
 const DEMO_TARGET = "/demo/multi-platform-sync?src=email";
-// a slow lookup must not hold the click long: after 1.5 s the reader gets the case study (the mix is cached and kept warm)
+// a slow lookup must not hold the click long: after 1.5 s the reader gets the demo (the mix is cached and kept warm)
 const LOOKUP_MS = 1500;
 
 // Only same-site paths, so the link can never be used as an open redirect.
@@ -31,7 +32,8 @@ function safeTarget(to: string | null): string {
 async function targetFor(token: string, to: string | null): Promise<string> {
   if (to || !validToken(token)) return safeTarget(to);
   const mix = await fetchCaseMix(token, LOOKUP_MS);
-  return mix?.words.item === "pair" ? DEMO_TARGET : DEFAULT_TARGET;
+  if (!mix || mix === NEUTRAL_MIX) return DEMO_TARGET; // slow, failed or unknown: fetchCaseMix answers the neutral mix
+  return mix.words.item === "pair" ? DEMO_TARGET : DEFAULT_TARGET;
 }
 
 export async function GET(req: NextRequest, ctx: RouteContext<"/r/[token]">) {
