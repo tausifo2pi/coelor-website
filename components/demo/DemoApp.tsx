@@ -19,12 +19,12 @@ const PRICING = "/pricing";
 
 const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "The sync right now: channels, orders and automations" },
+  { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines written, tested and scheduled from a chat" },
   { id: "connections", label: "Connections", icon: Plug, title: "Connections", sub: "Sales channels, the warehouse and the tools, on one stock count" },
   { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the sync did with the stock" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Picqer products linked to the same size on every account" },
   { id: "listings", label: "Listings", icon: Tag, title: "Listings", sub: "Channel listings the sync watches" },
   { id: "automations", label: "Automations", icon: Zap, title: "Automations", sub: "What runs on its own, and when it last ran" },
-  { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines written, tested and scheduled from a chat" },
 ];
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;
