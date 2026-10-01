@@ -2,7 +2,7 @@
 // The sheet assistant's parser and the scheduler's run times (Europe/Amsterdam, weekdays, weekly, every N, per sale).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { SEEDED, START_CHIPS, answer, describe, freqKey, fromWall, inText, nextRun, parse, prevRun, runLabel, timeOf, type Freq, type Schedule } from "./schedule.ts";
+import { KINDS, SEEDED, START_CHIPS, answer, cronOf, describe, freqKey, fromWall, inText, nextRun, parse, prevRun, runLabel, scriptOf, timeOf, verifyOf, type Freq, type Kind, type Schedule } from "./schedule.ts";
 import { flexUpdatedAt, liveUpdatedAt } from "./sheets.ts";
 
 const ams = (y: number, mo: number, d: number, h: number, mi = 0) => fromWall(y, mo, d, h, mi);
@@ -25,9 +25,10 @@ test("the chips parse to what they say", () => {
     return [p.kind, p.freq && describe(p.freq)];
   });
   assert.deepEqual(got, [
+    ["shopify-stock", "every 15 minutes"],
+    ["whatnot-lineup", "every day at 17:30"],
     ["pickup", "every weekday at 08:00"],
-    ["location", "after every sale"],
-    ["supplier", "every Monday at 09:00"],
+    ["sales-summary", "every day at 18:00"],
     ["consignment", "every 6 hours"],
   ]);
 });
@@ -145,25 +146,27 @@ test("the seeded schedules match the sheets", () => {
     assert.equal(prevRun(flex, now), flexUpdatedAt(now));
     assert.equal(nextRun(live, now)! - prevRun(live, now)!, 30 * 60_000);
   }
-  assert.deepEqual(SEEDED.map((s) => describe(s.freq)), ["every 30 minutes", "every 2 hours", "every weekday at 08:00", "after every sale"]);
+  assert.deepEqual(SEEDED.map((s) => describe(s.freq)), ["every 30 minutes", "every 2 hours", "every weekday at 08:00", "after every sale",
+    "every 15 minutes", "every day at 17:30", "every 6 hours", "every Monday at 09:00", "every day at 18:00"]);
+  assert.equal(new Set(SEEDED.map((s) => s.id)).size, SEEDED.length);
   for (const s of SEEDED) assert.ok(prevRun(s, THU)! <= THU);
 });
 
 test("answers: done, or one question with chips, and the answer to it", () => {
   const done = answer("Pickup sheet every weekday at 8:00, share with the warehouse", null, THU);
   assert.ok(done.ok);
-  assert.equal(done.text.split(" It lists")[0], "Done. Pickup sheet — every weekday at 08:00, shared with the warehouse. Next run: Fri 2 Oct, 08:00.");
+  assert.equal(done.text.split(" It lists")[0], 'Done. "Pickup sheet" is scheduled every weekday at 08:00 (cron 0 8 * * 1-5), shared with the warehouse. Next run: Fri 2 Oct, 08:00.');
   assert.equal(done.schedule.anchor, THU);
   assert.equal(freqKey(done.schedule.freq), "weekdays");
 
   const sale = answer("Location sheet after every sale", null, THU);
   assert.ok(sale.ok);
-  assert.match(sale.text, /^Done\. Location sheet — after every sale\. Next run: with the next sale\./);
+  assert.match(sale.text, /^Done\. "Location sheet" is scheduled after every sale\. Next run: with the next sale\./);
 
   const when = answer("a consignment check please", null, THU);
   assert.ok(!when.ok);
   assert.equal(when.kind, "consignment");
-  assert.match(when.text, /^When should the consignment check run\?/);
+  assert.match(when.text, /^When should "Consignment check" run\?/);
   assert.ok(when.chips.length >= 3);
   const then = answer(when.chips.find((c) => c.id === "when-2h")!.text, when.pending, THU);
   assert.ok(then.ok);
@@ -181,4 +184,41 @@ test("answers: done, or one question with chips, and the answer to it", () => {
   const lost = answer("hello", null, THU);
   assert.ok(!lost.ok);
   assert.equal(lost.kind, null);
+});
+
+test("routines on the channels: the request, the cron line, the script and its check", () => {
+  const kind = (t: string) => parse(t).kind;
+  assert.equal(kind("hide sold out sizes on shopify every 10 minutes"), "shopify-stock");
+  assert.equal(kind("Whatnot show lineup at 19:00"), "whatnot-lineup");
+  assert.equal(kind("check StockX prices against the lowest ask every 4 hours"), "stockx-ask");
+  assert.equal(kind("alias sales report every monday"), "alias-report");
+  assert.equal(kind("send a sales recap to slack at 18:00"), "sales-summary");
+  assert.equal(kind("Consignment report for StockX Flex"), "consignment");
+
+  assert.equal(cronOf({ type: "minutes", n: 15 }), "*/15 * * * *");
+  assert.equal(cronOf({ type: "hours", n: 6 }), "0 */6 * * *");
+  assert.equal(cronOf({ type: "hours", n: 1 }), "0 * * * *");
+  assert.equal(cronOf({ type: "weekdays", at: { h: 8, m: 0 } }), "0 8 * * 1-5");
+  assert.equal(cronOf({ type: "weekly", day: 1, at: { h: 9, m: 30 } }), "30 9 * * 1");
+  assert.equal(cronOf({ type: "sale" }), null);
+
+  for (const k of Object.keys(KINDS) as Kind[]) {
+    const sched = { kind: k, name: KINDS[k].name, freq: { type: "minutes", n: 15 } as Freq, share: "Anna" };
+    const sc = scriptOf(sched);
+    assert.match(sc.file, /^routines\/[a-z0-9-]+\.ts$/);
+    assert.match(sc.code, /from "@coelor\/engine";/);
+    assert.match(sc.code, /cron: "\*\/15 \* \* \* \*"/);
+    assert.match(sc.code, /export default async function run\(\) \{/);
+    const checks = verifyOf(sched, THU);
+    assert.equal(checks.length, 4);
+    assert.equal(checks[3].label, "Scheduled");
+    assert.deepEqual(verifyOf(sched, THU), checks, "the same routine, the same check");
+  }
+  const onSale = scriptOf({ kind: "location", name: "Location sheet", freq: { type: "sale" }, share: null });
+  assert.match(onSale.code, /export const trigger = "picqer\.order\.created";/);
+  assert.equal(verifyOf({ kind: "location", name: "Location sheet", freq: { type: "sale" } }, THU)[3].label, "Hooked to new orders");
+
+  const done = answer("Hide sold-out sizes on Shopify every 15 minutes", null, THU);
+  assert.ok(done.ok);
+  assert.match(done.text, /^Done\. "Hide sold-out sizes on Shopify" is scheduled every 15 minutes \(cron \*\/15 \* \* \* \*\)\./);
 });

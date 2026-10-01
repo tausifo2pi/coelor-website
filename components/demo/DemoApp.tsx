@@ -5,7 +5,7 @@
 // use. Read-only; every channel looks the same. Sections switch without a page load (?section= in the address);
 // lib/demo/track.ts records what the visitor looks at.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Boxes, FileSpreadsheet, Lock, LayoutDashboard, Plug, Receipt, RefreshCw, Sparkles, Tag, X, Zap, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Boxes, Lock, LayoutDashboard, Plug, Receipt, RefreshCw, Sparkles, Tag, X, Zap, type LucideIcon } from "lucide-react";
 import { PICQER } from "@/lib/demo/channels";
 import type { Overview, Product } from "@/lib/demo/shape";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
@@ -24,7 +24,7 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Picqer products linked to the same size on every account" },
   { id: "listings", label: "Listings", icon: Tag, title: "Listings", sub: "Channel listings the sync watches" },
   { id: "automations", label: "Automations", icon: Zap, title: "Automations", sub: "What runs on its own, and when it last ran" },
-  { id: "extra", label: "Extra", icon: FileSpreadsheet, title: "Extra", sub: "Google Sheets the sync keeps up to date" },
+  { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines written, tested and scheduled from a chat" },
 ];
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;
@@ -226,7 +226,7 @@ export default function DemoApp({ initial, first }: { initial: Live<Overview> | 
             {section === "products" && <Products ctx={ctx} />}
             {section === "listings" && <Listings ctx={ctx} />}
             {section === "automations" && <Automations ov={ov} ctx={ctx} />}
-            {section === "extra" && <Extra ctx={ctx} />}
+            {section === "assistant" && <Extra ctx={ctx} />}
             <p className="mt-8 text-center text-[12.5px] leading-[1.6] text-[#94a3b8]">
               Built and run by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a> · customer names and order numbers hidden
             </p>

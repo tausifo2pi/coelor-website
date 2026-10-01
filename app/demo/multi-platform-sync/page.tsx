@@ -17,11 +17,12 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#0f172a", colorScheme: "light" };
 
-const SECTIONS: SectionId[] = ["dashboard", "connections", "orders", "products", "listings", "automations", "extra"];
+const SECTIONS: SectionId[] = ["dashboard", "connections", "orders", "products", "listings", "automations", "assistant"];
 
 export default async function DemoPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  const want = typeof sp.section === "string" ? sp.section : "";
+  // "extra" was the Assistant's old name: old links still open it
+  const want = typeof sp.section === "string" ? (sp.section === "extra" ? "assistant" : sp.section) : "";
   const first = (SECTIONS as string[]).includes(want) ? (want as SectionId) : "dashboard";
   const initial = await Promise.race([
     overview().catch(() => null),

@@ -24,7 +24,7 @@ export type Ctx = {
   connect: (slug: string, name: string, body?: string) => void;
   go: (section: SectionId) => void;
 };
-export type SectionId = "dashboard" | "connections" | "orders" | "products" | "listings" | "automations" | "extra";
+export type SectionId = "dashboard" | "connections" | "orders" | "products" | "listings" | "automations" | "assistant";
 
 // the client's own channels (StockX, Alias), which have rules of their own on the automations page
 const REAL = CHANNELS.filter((c) => fromApi(c.id));
@@ -476,7 +476,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
       tiles: [
         {
           slug: "google-sheets", name: "Google Sheets", role: "Live stock sheet + consignment report", state: "on",
-          action: { label: "View", run: () => { ctx.t?.action("open_extra", "connections"); ctx.go("extra"); } },
+          action: { label: "View", run: () => { ctx.t?.action("open_assistant", "connections"); ctx.go("assistant"); } },
         },
         { slug: "discord", name: "Discord", role: "Alerts", detail: "Sold-out sizes, cancellations and the not-listed report", state: "on" },
         { slug: "openai", name: "OpenAI", role: "GPT reads product names", detail: "Finds the size and colour in every Picqer name", state: "on" },

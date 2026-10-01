@@ -1,7 +1,7 @@
 "use client";
 
-// The demo's "Extra" section: Google Sheets the sync keeps up to date from the Picqer stock and shares with partners.
-// First the sheet assistant and the scheduler (SheetAssistant.tsx), then two sheets: a live stock sheet for a supplier
+// The demo's Assistant section (it was "Extra"): first the assistant that writes, tests and schedules routines, and the
+// routines table (SheetAssistant.tsx), then the Google Sheets the sync keeps up to date and shares with partners, two sheets: a live stock sheet for a supplier
 // (like live.gs) and the StockX US Flex "not listed" report for a consignment partner (like flex.gs), drawn from
 // sample data with fictional partners (lib/demo/sheets.ts). Buttons that would change something open the view-only dialog.
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
