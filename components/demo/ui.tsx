@@ -41,7 +41,7 @@ export function Logo({ slug, name, size = 32, className = "" }: { slug: string; 
   );
 }
 
-/* ---------- marks of the tools that are not sales platforms (shipping, AI, chat) ---------- */
+/* ---------- marks of the tools (shipping, AI, chat) and of the sales platforms without a logo file ---------- */
 
 function OpenAIKnot({ size }: { size: number }) {
   return (
@@ -75,6 +75,14 @@ const MARKS: Record<string, { bg: string; fg?: string; ring?: boolean; scale?: n
   shipstation: { bg: "#84C225", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="SS" /> },
   loop: { bg: "#111111", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="loop" /> },
   excel: { bg: "#217346", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="X" /> },
+  // sneaker marketplaces with no logo in data/platforms.json and none in the icon set: their initials, black and white
+  // like their own marks
+  "flight-club": { bg: "#000000", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="FC" /> },
+  "kicks-crew": { bg: "#FFFFFF", fg: "#000000", ring: true, glyph: (px) => <Initials px={px} text="KC" /> },
+  restocks: { bg: "#000000", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="R" /> },
+  klekt: { bg: "#FFFFFF", fg: "#000000", ring: true, glyph: (px) => <Initials px={px} text="K" /> },
+  laced: { bg: "#000000", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="L" /> },
+  hypeboost: { bg: "#FFFFFF", fg: "#000000", ring: true, glyph: (px) => <Initials px={px} text="HB" /> },
   gmail: { bg: "#FFFFFF", fg: "#EA4335", ring: true, scale: 0.62, glyph: (px) => <SiGmail size={px} color="currentColor" title="" /> },
   whatsapp: { bg: "#25D366", fg: "#FFFFFF", glyph: (px) => <SiWhatsapp size={px} color="currentColor" title="" /> },
   mailchimp: { bg: "#FFE01B", fg: "#241C15", glyph: (px) => <SiMailchimp size={px} color="currentColor" title="" /> },

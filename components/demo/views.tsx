@@ -346,9 +346,26 @@ type Tile = {
   body?: string;
 };
 
-// more sales channels to connect: the first three of these that are not one of CHANNELS already
+// more sales channels to connect: every one of these that is not one of CHANNELS already, in the order a sneaker
+// reseller sells the most there (the resale marketplaces like StockX and GOAT first, then the social and resale apps,
+// then the web stores). Only real marketplaces and stores: never a listing or stock-sync tool.
 const MORE_CHANNELS = [
-  { slug: "ebay", name: "eBay", role: "Marketplace" },
+  { slug: "ebay", name: "eBay", role: "Authenticity Guarantee" },
+  { slug: "grailed", name: "Grailed", role: "Streetwear marketplace" },
+  { slug: "stadium-goods", name: "Stadium Goods", role: "Consignment marketplace" },
+  { slug: "flight-club", name: "Flight Club", role: "Consignment store" },
+  { slug: "kicks-crew", name: "Kicks Crew", role: "Sneaker marketplace" },
+  { slug: "restocks", name: "Restocks", role: "Resale marketplace (EU)" },
+  { slug: "klekt", name: "Klekt", role: "Sneaker marketplace (EU)" },
+  { slug: "laced", name: "Laced", role: "Sneaker marketplace (UK)" },
+  { slug: "hypeboost", name: "Hypeboost", role: "Resale marketplace (EU)" },
+  { slug: "tiktok-shop", name: "TikTok Shop", role: "Social shop and live selling" },
+  { slug: "depop", name: "Depop", role: "Resale app" },
+  { slug: "vinted", name: "Vinted", role: "Resale app (EU)" },
+  { slug: "poshmark", name: "Poshmark", role: "Resale app" },
+  { slug: "mercari", name: "Mercari", role: "Resale app" },
+  { slug: "facebook-marketplace", name: "Facebook Marketplace", role: "Local and shipped sales" },
+  { slug: "amazon", name: "Amazon", role: "Marketplace" },
   { slug: "woocommerce", name: "WooCommerce", role: "Web store" },
   { slug: "wix", name: "Wix", role: "Web store" },
   { slug: "shopify", name: "Shopify", role: "Web store" },
@@ -375,6 +392,8 @@ const MORE_TOOLS = [
   { slug: "google-drive", name: "Google Drive", role: "Product photos" },
 ];
 
+const CHANNEL_BODY = (name: string) =>
+  `We connect ${name} for your store: every sale there comes off Picqer, and a size that sells out comes down everywhere.`;
 const SHIP_BODY = (name: string) =>
   `We connect ${name} for your store: labels are made from the order in Picqer, and the tracking code goes back to the channel it sold on.`;
 const AGENT_BODY = (name: string) =>
@@ -463,7 +482,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
         ...CHANNELS.map<Tile>((c) => ({
           slug: c.logo, name: c.name, role: c.role, detail: accountsText(c), last: last(c.id), state: state(c.id),
         })),
-        ...MORE_CHANNELS.slice(0, 3).map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off" })),
+        ...MORE_CHANNELS.map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off", body: CHANNEL_BODY(m.name) })),
       ],
     },
     {
