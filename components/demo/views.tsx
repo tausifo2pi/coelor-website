@@ -360,6 +360,19 @@ const MORE_STOCK = [
   { slug: "shipbob", name: "ShipBob", role: "Fulfilment warehouse", body: "We connect ShipBob for your store: orders from every channel go to their warehouse, and the stock they hold goes back to every channel." },
 ];
 
+// more tools the sync can work with (shown to add, view only)
+const MORE_TOOLS = [
+  { slug: "excel", name: "Excel", role: "Stock and sales export" },
+  { slug: "gemini", name: "Gemini", role: "AI assistant" },
+  { slug: "gmail", name: "Gmail", role: "Order and alert emails" },
+  { slug: "whatsapp", name: "WhatsApp", role: "Alerts to your phone" },
+  { slug: "quickbooks", name: "QuickBooks", role: "Sales into the books" },
+  { slug: "xero", name: "Xero", role: "Sales into the books" },
+  { slug: "notion", name: "Notion", role: "Buying notes" },
+  { slug: "airtable", name: "Airtable", role: "Product planning base" },
+  { slug: "google-drive", name: "Google Drive", role: "Product photos" },
+];
+
 const SHIP_BODY = (name: string) =>
   `We connect ${name} for your store: labels are made from the order in Picqer, and the tracking code goes back to the channel it sold on.`;
 const AGENT_BODY = (name: string) =>
@@ -386,7 +399,7 @@ function IntegrationTile({ t, ctx }: { t: Tile; ctx: Ctx }) {
         <Settings2 size={15} />
       </button>
     ) : (
-      <Button small primary onClick={() => ctx.connect(t.slug, t.name, t.body)}><Plus size={14} />Connect</Button>
+      <Button small primary onClick={() => ctx.connect(t.slug, t.slug === "custom" ? t.name.charAt(0).toLowerCase() + t.name.slice(1) : t.name, t.body)}><Plus size={14} />Connect</Button>
     );
   const details = (t.detail || t.last) && (
     <>
@@ -434,9 +447,15 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
     return ov.data.jobs.filter((j) => j.platform === platform).reduce<string | null>((a, j) => (!a || j.lastRun > a ? j.lastRun : a), null);
   };
 
-  const groups: { title: string; sub: string; tiles: Tile[] }[] = [
+  // every group ends with the connection we build for a platform that is not listed
+  const customTile = (what: string): Tile => ({
+    slug: "custom", name: `Your own ${what}`, role: "Built for your setup, as required", detail: "Any platform with an API, or its exports", state: "off",
+    body: `Not in the list? We build the connection your store needs: any ${what} with an API, or its exports where there is none, on the same Picqer stock and orders. Tell us what you use.`,
+  });
+  const groups: { title: string; sub: string; what: string; tiles: Tile[] }[] = [
     {
       title: "Sales channels",
+      what: "sales channel",
       sub: "Every sale comes off one stock count",
       tiles: [
         ...CHANNELS.map<Tile>((c) => ({
@@ -447,6 +466,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
     },
     {
       title: "Warehouse & stock",
+      what: "stock system",
       sub: "Where the stock is counted",
       tiles: [
         { slug: PICQER.logo, name: PICQER.name, role: "Warehouse, counts the stock", detail: `1 warehouse · ${fmt(ov.data.kpis.products.total)} products`, last: last("picqer"), state: state("picqer") },
@@ -455,6 +475,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
     },
     {
       title: "Shipping",
+      what: "carrier",
       sub: "How the orders go out",
       tiles: [
         { slug: "ups", name: "UPS", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("UPS") },
@@ -464,6 +485,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
     },
     {
       title: "AI sales agents",
+      what: "chat channel",
       sub: "Sell in DMs and chats from the same stock",
       tiles: [
         { slug: "instagram", name: "Instagram", role: "AI Sales Agent", detail: "Answers buyers in DMs with the sizes in stock", state: "off", body: AGENT_BODY("Instagram") },
@@ -472,6 +494,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
     },
     {
       title: "Tools",
+      what: "tool",
       sub: "Sheets, alerts and AI the sync works with",
       tiles: [
         {
@@ -488,6 +511,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
           slug: "claude", name: "Claude", role: "AI assistant", state: "off",
           body: "We connect Claude to the sync for your store: it can read product names for sizes and colours, or answer your team's questions about stock and sales.",
         },
+        ...MORE_TOOLS.map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off", body: `We connect ${m.name} to the sync for your store: ${m.role.charAt(0).toLowerCase() + m.role.slice(1)}, from the same Picqer stock and orders.` })),
       ],
     },
   ];
@@ -501,7 +525,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
             <span className="text-[12.5px] text-[#94a3b8]">{g.sub}</span>
           </div>
           <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1400px]:grid-cols-5">
-            {g.tiles.map((t) => <IntegrationTile key={t.slug} t={t} ctx={ctx} />)}
+            {[...g.tiles, customTile(g.what)].map((t) => <IntegrationTile key={t.slug} t={t} ctx={ctx} />)}
           </div>
         </section>
       ))}

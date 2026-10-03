@@ -127,6 +127,8 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
   };
   const sizeWeight = (v: Variant) => cfg.sizes[v.size] ?? (v.size === "One size" ? 1 : 0.06);
   const allChannels = join(cfg.channels.map((c) => c.name));
+  // "Shopify, TikTok Shop and Amazon", or "all 5 channels" once the list gets long
+  const everyChannel = cfg.channels.length > 3 ? `all ${cfg.channels.length} channels` : allChannels;
 
   // what a channel can sell on day d: listed there, published two hours before the day ends, a size in stock today
   const eligible = new Map<string, { list: Product[]; weights: number[] }>();
@@ -194,15 +196,15 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
 
   function stepsOf(o: { id: string; channel: string; placedAt: number; carrier: number; lines: Line[] }): Step[] {
     const t = o.placedAt;
-    const others = cfg.channels.map((c) => c.name);
-    const steps: Step[] = [{ kind: "stock", at: iso(t + (20 + U("s1", o.id) * 70) * 1000), text: `Stock −1 on ${join(others)}` }];
+    const ch = cfg.channels.find((c) => c.id === o.channel)!;
+    const steps: Step[] = [{ kind: "stock", at: iso(t + (20 + U("s1", o.id) * 70) * 1000), text: `Stock −1 on ${everyChannel}` }];
     if (U("cancel", o.id) < 0.025) {
       steps.push({ kind: "cancel", at: iso(t + (8 + U("c1", o.id) * 42) * MIN), text: "Cancelled by the buyer · stock +1 back everywhere" });
       return steps;
     }
     const car = cfg.shipping.carriers[o.carrier];
     const label = lastWorkingStart(t);
-    steps.push({ kind: "label", at: iso(label), text: `Label in ${cfg.shipping.tool.name} · ${car.service}` });
+    steps.push({ kind: "label", at: iso(label), text: ch.label ? ch.label.service : `Label in ${cfg.shipping.tool.name} · ${car.service}` });
     const shipped = label + (2 + U("sh", o.id) * 3) * HOUR;
     steps.push({ kind: "shipped", at: iso(shipped), text: `Shipped · tracking sent by ${cfg.tracking.name}${o.channel === "shopify" ? "" : `, marked shipped on ${names[o.channel]}`}` });
     const dd = dayOf(shipped) + between(car.days[0], car.days[1], U("dd", o.id));
@@ -214,7 +216,7 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
       const started = at(rd, 9 * 60 + U("rt", o.id) * 780);
       steps.push({ kind: "return", at: iso(started), text: `Return started in ${cfg.returns.name} · ${reason}` });
       const back = at(rd + between(4, 8, U("rb", o.id)), 10 * 60 + U("rbt", o.id) * 360);
-      steps.push({ kind: "restock", at: iso(back), text: `Back in stock after the check · +1 on ${allChannels}` });
+      steps.push({ kind: "restock", at: iso(back), text: `Back in stock after the check · +1 on ${everyChannel}` });
     }
     return steps;
   }
@@ -223,7 +225,7 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
   const dayMemo = new Map<number, Raw[]>();
 
   function makeOrder(ch: ChannelCfg, id: string, t: number, ref: number, lines: Line[]): Raw {
-    const carrier = pickIndex(cfg.shipping.carriers.map((c) => c.share), U("car", id));
+    const carrier = ch.label ? ch.label.carrier : pickIndex(cfg.shipping.carriers.map((c) => c.share), U("car", id));
     const shipTo = STATES[pickIndex(STATE_W, U("st", id))][0];
     const base = { id, channel: ch.id, placedAt: t, carrier, lines };
     return { ...base, ref, shipTo, steps: stepsOf(base) };
@@ -368,7 +370,7 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
       if (t > now || t <= from) continue;
       const brand = brands[H("rsb", d) % brands.length];
       const units = between(12, 48, U("rsu", d));
-      out.push({ id: `r${d}`, kind: "restock", at: iso(t), title: `${cfg.restock.name} order received`, text: `${brand} · ${units} ${cfg.items} → stock up on ${allChannels}` });
+      out.push({ id: `r${d}`, kind: "restock", at: iso(t), title: `${cfg.restock.name} order received`, text: `${brand} · ${units} ${cfg.items} → stock up on ${everyChannel}` });
     }
     return out.sort((a, b) => b.at.localeCompare(a.at));
   }
@@ -379,7 +381,7 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
     { key: "orders", name: "Every order into one stock count", when: `An order comes in on ${allChannels}`, then: `Stock −1 on every channel, for that size and colour`, min: 2, every: "every 2 min", tools: cfg.channels.map((c) => c.logo) },
     { key: "soldout", name: "Sold-out sizes pulled", when: "A size reaches 0", then: `Pulled from ${join(cfg.channels.slice(1).map((c) => c.name))}; shown sold out in the web store`, min: 5, every: "every 5 min", tools: cfg.channels.map((c) => c.logo) },
     { key: "listing", name: "New products listed", when: `A new product is published in ${cfg.channels[0].name}`, then: `Listed on ${join(cfg.channels.slice(1).map((c) => c.name))} with every size and the photos`, min: 15, every: "every 15 min", tools: cfg.channels.map((c) => c.logo) },
-    { key: "labels", name: "Labels bought", when: "An order is paid on any channel", then: `Label in ${cfg.shipping.tool.name}: ${join(cfg.shipping.carriers.map((c) => c.name))}, by weight and speed`, min: 10, every: "every 10 min", tools: [cfg.shipping.tool.logo, ...cfg.shipping.carriers.map((c) => c.logo)] },
+    { key: "labels", name: "Labels bought", when: "An order is paid on any channel", then: `Label in ${cfg.shipping.tool.name}: ${join(cfg.shipping.carriers.map((c) => c.name))}, by weight and speed${cfg.channels.some((c) => c.label) ? `; ${join(cfg.channels.filter((c) => c.label).map((c) => c.name))} orders on their own prepaid label` : ""}`, min: 10, every: "every 10 min", tools: [cfg.shipping.tool.logo, ...cfg.shipping.carriers.map((c) => c.logo)] },
     { key: "tracking", name: "Tracking to the buyer", when: "A parcel is scanned by the carrier", then: `Tracking page and emails by ${cfg.tracking.name}; the order marked shipped on its channel`, min: 15, every: "every 15 min", tools: [cfg.tracking.logo, ...cfg.channels.slice(1).map((c) => c.logo)] },
     { key: "returns", name: "Returns back into stock", when: `A return is checked in ${cfg.returns.name}`, then: "+1 on every channel, or the exchange size sent", min: 60, every: "every hour", tools: [cfg.returns.logo] },
     { key: "restock", name: "Wholesale restocks", when: `A ${cfg.restock.name} order is received`, then: "New stock on every channel at once", min: 1440, every: "daily", tools: [cfg.restock.logo] },

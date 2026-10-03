@@ -5,12 +5,17 @@
 // schedules it with a cron line; below, the routines table with every routine, its cron line, next and last run, and
 // its script. The answers come from a small deterministic parser (lib/demo/schedule.ts), with no network call; what
 // the visitor adds lives in this page only.
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ArrowUp, Check, FileCode2, FileSpreadsheet, Info, Loader2, Lock, MapPin, PackageCheck, Sparkles, Store, X } from "lucide-react";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
-import type { Ctx } from "@/components/demo/views";
-import { Badge, Card, Logo, ago } from "@/components/demo/ui";
-import { GREETING, KINDS, SEEDED, START_CHIPS, answer, cronOf, describe, freqKey, inText, nextRun, prevRun, runLabel, scriptOf, verifyOf, type Check as CheckStep, type Chip, type Kind, type Pending, type Schedule, type Script } from "@/lib/demo/schedule";
+import { Badge, BrandMark, Card, ago } from "@/components/demo/ui";
+import type { DemoTracker } from "@/lib/demo/track";
+import { SNEAKER, answer, cronOf, describe, freqKey, inText, nextRun, prevRun, runLabel, scriptOf, verifyOf, type Check as CheckStep, type Chip, type Pending, type Profile, type Schedule, type Script } from "@/lib/demo/schedule";
+
+/** what the assistant needs from its demo page (the sneaker demo's Ctx and a store demo's SCtx both have it) */
+export type AssistantCtx = { now: number; t: DemoTracker | null; locked: (what: string, text?: string) => void };
+// the demo's routines, words and time zone (lib/demo/schedule.ts Profile): the sneaker demo's unless a page passes its own
+const ProfileOf = createContext<Profile>(SNEAKER);
 
 type Msg =
   | { id: number; from: "bot" | "you"; text: string }
@@ -23,12 +28,12 @@ const CHECK_MS = 420; // one verification step
 const MAX_MSGS = 40;
 const MAX_ADDED = 8;
 
-export function SheetAssistant({ ctx }: { ctx: Ctx }) {
-  const [msgs, setMsgs] = useState<Msg[]>([{ id: 0, from: "bot", text: GREETING }]);
+export function SheetAssistant({ ctx, profile = SNEAKER }: { ctx: AssistantCtx; profile?: Profile }) {
+  const [msgs, setMsgs] = useState<Msg[]>([{ id: 0, from: "bot", text: profile.greeting }]);
   const [typing, setTyping] = useState(false);
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState<Schedule | null>(null);
-  const [chips, setChips] = useState<Chip[]>(START_CHIPS);
+  const [chips, setChips] = useState<Chip[]>(profile.startChips);
   const [pending, setPending] = useState<Pending>(null);
   const [added, setAdded] = useState<Schedule[]>([]);
   const [text, setText] = useState("");
@@ -63,7 +68,7 @@ export function SheetAssistant({ ctx }: { ctx: Ctx }) {
     const q = raw.trim().replace(/\s+/g, " ").slice(0, 140);
     if (!q || busy) return;
     const now = Date.now();
-    const a = answer(q, pending, now);
+    const a = answer(q, pending, now, profile);
     if (chip) ctx.t?.action("assistant_chip", chip.id);
     else ctx.t?.action("assistant_ask", a.kind ?? "unknown");
     say({ from: "you", text: q });
@@ -87,9 +92,9 @@ export function SheetAssistant({ ctx }: { ctx: Ctx }) {
     });
     await later(WRITE_MS, () => {
       setTyping(false);
-      say({ from: "bot", script: scriptOf(sched) });
+      say({ from: "bot", script: scriptOf(sched, profile) });
     });
-    const checks = verifyOf(sched, now);
+    const checks = verifyOf(sched, now, profile);
     let checkId = -1;
     await later(TYPING_MS, () => {
       checkId = say({ from: "bot", checks, shown: 0 });
@@ -102,7 +107,7 @@ export function SheetAssistant({ ctx }: { ctx: Ctx }) {
       const id = `new-${seq.current++}`;
       setAdded((l) => [{ ...sched, id }, ...l].slice(0, MAX_ADDED));
       setPending(null);
-      setChips(START_CHIPS);
+      setChips(profile.startChips);
       ctx.t?.action("assistant_created", `${a.kind}:${freqKey(sched.freq)}`);
     });
     setBusy(false);
@@ -113,6 +118,7 @@ export function SheetAssistant({ ctx }: { ctx: Ctx }) {
   };
 
   return (
+    <ProfileOf.Provider value={profile}>
     <div className="flex flex-col gap-8">
       <section className="flex min-w-0 flex-col gap-4">
         <Heading title="Ask the assistant" sub="Say what should run and when. It writes the routine, tests it and puts it on a schedule." />
@@ -172,9 +178,9 @@ export function SheetAssistant({ ctx }: { ctx: Ctx }) {
       </section>
 
       <section className="flex min-w-0 flex-col gap-4">
-        <Heading title="Routines" sub="Everything that runs on its own, with its cron line, in Amsterdam time." />
+        <Heading title="Routines" sub={`Everything that runs on its own, with its cron line, in ${profile.tzName} time.`} />
         <Scheduler
-          rows={[...added, ...SEEDED]}
+          rows={[...added, ...profile.seeded]}
           ctx={ctx}
           onRemove={(id) => setAdded((l) => l.filter((s) => s.id !== id))}
           onScript={(s) => { setOpen(s); ctx.t?.action("view_script", s.seeded ? s.id : s.kind); }}
@@ -183,6 +189,7 @@ export function SheetAssistant({ ctx }: { ctx: Ctx }) {
 
       {open && <ScriptDialog s={open} onClose={() => setOpen(null)} />}
     </div>
+    </ProfileOf.Provider>
   );
 }
 
@@ -288,7 +295,7 @@ function ScriptDialog({ s, onClose }: { s: Schedule; onClose: () => void }) {
           </div>
           <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-[#94a3b8] hover:bg-[#f4f5f7] hover:text-[#0f172a]" aria-label="Close"><X size={16} /></button>
         </div>
-        <Code script={scriptOf(s)} tall />
+        <Code script={scriptOf(s, useContext(ProfileOf))} tall />
       </div>
     </div>
   );
@@ -296,7 +303,7 @@ function ScriptDialog({ s, onClose }: { s: Schedule; onClose: () => void }) {
 
 /* ---------- the scheduler ---------- */
 
-const ICON: Partial<Record<Kind, ReactNode>> = {
+const ICON: Partial<Record<string, ReactNode>> = {
   pickup: <PackageCheck size={16} />,
   location: <MapPin size={16} />,
   supplier: <Store size={16} />,
@@ -304,25 +311,27 @@ const ICON: Partial<Record<Kind, ReactNode>> = {
 };
 
 /** The platform a routine works on (its logo), else an icon for the kind of sheet. */
-function KindIcon({ kind }: { kind: Kind }) {
-  const logo = KINDS[kind].logo;
+function KindIcon({ kind }: { kind: string }) {
+  const k = useContext(ProfileOf).kinds[kind];
+  const logo = k?.logo;
   if (logo === "discord") return <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#5865F2] text-white" aria-hidden><SiDiscord size={17} color="currentColor" /></span>;
-  if (logo) return <Logo slug={logo} name={KINDS[kind].name} size={32} />;
+  if (logo) return <BrandMark slug={logo} name={k.name} size={32} />;
   return <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#f1f5f9] text-[#475569]" aria-hidden>{ICON[kind] ?? <FileSpreadsheet size={16} />}</span>;
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const iso = (ms: number) => new Date(ms).toISOString();
 
-function Scheduler({ rows, ctx, onRemove, onScript }: { rows: Schedule[]; ctx: Ctx; onRemove: (id: string) => void; onScript: (s: Schedule) => void }) {
+function Scheduler({ rows, ctx, onRemove, onScript }: { rows: Schedule[]; ctx: AssistantCtx; onRemove: (id: string) => void; onScript: (s: Schedule) => void }) {
+  const { tz } = useContext(ProfileOf);
   const view = rows.map((s) => {
-    const next = nextRun(s, ctx.now);
-    const last = s.seeded ? prevRun(s, ctx.now) : null;
+    const next = nextRun(s, ctx.now, tz);
+    const last = s.seeded ? prevRun(s, ctx.now, tz) : null;
     return {
       s,
       runs: cap(describe(s.freq)),
       cron: cronOf(s.freq) ?? "on order",
-      next: next === null ? "With the next sale" : runLabel(next),
+      next: next === null ? "With the next sale" : runLabel(next, tz),
       nextSub: next === null ? "on each order" : inText(next, ctx.now),
       last: last === null ? "Not yet" : ago(iso(last), ctx.now),
       share: s.share ? `Shared with ${s.share}` : "Not shared",

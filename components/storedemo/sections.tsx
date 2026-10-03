@@ -9,7 +9,7 @@ import type { DemoTracker } from "@/lib/demo/track";
 import type { ProductRow, StoreWorld } from "@/lib/storedemo/engine";
 import type { ChannelCfg, DemoConfig, Happening, Order, Step } from "@/lib/storedemo/types";
 
-export type SectionId = "dashboard" | "orders" | "products" | "shipping" | "automations" | "connections";
+export type SectionId = "dashboard" | "assistant" | "orders" | "products" | "shipping" | "automations" | "connections";
 
 export type SCtx = {
   cfg: DemoConfig;
@@ -174,13 +174,15 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
   const live = w.liveNow(ctx.now);
   const day = cfg.channels.reduce((n, c) => n + (k.orders24h[c.id] ?? 0), 0);
   const last = k.lastOrder;
+  // channels around the stock count: the first half on the left, the rest (and the tools) on the right
+  const half = Math.ceil(cfg.channels.length / 2);
   return (
     <div className="flex flex-col gap-5">
       <Card>
         <CardHead title="Your connected channels" sub="One stock count for every size, kept in step with every channel, the stockroom and the parcels." />
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.8fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-3">
-            {cfg.channels.slice(0, 2).map((c) => <HubCard key={c.id} c={c} n={k.live[c.id] ?? 0} live={live === c.id} />)}
+            {cfg.channels.slice(0, half).map((c) => <HubCard key={c.id} c={c} n={k.live[c.id] ?? 0} live={live === c.id} />)}
           </div>
           <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-[#bfdbfe] bg-[#f8fbff] p-4 text-center">
             <BrandMark slug={cfg.stock.logo} name={cfg.stock.name} size={56} />
@@ -192,7 +194,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
             <p className="text-[13px] text-[#64748b]">{fmt(w.products)} products · {fmt(k.live[cfg.channels[0].id] ?? 0)} in stock</p>
           </div>
           <div className="flex flex-col gap-3">
-            {cfg.channels.slice(2).map((c) => <HubCard key={c.id} c={c} n={k.live[c.id] ?? 0} live={live === c.id} />)}
+            {cfg.channels.slice(half).map((c) => <HubCard key={c.id} c={c} n={k.live[c.id] ?? 0} live={live === c.id} />)}
             <div className="grid grid-cols-2 gap-3">
               <ToolChip slug={cfg.shipping.tool.logo} name={cfg.shipping.tool.name} role="Labels" />
               <ToolChip slug={cfg.returns.logo} name={cfg.returns.name} role="Returns" />
@@ -418,7 +420,7 @@ export function Shipping({ ctx }: { ctx: SCtx }) {
             <div className="min-w-0">
               <p className="text-[13px] font-medium text-[#64748b]">{c.service}</p>
               <p className="text-[26px] font-bold leading-tight tabular-nums">{fmt(data.today[c.name] ?? 0)}</p>
-              <p className="text-[12.5px] text-[#64748b]">labels today in {cfg.shipping.tool.name}</p>
+              <p className="text-[12.5px] text-[#64748b]">labels today</p>
             </div>
           </Card>
         ))}
@@ -440,7 +442,7 @@ export function Shipping({ ctx }: { ctx: SCtx }) {
                   <Thumb src={o.lines[0].image} size={40} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[14px] font-semibold">{o.lines[0].title}{o.lines.length > 1 && <span className="font-medium text-[#64748b]"> +{o.lines.length - 1}</span>}</p>
-                    <p className="truncate text-[12.5px] text-[#64748b]">{ch.name} · {o.ref} · to {o.shipTo} · {cfg.shipping.carriers.find((c) => c.name === o.carrier)?.service}</p>
+                    <p className="truncate text-[12.5px] text-[#64748b]">{ch.name} · {o.ref} · to {o.shipTo} · {ch.label?.service ?? cfg.shipping.carriers.find((c) => c.name === o.carrier)?.service}</p>
                   </div>
                   <div className="hidden shrink-0 text-right sm:block">
                     <Badge tone={STATE_TONE[o.state] ?? "gray"}>{o.state}</Badge>
@@ -541,6 +543,7 @@ export function Connections({ ctx }: { ctx: SCtx }) {
       tiles: [
         <ConnTile key="stock" slug={cfg.stock.logo} name={cfg.stock.name} role={cfg.stock.role} detail={cfg.stock.detail} on onClick={settings(cfg.stock.name)} />,
         <ConnTile key="ship" slug={cfg.shipping.tool.logo} name={cfg.shipping.tool.name} role={cfg.shipping.tool.role} detail={cfg.shipping.carriers.map((c) => c.name).join(", ")} on onClick={settings(cfg.shipping.tool.name)} />,
+        ...cfg.shipping.carriers.map((c) => <ConnTile key={c.name} slug={c.logo} name={c.name} role={c.service} detail={`Labels through ${cfg.shipping.tool.name}`} on onClick={settings(c.name)} />),
         <ConnTile key="track" slug={cfg.tracking.logo} name={cfg.tracking.name} role={cfg.tracking.role} on onClick={settings(cfg.tracking.name)} />,
         <ConnTile key="ret" slug={cfg.returns.logo} name={cfg.returns.name} role={cfg.returns.role} on onClick={settings(cfg.returns.name)} />,
         <ConnTile key="restock" slug={cfg.restock.logo} name={cfg.restock.name} role={cfg.restock.role} on onClick={settings(cfg.restock.name)} />,
@@ -550,13 +553,27 @@ export function Connections({ ctx }: { ctx: SCtx }) {
         )),
       ],
     },
+    {
+      title: "Team, sheets and AI",
+      sub: "Where the team sees the numbers and gets the alerts, and the AI that works on the same data.",
+      tiles: cfg.tools.map((x) => (
+        <ConnTile key={x.slug} slug={x.slug} name={x.name} role={x.role} detail={x.detail} on={!!x.on}
+          onClick={x.on ? settings(x.name) : () => ctx.connect(x.slug, x.name, `View only in this demo. For your store we connect ${x.name} to the same stock count and orders: ${x.role.charAt(0).toLowerCase() + x.role.slice(1)}, without anyone copying numbers over.`)} />
+      )),
+    },
   ];
+  // every group ends with the connection we build for a platform that is not listed
+  const custom = (what: string) => (
+    <ConnTile key="custom" slug="custom" name={`Your own ${what}`} role="Built for your setup, as required" detail="Any platform with an API, or its exports" on={false}
+      onClick={() => ctx.connect("custom", `your own ${what}`, `Not in the list? We build the connection your store needs: any ${what} with an API, or its exports where there is none, on the same stock count and orders. Tell us what you use.`)} />
+  );
+  const WHAT = ["sales channel", "system", "tool"];
   return (
     <div className="flex flex-col gap-5">
-      {groups.map((g) => (
+      {groups.map((g, i) => (
         <Card key={g.title}>
           <CardHead title={g.title} sub={g.sub} />
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">{g.tiles}</div>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">{[...g.tiles, custom(WHAT[i] ?? "platform")]}</div>
         </Card>
       ))}
     </div>

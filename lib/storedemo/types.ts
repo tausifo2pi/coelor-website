@@ -40,6 +40,8 @@ export type ChannelCfg = {
   /** order numbers as the channel writes them: the start of the number, masked on the page */
   refStart: number;
   every: string;
+  /** the channel buys the label itself (Poshmark's prepaid label): its words and the carrier (index in shipping.carriers) */
+  label?: { service: string; carrier: number };
 };
 
 export type Carrier = { name: string; service: string; logo: string; share: number; days: [number, number] };
@@ -67,6 +69,8 @@ export type DemoConfig = {
   sizes: Record<string, number>;
   more: { slug: string; name: string; why: string }[];
   moreTools: { slug: string; name: string; why: string }[];
+  /** team, sheets and AI tools: connected ones first (`on`), then what can be added */
+  tools: { slug: string; name: string; role: string; detail?: string; on?: boolean }[];
   caseHref: string;
   contactHref: string;
 };

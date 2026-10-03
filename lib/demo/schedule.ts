@@ -19,8 +19,32 @@ export type Freq =
   | { type: "weekdays"; at: HM }
   | { type: "weekly"; day: number; at: HM } // day: 0 = Sunday … 6 = Saturday
   | { type: "sale" }; // on each order
-/** `anchor`: where a periodic schedule counts from (its start); unused for the others. */
-export type Schedule = { id: string; kind: Kind; name: string; freq: Freq; share: string | null; seeded: boolean; anchor: number };
+/** `anchor`: where a periodic schedule counts from (its start); unused for the others. `kind`: a key of the profile's kinds. */
+export type Schedule = { id: string; kind: string; name: string; freq: Freq; share: string | null; seeded: boolean; anchor: number };
+
+/** One kind of routine: what it is, the engine modules its script uses, the lines of its run(), its dry-run result. */
+export type KindDef = { name: string; what: string; logo?: string; uses: string[]; body: string[]; dry: (n: number) => string };
+
+/** A demo's assistant: its routines, how a request picks one, its words, the routines already running, its time zone.
+ * The sneaker demo's is SNEAKER (below); a store demo builds its own (lib/storedemo/assistant.ts). */
+export type Profile = {
+  kinds: Record<string, KindDef>;
+  kindOf: (t: string) => { kind: string; name: string } | null;
+  greeting: string;
+  startChips: Chip[];
+  whatChips: Chip[];
+  whenChips: Chip[];
+  askWhat: string;
+  askWhatWhen: (when: string) => string;
+  seeded: Schedule[];
+  tz: string;
+  tzName: string;
+  /** what an "after every sale" routine hooks into, in the script and in the check */
+  trigger: { event: string; text: string };
+  sources: Record<string, string>;
+  /** constants a kind's script declares after its schedule (a chat channel, a name) */
+  consts?: (s: Pick<Schedule, "kind" | "name" | "share">) => string[];
+};
 
 /** `logo`: a platform slug (website data/platforms.json) the routine works on, shown next to it; else an icon. */
 export const KINDS: Record<Kind, { name: string; what: string; logo?: string }> = {
@@ -45,7 +69,7 @@ const SALE_POLL_MIN = 5; // orders come in every 5 minutes; a sale-triggered she
 
 /* ---------- the parser ---------- */
 
-export type Parsed = { kind: Kind | null; name: string | null; freq: Freq | null; share: string | null; note: string | null };
+export type Parsed = { kind: string | null; name: string | null; freq: Freq | null; share: string | null; note: string | null };
 
 const NUMBERS: Record<string, number> = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, eight: 8, ten: 10, twelve: 12, fifteen: 15, twenty: 20, thirty: 30 };
 const STOP = new Set(["a", "an", "the", "new", "my", "our", "one", "this", "that", "google", "every", "each", "same", "own", "simple", "small", "big"]);
@@ -147,9 +171,9 @@ function shareOf(raw: string): string | null {
   return name || null;
 }
 
-export function parse(raw: string): Parsed {
+export function parse(raw: string, p: Profile = SNEAKER): Parsed {
   const t = raw.toLowerCase().replace(/\s+/g, " ").trim();
-  const k = kindOf(t);
+  const k = p.kindOf(t);
   const f = freqOf(t);
   return { kind: k?.kind ?? null, name: k?.name ?? null, freq: f?.freq ?? null, share: shareOf(raw), note: f?.note ?? null };
 }
@@ -184,26 +208,34 @@ export function freqKey(f: Freq): string {
 /* ---------- time, in the store's time zone ---------- */
 
 type Wall = { y: number; mo: number; d: number; h: number; mi: number; s: number };
-const PARTS = new Intl.DateTimeFormat("en-US", { timeZone: TZ, hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+const FORMATS = new Map<string, Intl.DateTimeFormat>();
+const parts = (tz: string) => {
+  let f = FORMATS.get(tz);
+  if (!f) {
+    f = new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+    FORMATS.set(tz, f);
+  }
+  return f;
+};
 
-function wall(ms: number): Wall {
+function wall(ms: number, tz: string): Wall {
   const p: Record<string, number> = {};
-  for (const x of PARTS.formatToParts(new Date(ms))) if (x.type !== "literal") p[x.type] = Number(x.value);
+  for (const x of parts(tz).formatToParts(new Date(ms))) if (x.type !== "literal") p[x.type] = Number(x.value);
   return { y: p.year, mo: p.month, d: p.day, h: p.hour % 24, mi: p.minute, s: p.second };
 }
-const offset = (ms: number) => {
-  const w = wall(ms);
+const offset = (ms: number, tz: string) => {
+  const w = wall(ms, tz);
   return Date.UTC(w.y, w.mo - 1, w.d, w.h, w.mi, w.s) - Math.floor(ms / 1000) * 1000;
 };
-/** The instant a wall-clock time in Amsterdam happens. */
-export function fromWall(y: number, mo: number, d: number, h: number, mi: number): number {
+/** The instant a wall-clock time in the store's zone (Amsterdam unless told) happens. */
+export function fromWall(y: number, mo: number, d: number, h: number, mi: number, tz = TZ): number {
   const guess = Date.UTC(y, mo - 1, d, h, mi);
-  const t = guess - offset(guess);
-  return guess - offset(t);
+  const t = guess - offset(guess, tz);
+  return guess - offset(t, tz);
 }
-/** Amsterdam's calendar date `k` days after the one `ms` falls on, with its weekday. */
-function day(ms: number, k: number) {
-  const w = wall(ms);
+/** The store's calendar date `k` days after the one `ms` falls on, with its weekday. */
+function day(ms: number, k: number, tz: string) {
+  const w = wall(ms, tz);
   const u = new Date(Date.UTC(w.y, w.mo - 1, w.d + k));
   return { y: u.getUTCFullYear(), mo: u.getUTCMonth() + 1, d: u.getUTCDate(), wd: u.getUTCDay() };
 }
@@ -211,7 +243,7 @@ const runsOn = (f: Freq, wd: number) => f.type === "daily" || (f.type === "weekd
 const period = (f: Freq) => (f.type === "minutes" ? f.n * MINUTE : f.type === "hours" ? f.n * HOUR : 0);
 
 /** When it runs next; null for "after every sale", which waits for the next order. */
-export function nextRun(s: Pick<Schedule, "freq" | "anchor">, now: number): number | null {
+export function nextRun(s: Pick<Schedule, "freq" | "anchor">, now: number, tz = TZ): number | null {
   const f = s.freq;
   if (f.type === "sale") return null;
   const p = period(f);
@@ -221,32 +253,33 @@ export function nextRun(s: Pick<Schedule, "freq" | "anchor">, now: number): numb
   }
   const at = (f as { at: HM }).at;
   for (let k = 0; k <= 7; k++) {
-    const d = day(now, k);
+    const d = day(now, k, tz);
     if (!runsOn(f, d.wd)) continue;
-    const t = fromWall(d.y, d.mo, d.d, at.h, at.m);
+    const t = fromWall(d.y, d.mo, d.d, at.h, at.m, tz);
     if (t > now) return t;
   }
   return null;
 }
 
 /** When it last ran: the last slot for periodic ones, the last order poll for "after every sale". */
-export function prevRun(s: Pick<Schedule, "freq" | "anchor">, now: number): number | null {
+export function prevRun(s: Pick<Schedule, "freq" | "anchor">, now: number, tz = TZ): number | null {
   const f = s.freq;
   const p = f.type === "sale" ? SALE_POLL_MIN * MINUTE : period(f);
   if (p) return now < s.anchor ? null : s.anchor + Math.floor((now - s.anchor) / p) * p;
   const at = (f as { at: HM }).at;
   for (let k = 0; k <= 7; k++) {
-    const d = day(now, -k);
+    const d = day(now, -k, tz);
     if (!runsOn(f, d.wd)) continue;
-    const t = fromWall(d.y, d.mo, d.d, at.h, at.m);
+    const t = fromWall(d.y, d.mo, d.d, at.h, at.m, tz);
     if (t <= now) return t;
   }
   return null;
 }
 
-/** "Fri 2 Oct, 08:00", Amsterdam time. Names from here, not Intl, so every ICU prints the same ("Sep", not "Sept"). */
-export function runLabel(ms: number): string {
-  const w = wall(ms);
+/** "Fri 2 Oct, 08:00", in the store's time (Amsterdam unless told). Names from here, not Intl, so every ICU prints the
+ * same ("Sep", not "Sept"). */
+export function runLabel(ms: number, tz = TZ): string {
+  const w = wall(ms, tz);
   const wd = new Date(Date.UTC(w.y, w.mo - 1, w.d)).getUTCDay();
   return `${DAYS[wd].slice(0, 3)} ${w.d} ${MONTHS[w.mo - 1].slice(0, 3)}, ${pad2(w.h)}:${pad2(w.mi)}`;
 }
@@ -289,24 +322,22 @@ export const GREETING =
   "Hi! Tell me what should run on its own and when. I write the routine's script, test it on your live setup without changing anything, and put it on a schedule. For example: hide sold-out sizes on Shopify every 15 minutes, a pickup sheet every weekday at 8:00, or a daily sales summary to Discord.";
 
 /** What the last question left open, carried into the next message. */
-export type Pending = { kind: Kind | null; name: string | null; freq: Freq | null; share: string | null } | null;
+export type Pending = { kind: string | null; name: string | null; freq: Freq | null; share: string | null } | null;
 
 export type Answer =
-  | { ok: true; kind: Kind; text: string; schedule: Omit<Schedule, "id"> }
-  | { ok: false; kind: Kind | null; text: string; pending: Pending; chips: Chip[] };
+  | { ok: true; kind: string; text: string; schedule: Omit<Schedule, "id"> }
+  | { ok: false; kind: string | null; text: string; pending: Pending; chips: Chip[] };
 
-export function answer(raw: string, pending: Pending, now: number): Answer {
-  const p = parse(raw);
+export function answer(raw: string, pending: Pending, now: number, pr: Profile = SNEAKER): Answer {
+  const p = parse(raw, pr);
   const kind = p.kind ?? pending?.kind ?? null;
   const name = p.kind ? p.name : pending?.name ?? null;
   const freq = p.freq ?? pending?.freq ?? null;
   const share = p.share ?? pending?.share ?? null;
 
   if (!kind || !name) {
-    const text = freq
-      ? `Sure, ${describe(freq)}. What should run: a sheet (pickup, location, supplier stock, consignment) or a routine on a channel, like hiding sold-out sizes on Shopify?`
-      : "What should run? A sheet (pickup, location, supplier stock, consignment), a routine on a channel (Shopify, Whatnot, StockX, Alias), or a sales summary for the team chat.";
-    return { ok: false, kind: null, text, pending: { kind: null, name: null, freq, share }, chips: WHAT_CHIPS };
+    const text = freq ? pr.askWhatWhen(describe(freq)) : pr.askWhat;
+    return { ok: false, kind: null, text, pending: { kind: null, name: null, freq, share }, chips: pr.whatChips };
   }
   if (!freq) {
     return {
@@ -314,16 +345,16 @@ export function answer(raw: string, pending: Pending, now: number): Answer {
       kind,
       text: `When should "${name}" run? For example every 15 minutes, every weekday at 8:00 or after every sale.`,
       pending: { kind, name, freq: null, share },
-      chips: WHEN_CHIPS,
+      chips: pr.whenChips,
     };
   }
 
   const schedule = { kind, name, freq, share, seeded: false, anchor: now };
-  const next = nextRun(schedule, now);
+  const next = nextRun(schedule, now, pr.tz);
   const cron = cronOf(freq);
   const text = [
-    `Done. "${name}" is scheduled ${describe(freq)}${cron ? ` (cron ${cron})` : ""}${share ? `, shared with ${share}` : ""}. Next run: ${next === null ? "with the next sale" : runLabel(next)}.`,
-    KINDS[kind].what,
+    `Done. "${name}" is scheduled ${describe(freq)}${cron ? ` (cron ${cron})` : ""}${share ? `, shared with ${share}` : ""}. Next run: ${next === null ? "with the next sale" : runLabel(next, pr.tz)}.`,
+    pr.kinds[kind].what,
     p.note,
   ].filter(Boolean).join(" ");
   return { ok: true, kind, text, schedule };
@@ -429,17 +460,17 @@ const USES: Record<Kind, string[]> = {
 export type Script = { file: string; code: string };
 
 /** The routine's script, as the assistant writes it: engine imports, its schedule and its run(). */
-export function scriptOf(s: Pick<Schedule, "kind" | "name" | "freq" | "share">): Script {
+export function scriptOf(s: Pick<Schedule, "kind" | "name" | "freq" | "share">, p: Profile = SNEAKER): Script {
+  const k = p.kinds[s.kind] ?? p.kinds.custom;
   const cron = cronOf(s.freq);
   const lines = [
-    `import { ${USES[s.kind].join(", ")} } from "@coelor/engine";`,
+    `import { ${k.uses.join(", ")} } from "@coelor/engine";`,
     "",
-    cron ? `export const schedule = { cron: "${cron}", tz: "Europe/Amsterdam" }; // ${describe(s.freq)}` : `export const trigger = "picqer.order.created"; // ${describe(s.freq)}`,
+    cron ? `export const schedule = { cron: "${cron}", tz: "${p.tz}" }; // ${describe(s.freq)}` : `export const trigger = "${p.trigger.event}"; // ${describe(s.freq)}`,
   ];
-  if (USES[s.kind].includes("sheets")) lines.push(`const SHEET = sheets.byName(${JSON.stringify(s.name)}${s.share ? `, { share: ${JSON.stringify(s.share)} }` : ""});`);
-  if (s.kind === "custom") lines.push(`const NAME = ${JSON.stringify(s.name)};`);
-  if (s.kind === "sales-summary") lines.push(`const CHANNEL = discord.channel(${JSON.stringify(s.share ?? "the team chat")});`);
-  lines.push("", "export default async function run() {", ...BODY[s.kind].map((l) => `  ${l}`), "}");
+  if (k.uses.includes("sheets")) lines.push(`const SHEET = sheets.byName(${JSON.stringify(s.name)}${s.share ? `, { share: ${JSON.stringify(s.share)} }` : ""});`);
+  lines.push(...(p.consts?.(s) ?? []));
+  lines.push("", "export default async function run() {", ...k.body.map((l) => `  ${l}`), "}");
   return { file: `routines/${slug(s.name)}.ts`, code: lines.join("\n") };
 }
 
@@ -455,29 +486,53 @@ function count(seed: string, lo: number, hi: number): number {
 const SOURCE: Partial<Record<string, string>> = { picqer: "Picqer", shopify: "Shopify", whatnot: "Whatnot", stockx: "StockX", alias: "Alias", discord: "Discord", sheets: "Google Sheets" };
 
 /** What the assistant checks before it schedules a routine: nothing is written during the check. */
-export function verifyOf(s: Pick<Schedule, "kind" | "name" | "freq">, now: number): Check[] {
+export function verifyOf(s: Pick<Schedule, "kind" | "name" | "freq">, now: number, p: Profile = SNEAKER): Check[] {
+  const k = p.kinds[s.kind] ?? p.kinds.custom;
   const n = count(`${s.kind}|${s.name}`, 6, 48);
-  const reached = USES[s.kind].map((u) => SOURCE[u]).filter((x): x is string => !!x);
-  const dry: Record<Kind, string> = {
-    pickup: `${n} order lines with their bins`,
-    location: `${n * 40} sizes in ${n + 20} bins`,
-    supplier: `${n * 35} sizes in stock, prices in EUR and USD`,
-    consignment: `${Math.max(3, Math.round(n / 4))} sizes not on Flex yet`,
-    custom: `${n * 30} rows`,
-    "shopify-stock": `${Math.max(2, Math.round(n / 3))} sizes to hide, ${Math.max(1, Math.round(n / 8))} to show again`,
-    "whatnot-lineup": `${n} sizes for the next show`,
-    "stockx-ask": `${Math.max(2, Math.round(n / 3))} listings above the lowest ask`,
-    "alias-report": `${n + 9} sales and ${Math.max(1, Math.round(n / 12))} cancellations last week`,
-    "sales-summary": `${n + 40} orders today across 4 channels`,
-  };
+  const reached = k.uses.map((u) => p.sources[u]).filter((x): x is string => !!x);
   const cron = cronOf(s.freq);
-  const next = nextRun({ freq: s.freq, anchor: now }, now);
+  const next = nextRun({ freq: s.freq, anchor: now }, now, p.tz);
   return [
     { label: "Script checked", detail: "types and imports OK" },
     { label: "Connections reached", detail: reached.join(", ") },
-    { label: "Test run, nothing written", detail: dry[s.kind] },
+    { label: "Test run, nothing written", detail: k.dry(n) },
     cron
-      ? { label: "Scheduled", detail: `cron ${cron}, next ${next === null ? "with the next sale" : runLabel(next)}` }
-      : { label: "Hooked to new orders", detail: "runs on each order Picqer receives" },
+      ? { label: "Scheduled", detail: `cron ${cron}, next ${next === null ? "with the next sale" : runLabel(next, p.tz)}` }
+      : { label: "Hooked to new orders", detail: p.trigger.text },
   ];
 }
+
+/* ---------- the sneaker demo's assistant ---------- */
+
+const DRY: Record<Kind, (n: number) => string> = {
+  pickup: (n) => `${n} order lines with their bins`,
+  location: (n) => `${n * 40} sizes in ${n + 20} bins`,
+  supplier: (n) => `${n * 35} sizes in stock, prices in EUR and USD`,
+  consignment: (n) => `${Math.max(3, Math.round(n / 4))} sizes not on Flex yet`,
+  custom: (n) => `${n * 30} rows`,
+  "shopify-stock": (n) => `${Math.max(2, Math.round(n / 3))} sizes to hide, ${Math.max(1, Math.round(n / 8))} to show again`,
+  "whatnot-lineup": (n) => `${n} sizes for the next show`,
+  "stockx-ask": (n) => `${Math.max(2, Math.round(n / 3))} listings above the lowest ask`,
+  "alias-report": (n) => `${n + 9} sales and ${Math.max(1, Math.round(n / 12))} cancellations last week`,
+  "sales-summary": (n) => `${n + 40} orders today across 4 channels`,
+};
+
+export const SNEAKER: Profile = {
+  kinds: Object.fromEntries((Object.keys(KINDS) as Kind[]).map((k) => [k, { ...KINDS[k], uses: USES[k], body: BODY[k], dry: DRY[k] }])),
+  kindOf,
+  greeting: GREETING,
+  startChips: START_CHIPS,
+  whatChips: WHAT_CHIPS,
+  whenChips: WHEN_CHIPS,
+  askWhat: "What should run? A sheet (pickup, location, supplier stock, consignment), a routine on a channel (Shopify, Whatnot, StockX, Alias), or a sales summary for the team chat.",
+  askWhatWhen: (when) => `Sure, ${when}. What should run: a sheet (pickup, location, supplier stock, consignment) or a routine on a channel, like hiding sold-out sizes on Shopify?`,
+  seeded: SEEDED,
+  tz: TZ,
+  tzName: "Amsterdam",
+  trigger: { event: "picqer.order.created", text: "runs on each order Picqer receives" },
+  sources: SOURCE as Record<string, string>,
+  consts: (s) => [
+    ...(s.kind === "custom" ? [`const NAME = ${JSON.stringify(s.name)};`] : []),
+    ...(s.kind === "sales-summary" ? [`const CHANNEL = discord.channel(${JSON.stringify(s.share ?? "the team chat")});`] : []),
+  ],
+};

@@ -4,8 +4,8 @@
 // "Connected" badges), apart from the dark site and from our own admin panel on purpose, so a seller sees the kind of
 // app they know from their other tools.
 import type { CSSProperties, ReactNode } from "react";
-import { ChevronLeft, ChevronRight, Search, Warehouse, X } from "lucide-react";
-import { SiAftership, SiClaude, SiDhl, SiDiscord, SiFedex, SiInstagram, SiUps, SiUsps } from "@icons-pack/react-simple-icons";
+import { ChevronLeft, ChevronRight, Puzzle, Search, Warehouse, X } from "lucide-react";
+import { SiAftership, SiAirtable, SiClaude, SiDhl, SiDiscord, SiFedex, SiGmail, SiGoogledrive, SiGooglegemini, SiHubspot, SiInstagram, SiMailchimp, SiNotion, SiQuickbooks, SiUps, SiUsps, SiWhatsapp, SiXero, SiZendesk } from "@icons-pack/react-simple-icons";
 import { PICQER, channel } from "@/lib/demo/channels";
 import { platformInfo } from "@/lib/platforms";
 
@@ -74,6 +74,20 @@ const MARKS: Record<string, { bg: string; fg?: string; ring?: boolean; scale?: n
   // no published mark in the icon set: the name's initials on the brand colour
   shipstation: { bg: "#84C225", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="SS" /> },
   loop: { bg: "#111111", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="loop" /> },
+  excel: { bg: "#217346", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="X" /> },
+  gmail: { bg: "#FFFFFF", fg: "#EA4335", ring: true, scale: 0.62, glyph: (px) => <SiGmail size={px} color="currentColor" title="" /> },
+  whatsapp: { bg: "#25D366", fg: "#FFFFFF", glyph: (px) => <SiWhatsapp size={px} color="currentColor" title="" /> },
+  mailchimp: { bg: "#FFE01B", fg: "#241C15", glyph: (px) => <SiMailchimp size={px} color="currentColor" title="" /> },
+  hubspot: { bg: "#FF7A59", fg: "#FFFFFF", glyph: (px) => <SiHubspot size={px} color="currentColor" title="" /> },
+  zendesk: { bg: "#03363D", fg: "#FFFFFF", glyph: (px) => <SiZendesk size={px} color="currentColor" title="" /> },
+  quickbooks: { bg: "#2CA01C", fg: "#FFFFFF", glyph: (px) => <SiQuickbooks size={px} color="currentColor" title="" /> },
+  xero: { bg: "#13B5EA", fg: "#FFFFFF", glyph: (px) => <SiXero size={px} color="currentColor" title="" /> },
+  notion: { bg: "#FFFFFF", fg: "#000000", ring: true, glyph: (px) => <SiNotion size={px} color="currentColor" title="" /> },
+  airtable: { bg: "#FFFFFF", fg: "#18BFFF", ring: true, glyph: (px) => <SiAirtable size={px} color="currentColor" title="" /> },
+  "google-drive": { bg: "#FFFFFF", fg: "#1FA463", ring: true, glyph: (px) => <SiGoogledrive size={px} color="currentColor" title="" /> },
+  gemini: { bg: "#FFFFFF", fg: "#8E75B2", ring: true, glyph: (px) => <SiGooglegemini size={px} color="currentColor" title="" /> },
+  // a connection we build for a platform that is not listed
+  custom: { bg: "#F8FAFC", fg: "#475569", ring: true, scale: 0.55, glyph: (px) => <Puzzle size={px} strokeWidth={2} /> },
   // the shop's own stockroom (not a product): a warehouse glyph
   stockroom: { bg: "#EFF6FF", fg: "#1D4ED8", ring: true, scale: 0.55, glyph: (px) => <Warehouse size={px} strokeWidth={2} /> },
   dhl: { bg: "#FFCC00", fg: "#D40511", scale: 0.8, glyph: (px) => <SiDhl size={px} color="currentColor" title="" /> },

@@ -5,10 +5,12 @@
 // lib/storedemo/engine.ts tells the sync around it. Read-only, every click that would change something opens the
 // "view only" dialog. lib/demo/track.ts records what the visitor looks at, like the sneaker demo.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Boxes, LayoutDashboard, Lock, Plug, Receipt, RefreshCw, Truck, X, Zap, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Boxes, LayoutDashboard, Lock, Plug, Receipt, RefreshCw, Sparkles, Truck, X, Zap, type LucideIcon } from "lucide-react";
 import { Badge, BrandMark, Button, CoelorWordmark, ago, fmt, hasMark } from "@/components/demo/ui";
 import { getJson } from "@/lib/demo/get";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
+import { SheetAssistant } from "@/components/demo/SheetAssistant";
+import { storeAssistant } from "@/lib/storedemo/assistant";
 import { demoBySlug } from "@/lib/storedemo/configs";
 import { storeWorld } from "@/lib/storedemo/engine";
 import { fetchCatalog } from "@/lib/storedemo/shopify";
@@ -19,6 +21,7 @@ const PRICING = "/pricing";
 
 const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "The sync right now: channels, orders, parcels and automations" },
+  { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines written, tested and scheduled from a chat" },
   { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the sync did with them" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Every size on one count, the same on every channel" },
   { id: "shipping", label: "Shipping & returns", icon: Truck, title: "Shipping & returns", sub: "Labels, tracking and returns, back into stock" },
@@ -95,6 +98,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
   }, [cfg]);
 
   const world = useMemo(() => (cat ? storeWorld(cfg, cat) : null), [cfg, cat]);
+  const assistant = useMemo(() => storeAssistant(cfg), [cfg]);
 
   const go = useCallback((s: SectionId) => {
     setSection(s);
@@ -231,6 +235,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
             ) : (
               <>
                 {section === "dashboard" && <Dashboard ctx={ctx} />}
+                {section === "assistant" && <SheetAssistant ctx={ctx} profile={assistant} />}
                 {section === "orders" && <Orders ctx={ctx} />}
                 {section === "products" && <Products ctx={ctx} />}
                 {section === "shipping" && <Shipping ctx={ctx} />}

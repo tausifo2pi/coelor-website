@@ -160,3 +160,17 @@ test("the store's answer: product types read as a shopper reads them, codes are 
   assert.equal(c.products.length, 1);
   assert.deepEqual([c.products[0].category, c.products[0].variants[0].color, c.products[0].variants[0].size], ["Tops", "Brown", "M"]);
 });
+
+test("a channel that buys its own label (Poshmark) ships on that label and carrier; the others use the shipping tool", () => {
+  const w = world();
+  const rows = w.orders({ now: NOW, per: 5000 }).rows;
+  const posh = rows.filter((o) => o.channel === "poshmark");
+  assert.ok(posh.length > 20, `poshmark orders ${posh.length}`);
+  for (const o of posh) {
+    assert.equal(o.carrier, "USPS");
+    const l = o.steps.find((s) => s.kind === "label");
+    if (l) assert.match(l.text, /Poshmark prepaid label/);
+  }
+  const other = rows.find((o) => o.channel === "walmart" && o.steps.some((s) => s.kind === "label"))!;
+  assert.match(other.steps.find((s) => s.kind === "label")!.text, /ShipStation/);
+});
