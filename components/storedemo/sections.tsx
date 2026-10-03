@@ -3,7 +3,7 @@
 // The sections of a store demo (/demo/<slug>), drawn from lib/storedemo/engine.ts over the store's live catalogue. The
 // same look as the sneaker demo (components/demo): white cards on grey, platform logos, green "Connected" badges.
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowLeftRight, ArrowRight, Check, Lock, Package, Plus, RotateCcw, Truck, X } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, Check, Lock, Package, Plus, RotateCcw, Truck, X, Zap } from "lucide-react";
 import { Badge, BrandMark, Button, Card, CardHead, Empty, Pager, SearchInput, Skeleton, Tabs, ago, clock, fmt, type Tone } from "@/components/demo/ui";
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
 import type { DemoTracker } from "@/lib/demo/track";
@@ -146,7 +146,7 @@ function HubCard({ c, n, live }: { c: ChannelCfg; n: number; live: boolean }) {
       </div>
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] font-semibold">
         <ArrowLeftRight size={13} className="text-[#94a3b8]" />
-        <span className="text-[#15803d]">Orders in · {c.every}</span>
+        <span className="inline-flex items-center gap-1 text-[#15803d]">{c.realtime && <Zap size={12} />}Orders in · {c.every}</span>
         <span className="text-[#cbd5e1]">·</span>
         <span className="text-[#6d28d9]">Sold out → pulled</span>
       </div>
@@ -250,7 +250,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
                   <BrandMark slug={r.tools[0]} name={r.name} size={26} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13.5px] font-medium">{r.name}</p>
-                    <p className="text-[12.5px] text-[#64748b]">{r.every} · {ago(r.lastRun, ctx.now)}</p>
+                    <p className="text-[12.5px] text-[#64748b]">{r.every} · {r.every.startsWith("real time") ? "last event " : ""}{ago(r.lastRun, ctx.now)}</p>
                   </div>
                   <Badge tone="green" dot>On schedule</Badge>
                 </li>
@@ -494,7 +494,7 @@ export function Automations({ ctx }: { ctx: SCtx }) {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[#f1f3f5] pt-3 xl:justify-end xl:border-0 xl:pt-0">
-              <span className="text-[12.5px] text-[#64748b]">{r.every} · ran {ago(r.lastRun, ctx.now)}</span>
+              <span className="text-[12.5px] text-[#64748b]">{r.every} · {r.every.startsWith("real time") ? "last event" : "ran"} {ago(r.lastRun, ctx.now)}</span>
               <Badge tone="green" dot>On schedule</Badge>
               {toggle("hidden sm:block")}
             </div>
@@ -534,7 +534,8 @@ export function Connections({ ctx }: { ctx: SCtx }) {
       title: "Sales channels",
       sub: "Where the store sells. Every order comes off the one stock count.",
       tiles: [
-        ...cfg.channels.map((c) => <ConnTile key={c.id} slug={c.logo} name={c.name} role={c.role} detail={ov ? `${fmt(ov.kpis.live[c.id] ?? 0)} listed` : undefined} on onClick={settings(c.name)} />),
+        ...cfg.channels.map((c) => <ConnTile key={c.id} slug={c.logo} name={c.name} role={c.role}
+          detail={`${ov ? `${fmt(ov.kpis.live[c.id] ?? 0)} listed · ` : ""}${c.realtime ? "orders in real time (webhooks)" : `orders read ${c.every}`}`} on onClick={settings(c.name)} />),
         ...cfg.more.map((m) => (
           <ConnTile key={m.slug} slug={m.slug} name={m.name} role={m.why} on={false}
             onClick={() => ctx.connect(m.slug, m.name, `This demo is a store that is already running, so it is view only. For your store we connect ${m.name} to the same stock count: every sale there comes off the count, and sold-out sizes come down everywhere.`)} />

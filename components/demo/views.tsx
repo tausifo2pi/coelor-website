@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { getJson } from "@/lib/demo/get";
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
-import { ArrowLeftRight, ArrowRight, Check, Lock, Plus, Settings2, TriangleAlert } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, Check, Lock, Plus, Settings2, TriangleAlert, Zap } from "lucide-react";
 import { CHANNELS, PICQER, fromApi, type Channel as ChannelInfo } from "@/lib/demo/channels";
 import { STORES, type Connection, type Job, type Linked, type Listing, type Overview, type Page, type Platform, type Sale, type SellPlatform, type Step, type StoreId } from "@/lib/demo/shape";
 import type { DemoTracker } from "@/lib/demo/track";
@@ -123,7 +123,7 @@ function HubChannel({ c, conn, cadence = false }: { c: ChannelInfo; conn?: Conne
       {cadence && (
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] font-semibold">
           <ArrowLeftRight size={13} className="text-[#94a3b8]" />
-          <span className="text-[#15803d]">Orders in · {c.ordersEvery}</span>
+          <span className="inline-flex items-center gap-1 text-[#15803d]">{c.realtime && <Zap size={12} />}Orders in · {c.ordersEvery}</span>
           <span className="text-[#cbd5e1]">·</span>
           <span className="text-[#6d28d9]">Sold out → pulled</span>
         </div>
@@ -135,7 +135,7 @@ function HubChannel({ c, conn, cadence = false }: { c: ChannelInfo; conn?: Conne
 function Spoke({ c }: { c: ChannelInfo }) {
   return (
     <div className="flex min-w-0 flex-col items-center justify-center gap-1 px-1.5">
-      <span className="whitespace-nowrap text-[11.5px] font-semibold text-[#15803d]">Orders · {c.ordersEvery}</span>
+      <span className="inline-flex items-center gap-1 whitespace-nowrap text-[11.5px] font-semibold text-[#15803d]">{c.realtime && <Zap size={11} />}Orders · {c.ordersEvery}</span>
       <span className="flex w-full items-center text-[#94a3b8]">
         <span className="h-0 flex-1 border-t-2 border-dashed border-[#cbd5e1]" />
         <ArrowLeftRight size={14} className="mx-1 shrink-0" />
@@ -292,7 +292,7 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
                   <PLogo platform={j.platform} size={26} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13.5px] font-medium">{j.name}</p>
-                    <p className="text-[12.5px] text-[#64748b]">{j.every} · {ago(j.lastRun, ctx.now)}</p>
+                    <p className="text-[12.5px] text-[#64748b]">{j.every} · {j.every.startsWith("real time") ? "last order " : ""}{ago(j.lastRun, ctx.now)}</p>
                   </div>
                   <Badge tone={JOB_TONE[j.status]} dot>{JOB_TEXT[j.status]}</Badge>
                 </li>
@@ -910,7 +910,7 @@ export function Automations({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[#f1f3f5] pt-3 xl:justify-end xl:border-0 xl:pt-0">
-              <span className="text-[12.5px] text-[#64748b]">{j ? `${j.every} · ran ${ago(j.lastRun, ctx.now)}` : a.every}</span>
+              <span className="text-[12.5px] text-[#64748b]">{j ? `${j.every} · ${j.every.startsWith("real time") ? "last order" : "ran"} ${ago(j.lastRun, ctx.now)}` : a.every}</span>
               {j && <Badge tone={JOB_TONE[j.status]} dot>{JOB_TEXT[j.status]}</Badge>}
               {toggle("hidden sm:block")}
             </div>

@@ -151,7 +151,8 @@ test("rows look like the real ones: same fields, masked refs, sync lag, known st
     assert.match(r.ref, /^•••[A-Z0-9]{3}$/);
     assert.match(r.soldAt!, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/);
     const d = Date.parse(r.syncedAt!) - Date.parse(r.soldAt!);
-    assert.ok(d >= 20_000 && d <= lag.get(r.platform)! * 60_000 + 30_000, `lag ${d}`);
+    if (CHANNELS.find((c) => c.id === r.platform)?.realtime) assert.ok(d >= 2_000 && d <= 12_000, `webhook lag ${d}`);
+    else assert.ok(d >= 20_000 && d <= lag.get(r.platform)! * 60_000 + 30_000, `lag ${d}`);
     assert.ok(["Sold", "Shipped", "Cancelled"].includes(r.state));
     for (const s of r.steps) assert.match(s.text, steps);
     assert.equal(r.detail, r.steps[0].text !== "Not linked in Picqer yet, flagged");
@@ -275,10 +276,11 @@ test("the overview: counts, feed, automations and connection cards, shaped like 
   for (const c of CHANNELS.filter((x) => !fromApi(x.id))) {
     const j = o.jobs.find((x) => x.key === `${c.id}-orders`)!;
     assert.deepEqual(Object.keys(j), Object.keys(real.jobs[0]));
-    assert.equal(j.every, c.ordersEvery);
+    assert.equal(j.every, c.realtime ? "real time · webhook" : c.ordersEvery);
     assert.equal(j.status, "ok");
     const age = NOW - Date.parse(j.lastRun);
-    assert.ok(age >= 0 && age <= c.ordersMin * 60_000 + 10_000, `${j.key} ran ${age} ms ago`);
+    // a webhook channel's job ran with its last order; the others within one interval
+    assert.ok(age >= 0 && age <= (c.realtime ? 6 * 3_600_000 : c.ordersMin * 60_000 + 10_000), `${j.key} ran ${age} ms ago`);
     assert.match(j.name, new RegExp(`^${c.name} (orders|sales) into Picqer$`));
   }
   assert.deepEqual(o.kpis.jobs, { ok: o.jobs.length, total: o.jobs.length });
@@ -304,7 +306,7 @@ test("nothing identifying the client and nothing that says made up, on any page"
 
 test("flipping a slot: names, labels, cadence and rhythm follow channels.ts", () => {
   const flipped: Channel[] = CHANNELS.map((c) =>
-    c.id === WEB ? { ...c, name: "WooCommerce", logo: "woocommerce", accounts: [{ id: c.accounts[0].id, label: "WooCommerce" }], ordersEvery: "every 4 min", ordersMin: 4 }
+    c.id === WEB ? { ...c, name: "WooCommerce", logo: "woocommerce", accounts: [{ id: c.accounts[0].id, label: "WooCommerce" }], ordersEvery: "every 4 min", ordersMin: 4, realtime: false }
     : c.id === LIVE ? { ...c, name: "eBay", logo: "ebay", role: "Marketplace", accounts: [{ id: c.accounts[0].id, label: "eBay" }], syncs: ["Sales come in every 3 minutes"] }
     : c);
   assert.equal(rhythmOf(flipped.find((c) => c.id === LIVE)!), "store", "a marketplace sells steadily, without shows");

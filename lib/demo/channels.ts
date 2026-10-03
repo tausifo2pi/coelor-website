@@ -19,6 +19,9 @@ export type Channel = {
   /** how often its orders come in (as the automations and connection cards say it) */
   ordersEvery: string;
   ordersMin: number;
+  /** the platform sends webhooks: an order reaches Picqer within seconds instead of on the next scheduled run
+   * (Shopify does; StockX and Alias don't, so the client's sync reads them every few minutes) */
+  realtime?: boolean;
   syncs: string[];
 };
 
@@ -39,8 +42,8 @@ export const CHANNELS: Channel[] = [
     // slot 1: a web store with one shop
     id: "shopify", name: "Shopify", logo: "shopify", role: "Web store",
     accounts: [{ id: "sh-main", label: "Shopify" }],
-    ordersEvery: "every 2 min", ordersMin: 2,
-    syncs: ["Orders come in every 2 minutes", "Stock levels pushed after every sale", "Sold-out sizes hidden in the store"],
+    ordersEvery: "real time", ordersMin: 0, realtime: true,
+    syncs: ["Orders come in the moment they're placed (webhook)", "Stock levels pushed after every sale", "Sold-out sizes hidden in the store"],
   },
   {
     // slot 2: a live-selling marketplace with one account

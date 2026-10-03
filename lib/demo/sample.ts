@@ -330,7 +330,9 @@ export function sampleWorld(channels: readonly Channel[] = CHANNELS) {
     return t <= now ? t : runAt(c, what, min, k - 1);
   }
   const every = (c: Channel) => (c.ordersMin > 0 ? c.ordersMin : 5);
-  const syncOf = (c: Channel, soldAt: number) => runAt(c, "orders", every(c), Math.ceil((soldAt + 20_000) / (every(c) * MIN)));
+  // a channel with webhooks (c.realtime) hands each order over within seconds; the others wait for the next run
+  const syncOf = (c: Channel, soldAt: number) =>
+    c.realtime ? soldAt + 2000 + (H("hook", c.id, soldAt) % 10_000) : runAt(c, "orders", every(c), Math.ceil((soldAt + 20_000) / (every(c) * MIN)));
 
   /* ---- one day of one channel ---- */
   const pickAcct = (ch: Ch, u: number) => (ch.own.length === 1 || u < 0.7 ? ch.own[0] : ch.own[1 + Math.floor(((u - 0.7) / 0.3) * (ch.own.length - 1))]);
@@ -581,7 +583,10 @@ export function sampleWorld(channels: readonly Channel[] = CHANNELS) {
     const stock: Job[] = [];
     for (const ch of chans) {
       const c = ch.c;
-      orders.push({ key: `${c.id}-orders`, name: `${c.name} ${ch.prof.word} into Picqer`, platform: c.id, every: c.ordersEvery, lastRun: iso(lastRun(c, "orders", every(c), now)), status: "ok" });
+      // a webhook channel's job runs on each order: its last run is the last order handed over
+      const hooked = c.realtime ? orderScan({ now, platform: c.id, limit: 1 }).rows[0]?.syncedAt : undefined;
+      orders.push({ key: `${c.id}-orders`, name: `${c.name} ${ch.prof.word} into Picqer`, platform: c.id, every: c.realtime ? "real time · webhook" : c.ordersEvery,
+        lastRun: iso(c.realtime ? Math.min(now, hooked ?? now - 90_000) : lastRun(c, "orders", every(c), now)), status: "ok" });
       stock.push({ key: `${c.id}-stock`, name: `Stock pushed to ${c.name}`, platform: c.id, every: "every 5 min", lastRun: iso(lastRun(c, "stock", 5, now)), status: "ok" });
     }
     return [...orders, ...stock];

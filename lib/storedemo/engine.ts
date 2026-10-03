@@ -197,7 +197,9 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
   function stepsOf(o: { id: string; channel: string; placedAt: number; carrier: number; lines: Line[] }): Step[] {
     const t = o.placedAt;
     const ch = cfg.channels.find((c) => c.id === o.channel)!;
-    const steps: Step[] = [{ kind: "stock", at: iso(t + (20 + U("s1", o.id) * 70) * 1000), text: `Stock −1 on ${everyChannel}` }];
+    // webhooks hand the order over within seconds; a channel without them waits for the next read
+    const handover = ch.realtime ? (3 + U("s1", o.id) * 12) * 1000 : (5 + U("s1", o.id) * (ch.pollMin ?? 5) * 60) * 1000;
+    const steps: Step[] = [{ kind: "stock", at: iso(t + handover), text: `Stock −1 on ${everyChannel}` }];
     if (U("cancel", o.id) < 0.025) {
       steps.push({ kind: "cancel", at: iso(t + (8 + U("c1", o.id) * 42) * MIN), text: "Cancelled by the buyer · stock +1 back everywhere" });
       return steps;
@@ -388,13 +390,35 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
     { key: "low", name: "Low-stock list", when: "A best seller is down to 2 in a size", then: "On the morning reorder list", min: 1440, every: "daily at 7:00", tools: [cfg.stock.logo] },
   ];
 
+  // the event-driven rules (webhooks) ran with the last thing that happened: the last order handed over, the last
+  // new product listed
+  const hooked = cfg.channels.filter((c) => c.realtime);
+  const polled = cfg.channels.filter((c) => !c.realtime);
+  const ordersEvery = hooked.length
+    ? `real time (webhooks)${polled.length ? ` · ${join(polled.map((c) => c.name))} every ${polled[0].pollMin ?? 5} min` : ""}`
+    : "every 2 min";
+  const EVENT: Record<string, string> = { orders: ordersEvery, soldout: "real time, on each sale", listing: `real time (${cfg.channels[0].name} webhook)` };
+
+  function lastHandover(now: number): number | null {
+    for (const r of ordersIn(now, now - 2 * DAY)) {
+      const s = r.steps.find((x) => x.kind === "stock");
+      if (s && Date.parse(s.at) <= now) return Date.parse(s.at);
+    }
+    return null;
+  }
+
   function rules(now: number): Rule[] {
+    const handed = hooked.length ? lastHandover(now) : null;
+    const listed = happenings(now, now - 30 * DAY).find((h) => h.kind === "listed");
     return RULES.map((r) => {
       const period = r.min * MIN;
       const off = (H("rule", r.key) % Math.max(1, Math.min(period, 10 * MIN))) + 7000;
       let last = Math.floor((now - off) / period) * period + off;
       if (r.key === "low") last = at(dayOf(now) - (hourOf(now) < 7 ? 1 : 0), 7 * 60) + 4000;
-      return { key: r.key, name: r.name, when: r.when, then: r.then, every: r.every, lastRun: iso(Math.min(now, last)), tools: r.tools };
+      if (hooked.length && (r.key === "orders" || r.key === "soldout") && handed) last = handed;
+      if (hooked.length && r.key === "listing" && listed) last = Date.parse(listed.at);
+      const every = hooked.length && EVENT[r.key] ? EVENT[r.key] : r.every;
+      return { key: r.key, name: r.name, when: r.when, then: r.then, every, lastRun: iso(Math.min(now, last)), tools: r.tools };
     });
   }
 

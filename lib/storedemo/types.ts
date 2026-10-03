@@ -40,6 +40,9 @@ export type ChannelCfg = {
   /** order numbers as the channel writes them: the start of the number, masked on the page */
   refStart: number;
   every: string;
+  /** the platform sends webhooks: an order reaches the stock count within seconds; else it is read every `pollMin` */
+  realtime?: boolean;
+  pollMin?: number;
   /** the channel buys the label itself (Poshmark's prepaid label): its words and the carrier (index in shipping.carriers) */
   label?: { service: string; carrier: number };
 };

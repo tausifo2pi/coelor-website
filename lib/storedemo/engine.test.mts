@@ -174,3 +174,21 @@ test("a channel that buys its own label (Poshmark) ships on that label and carri
   const other = rows.find((o) => o.channel === "walmart" && o.steps.some((s) => s.kind === "label"))!;
   assert.match(other.steps.find((s) => s.kind === "label")!.text, /ShipStation/);
 });
+
+test("webhook channels hand an order to the stock count within seconds; Poshmark waits for its 10-minute read", () => {
+  const w = world();
+  for (const o of w.orders({ now: NOW, per: 3000 }).rows) {
+    const s = o.steps.find((x) => x.kind === "stock");
+    if (!s) continue;
+    const d = Date.parse(s.at) - Date.parse(o.placedAt);
+    const ch = CFG.channels.find((c) => c.id === o.channel)!;
+    if (ch.realtime) assert.ok(d >= 3_000 && d <= 15_000, `${o.id} webhook ${d}`);
+    else assert.ok(d >= 5_000 && d <= (ch.pollMin ?? 5) * 60_000 + 5_000, `${o.id} poll ${d}`);
+  }
+  const r = Object.fromEntries(w.rules(NOW).map((x) => [x.key, x]));
+  assert.match(r.orders.every, /^real time \(webhooks\) · Poshmark every 10 min$/);
+  assert.equal(r.soldout.every, "real time, on each sale");
+  assert.ok(Date.parse(r.orders.lastRun) <= NOW && NOW - Date.parse(r.orders.lastRun) < 3 * 3_600_000);
+  assert.match(r.labels.every, /every 10 min/); // labels are still bought in batches
+});
+
