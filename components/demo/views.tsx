@@ -353,12 +353,9 @@ const MORE_CHANNELS = [
   { slug: "ebay", name: "eBay", role: "Authenticity Guarantee" },
   { slug: "grailed", name: "Grailed", role: "Streetwear marketplace" },
   { slug: "stadium-goods", name: "Stadium Goods", role: "Consignment marketplace" },
-  { slug: "flight-club", name: "Flight Club", role: "Consignment store" },
   { slug: "kicks-crew", name: "Kicks Crew", role: "Sneaker marketplace" },
-  { slug: "restocks", name: "Restocks", role: "Resale marketplace (EU)" },
   { slug: "klekt", name: "Klekt", role: "Sneaker marketplace (EU)" },
   { slug: "laced", name: "Laced", role: "Sneaker marketplace (UK)" },
-  { slug: "hypeboost", name: "Hypeboost", role: "Resale marketplace (EU)" },
   { slug: "tiktok-shop", name: "TikTok Shop", role: "Social shop and live selling" },
   { slug: "depop", name: "Depop", role: "Resale app" },
   { slug: "vinted", name: "Vinted", role: "Resale app (EU)" },
@@ -366,6 +363,13 @@ const MORE_CHANNELS = [
   { slug: "mercari", name: "Mercari", role: "Resale app" },
   { slug: "facebook-marketplace", name: "Facebook Marketplace", role: "Local and shipped sales" },
   { slug: "amazon", name: "Amazon", role: "Marketplace" },
+  // the European marketplaces sneakers sell on (logos from data/platforms.json)
+  { slug: "zalando", name: "Zalando", role: "Fashion marketplace (EU)" },
+  { slug: "kaufland", name: "Kaufland", role: "Marketplace (DE, EU)" },
+  { slug: "bol", name: "Bol", role: "Marketplace (NL, BE)" },
+  { slug: "otto", name: "OTTO", role: "Marketplace (DE)" },
+  { slug: "allegro", name: "Allegro", role: "Marketplace (PL)" },
+  { slug: "cdiscount", name: "Cdiscount", role: "Marketplace (FR)" },
   { slug: "woocommerce", name: "WooCommerce", role: "Web store" },
   { slug: "wix", name: "Wix", role: "Web store" },
   { slug: "shopify", name: "Shopify", role: "Web store" },
@@ -420,7 +424,7 @@ function IntegrationTile({ t, ctx }: { t: Tile; ctx: Ctx }) {
         <Settings2 size={15} />
       </button>
     ) : (
-      <Button small primary onClick={() => ctx.connect(t.slug, t.slug === "custom" ? t.name.charAt(0).toLowerCase() + t.name.slice(1) : t.name, t.body)}><Plus size={14} />Connect</Button>
+      <Button small onClick={() => ctx.connect(t.slug, t.slug === "custom" ? t.name.charAt(0).toLowerCase() + t.name.slice(1) : t.name, t.body)}><Plus size={14} />Connect</Button>
     );
   const details = (t.detail || t.last) && (
     <>

@@ -267,6 +267,30 @@
    "bleed": true,
    "src": "App Store icon"
   },
+  "kicks-crew": {
+   "name": "Kicks Crew",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/kicks-crew.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "klekt": {
+   "name": "Klekt",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/klekt.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
+  "laced": {
+   "name": "Laced",
+   "kind": "sell",
+   "type": "marketplace",
+   "logo": "/platforms/laced.png",
+   "bleed": true,
+   "src": "App Store icon"
+  },
   "back-market": {
    "name": "Back Market",
    "kind": "sell",
