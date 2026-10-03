@@ -218,7 +218,36 @@ test("routines on the channels: the request, the cron line, the script and its c
   assert.match(onSale.code, /export const trigger = "picqer\.order\.created";/);
   assert.equal(verifyOf({ kind: "location", name: "Location sheet", freq: { type: "sale" } }, THU)[3].label, "Hooked to new orders");
 
-  const done = answer("Hide sold-out sizes on Shopify every 15 minutes", null, THU);
+  const done = answer("Sold-out sizes check on Shopify every 15 minutes", null, THU);
   assert.ok(done.ok);
-  assert.match(done.text, /^Done\. "Hide sold-out sizes on Shopify" is scheduled every 15 minutes \(cron \*\/15 \* \* \* \*\)\./);
+  assert.match(done.text, /^Done\. "Sold-out sizes check \(Shopify\)" is scheduled every 15 minutes \(cron \*\/15 \* \* \* \*\)\./);
+});
+
+test("beta: only routines that get data; a change to the store is offered as a report instead", () => {
+  for (const t of [
+    "Hide sold-out sizes on Shopify every 15 minutes",
+    "set the prices on StockX to the lowest ask every hour",
+    "update stock in picqer every 10 minutes",
+    "list new pairs on eBay every morning",
+    "post the new drops to instagram at 18:00",
+    "push every listing to all channels daily",
+    "cancel unpaid orders every hour",
+  ]) {
+    const a = answer(t, null, THU);
+    assert.equal(a.ok, false, t);
+    if (!a.ok) {
+      assert.equal(a.refused, true, t);
+      assert.match(a.text, /only build routines that get data and post it to your team: Google Sheets, Excel, Discord or Slack/);
+      for (const c of a.chips) assert.ok(answer(c.text, null, THU).ok, c.text);
+    }
+  }
+  for (const t of ["Pickup sheet every weekday at 8:00, share with the warehouse", "set up a stock sheet every morning", "send a sales recap to slack at 18:00", "alias sales report every monday"]) {
+    assert.ok(answer(t, null, THU).ok, t);
+  }
+  // every routine only reads, and writes to a sheet or the team chat
+  for (const s of SEEDED) {
+    const code = scriptOf(s).code;
+    assert.doesNotMatch(code, /\.(hide|show|setLineup|update|delete|list)\(/, s.id);
+    assert.match(code, /sheets\.write|discord\.post/, s.id);
+  }
 });

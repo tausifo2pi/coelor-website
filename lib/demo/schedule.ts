@@ -2,7 +2,7 @@
 // The demo's assistant: a chat (labelled GPT) that turns a request into a routine. It "writes" the routine's script
 // (scriptOf), checks it against the setup without changing anything (verifyOf) and runs it on a cron schedule (cronOf).
 // No network and no AI: a small deterministic parser reads the request ("Pickup sheet every weekday at 8:00, share with
-// the warehouse", "Hide sold-out sizes on Shopify every 15 minutes"), and next and last runs are worked out in the
+// the warehouse", "Sold-out sizes check on Shopify every 15 minutes"), and next and last runs are worked out in the
 // store's time zone (Europe/Amsterdam), so the server and the browser agree. The seeded routines match the sheets in
 // lib/demo/sheets.ts and the connected channels.
 import { FLEX_AFTER_MS, FLEX_EVERY_MIN, LIVE_AFTER_MS, LIVE_EVERY_MIN, MONTHS, PARTNERS } from "./sheets.ts";
@@ -44,6 +44,11 @@ export type Profile = {
   sources: Record<string, string>;
   /** constants a kind's script declares after its schedule (a chat channel, a name) */
   consts?: (s: Pick<Schedule, "kind" | "name" | "share">) => string[];
+  /** beta: where routines may post (the team's sheets and chat), the sales channels and socials they may not write to
+   * (a regex alternation), and the reports offered instead of a change */
+  posts: { slug: string; name: string }[];
+  targets: string;
+  insteadChips: Chip[];
 };
 
 /** `logo`: a platform slug (website data/platforms.json) the routine works on, shown next to it; else an icon. */
@@ -53,8 +58,8 @@ export const KINDS: Record<Kind, { name: string; what: string; logo?: string }> 
   supplier: { name: "Supplier stock sheet", what: "It shares the live stock and prices with a partner." },
   consignment: { name: "Consignment check", what: "It lists the stock that isn't on StockX Flex yet.", logo: "stockx" },
   custom: { name: "Custom sheet", what: "It takes the columns you pick from the Picqer stock." },
-  "shopify-stock": { name: "Hide sold-out sizes on Shopify", what: "Every size at 0 in Picqer is hidden in the store, and shown again when stock comes back.", logo: "shopify" },
-  "whatnot-lineup": { name: "Whatnot show lineup", what: "It puts the sizes in stock into tonight's show list, so nothing sells that isn't there.", logo: "whatnot" },
+  "shopify-stock": { name: "Sold-out sizes check (Shopify)", what: "Every size at 0 in Picqer that is still for sale in the Shopify store, in a sheet for the team.", logo: "shopify" },
+  "whatnot-lineup": { name: "Whatnot show lineup sheet", what: "The sizes in stock for tonight's show, in a sheet for the host, so nothing goes into the show that isn't there.", logo: "whatnot" },
   "stockx-ask": { name: "StockX lowest-ask check", what: "It flags listings priced above the lowest ask, in a sheet for the team.", logo: "stockx" },
   "alias-report": { name: "Alias weekly sales report", what: "Last week's Alias sales, cancellations and payouts in one sheet.", logo: "alias-goat" },
   "sales-summary": { name: "Daily sales summary", what: "Orders per channel, sold-out sizes and anything flagged, posted to the team chat.", logo: "discord" },
@@ -86,7 +91,7 @@ const routine = (kind: Kind) => ({ kind, name: KINDS[kind].name });
 
 function kindOf(t: string): { kind: Kind; name: string } | null {
   // routines on a channel: the channel's name and what to do with it
-  if (/\bshopify\b/.test(t) && /\b(hide|sold[- ]?out|out of stock|stock|unpublish)\b/.test(t)) return routine("shopify-stock");
+  if (/\bshopify\b/.test(t) && /\b(sold[- ]?out|out of stock|stock|zero)\b/.test(t)) return routine("shopify-stock");
   if (/\bwhatnot\b|\bshow line ?-?up\b|\blive show\b/.test(t)) return routine("whatnot-lineup");
   if (/\bstockx\b/.test(t) && /\b(lowest|ask|asks|price|prices|pricing)\b/.test(t)) return routine("stockx-ask");
   if (/\balias\b/.test(t) && /\b(report|sales|payouts?|cancell?ations?)\b/.test(t)) return routine("alias-report");
@@ -299,16 +304,16 @@ export function inText(ms: number, now: number): string {
 export type Chip = { id: string; text: string };
 
 export const START_CHIPS: Chip[] = [
-  { id: "shopify-15min", text: "Hide sold-out sizes on Shopify every 15 minutes" },
-  { id: "whatnot-daily", text: "Whatnot show lineup every day at 17:30" },
+  { id: "shopify-15min", text: "Sold-out sizes check on Shopify every 15 minutes" },
+  { id: "whatnot-daily", text: "Whatnot show lineup sheet every day at 17:30" },
   { id: "pickup-weekdays", text: "Pickup sheet every weekday at 8:00" },
   { id: "summary-daily", text: "Daily sales summary to Discord at 18:00" },
   { id: "consignment-6h", text: "Consignment check every 6 hours" },
 ];
 const WHAT_CHIPS: Chip[] = [
   { id: "what-pickup", text: "Pickup sheet" },
-  { id: "what-shopify", text: "Hide sold-out sizes on Shopify" },
-  { id: "what-whatnot", text: "Whatnot show lineup" },
+  { id: "what-shopify", text: "Sold-out sizes check on Shopify" },
+  { id: "what-whatnot", text: "Whatnot show lineup sheet" },
   { id: "what-summary", text: "Daily sales summary" },
 ];
 const WHEN_CHIPS: Chip[] = [
@@ -319,16 +324,35 @@ const WHEN_CHIPS: Chip[] = [
 ];
 
 export const GREETING =
-  "Hi! Tell me what should run on its own and when. I write the routine's script, test it on your live setup without changing anything, and put it on a schedule. For example: hide sold-out sizes on Shopify every 15 minutes, a pickup sheet every weekday at 8:00, or a daily sales summary to Discord.";
+  "Hi! I'm in beta: I build routines that get data from your sync and post it to your team, in Google Sheets, Excel, Discord or Slack. Tell me what you need and when. I write the routine's script, test it without changing anything, and put it on a schedule. For example: a pickup sheet every weekday at 8:00, a sold-out sizes check on Shopify, or a daily sales summary to Discord.";
 
 /** What the last question left open, carried into the next message. */
 export type Pending = { kind: string | null; name: string | null; freq: Freq | null; share: string | null } | null;
 
 export type Answer =
   | { ok: true; kind: string; text: string; schedule: Omit<Schedule, "id"> }
-  | { ok: false; kind: string | null; text: string; pending: Pending; chips: Chip[] };
+  | { ok: false; kind: string | null; text: string; pending: Pending; chips: Chip[]; refused?: true };
+
+// Beta: a routine gets data and posts it to the team. A request that would change the store (hide, list, reprice,
+// set stock or a lineup, post on a sales channel or a social account) is not built yet.
+const CHANGE = /\b(hide|unhide|unpublish|publish|re-?list|de-?list|reprice|delete|remove|cancel|refund|mark (?:it |them |orders? )?(?:as )?(?:shipped|sold|paid))\b/;
+const SET = /\b(set(?! up)|change|update|lower|raise|adjust|edit)\b[^.]{0,30}\b(prices?|stock|quantit(?:y|ies)|line ?-?ups?|listings?|titles?|descriptions?)\b/;
+const ONTO = /\b(list|push|post|publish|upload|sync|send|add)\b[^.]{0,40}\b(?:on|to|onto|in)\s+(?:all\b|every\b)?/;
+
+/** The request would change the store or post outside the team's tools. */
+export function writes(raw: string, pr: Profile = SNEAKER): boolean {
+  const t = raw.toLowerCase().replace(/\s+/g, " ").trim();
+  if (CHANGE.test(t) || SET.test(t)) return true;
+  const onto = new RegExp(ONTO.source + String.raw`\s*(?:${pr.targets}|channels?|everywhere|marketplaces?)\b`);
+  return onto.test(t) || /\b(list|push|publish|sync)\b[^.]{0,40}\beverywhere\b/.test(t);
+}
 
 export function answer(raw: string, pending: Pending, now: number, pr: Profile = SNEAKER): Answer {
+  if (writes(raw, pr)) {
+    const posts = pr.posts.map((x) => x.name);
+    const text = `In this beta I only build routines that get data and post it to your team: ${posts.slice(0, -1).join(", ")} or ${posts[posts.length - 1]}. Changing listings, prices or stock from a routine comes later, to keep your store's data safe; the sync's own automations already do that part. Want a report instead?`;
+    return { ok: false, kind: null, text, pending: null, chips: pr.insteadChips, refused: true };
+  }
   const p = parse(raw, pr);
   const kind = p.kind ?? pending?.kind ?? null;
   const name = p.kind ? p.name : pending?.name ?? null;
@@ -421,15 +445,13 @@ const BODY: Record<Kind, string[]> = {
   ],
   "shopify-stock": [
     "const soldOut = await picqer.stock({ freeStock: 0 });",
-    "const variants = await shopify.variants({ sku: soldOut.map((p) => p.sku), published: true });",
-    "for (const v of variants) await shopify.hide(v.id);",
-    "const back = await shopify.variants({ hidden: true, sku: await picqer.skus({ freeStock: \">0\" }) });",
-    "for (const v of back) await shopify.show(v.id);",
+    "const live = await shopify.variants({ sku: soldOut.map((p) => p.sku), published: true });",
+    "await sheets.write(SHEET, \"Sold out, still for sale\", live.map((v) => [v.sku, v.title, v.size, \"0 in Picqer\"]));",
   ],
   "whatnot-lineup": [
     "const show = await whatnot.nextShow();",
     "const stock = await picqer.stock({ freeStock: \">0\", tag: \"whatnot\" });",
-    "await whatnot.setLineup(show.id, stock.map((p) => ({ sku: p.sku, size: p.us, quantity: p.free })));",
+    "await sheets.write(SHEET, show.title, stock.map((p) => [p.sku, p.name, p.us, p.free]));",
   ],
   "stockx-ask": [
     "const listings = await stockx.listings({ status: \"active\" });",
@@ -453,7 +475,7 @@ const BODY: Record<Kind, string[]> = {
 const USES: Record<Kind, string[]> = {
   pickup: ["picqer", "sheets"], location: ["picqer", "sheets"], supplier: ["picqer", "sheets"],
   consignment: ["picqer", "stockx", "sheets"], custom: ["picqer", "sheets"],
-  "shopify-stock": ["picqer", "shopify"], "whatnot-lineup": ["picqer", "whatnot"], "stockx-ask": ["stockx", "sheets"],
+  "shopify-stock": ["picqer", "shopify", "sheets"], "whatnot-lineup": ["picqer", "whatnot", "sheets"], "stockx-ask": ["stockx", "sheets"],
   "alias-report": ["alias", "dates", "sheets"], "sales-summary": ["picqer", "discord", "summary"],
 };
 
@@ -510,7 +532,7 @@ const DRY: Record<Kind, (n: number) => string> = {
   supplier: (n) => `${n * 35} sizes in stock, prices in EUR and USD`,
   consignment: (n) => `${Math.max(3, Math.round(n / 4))} sizes not on Flex yet`,
   custom: (n) => `${n * 30} rows`,
-  "shopify-stock": (n) => `${Math.max(2, Math.round(n / 3))} sizes to hide, ${Math.max(1, Math.round(n / 8))} to show again`,
+  "shopify-stock": (n) => `${Math.max(2, Math.round(n / 3))} sizes at 0 still for sale on Shopify`,
   "whatnot-lineup": (n) => `${n} sizes for the next show`,
   "stockx-ask": (n) => `${Math.max(2, Math.round(n / 3))} listings above the lowest ask`,
   "alias-report": (n) => `${n + 9} sales and ${Math.max(1, Math.round(n / 12))} cancellations last week`,
@@ -524,8 +546,8 @@ export const SNEAKER: Profile = {
   startChips: START_CHIPS,
   whatChips: WHAT_CHIPS,
   whenChips: WHEN_CHIPS,
-  askWhat: "What should run? A sheet (pickup, location, supplier stock, consignment), a routine on a channel (Shopify, Whatnot, StockX, Alias), or a sales summary for the team chat.",
-  askWhatWhen: (when) => `Sure, ${when}. What should run: a sheet (pickup, location, supplier stock, consignment) or a routine on a channel, like hiding sold-out sizes on Shopify?`,
+  askWhat: "What should run? A sheet (pickup, location, supplier stock, consignment), a check on a channel (sold-out sizes on Shopify, the Whatnot lineup, StockX asks, Alias sales), or a sales summary for the team chat.",
+  askWhatWhen: (when) => `Sure, ${when}. What should run: a sheet (pickup, location, supplier stock, consignment) or a check on a channel, like sold-out sizes on Shopify?`,
   seeded: SEEDED,
   tz: TZ,
   tzName: "Amsterdam",
@@ -535,4 +557,17 @@ export const SNEAKER: Profile = {
     ...(s.kind === "custom" ? [`const NAME = ${JSON.stringify(s.name)};`] : []),
     ...(s.kind === "sales-summary" ? [`const CHANNEL = discord.channel(${JSON.stringify(s.share ?? "the team chat")});`] : []),
   ],
+  posts: [{ slug: "google-sheets", name: "Google Sheets" }, { slug: "excel", name: "Excel" }, { slug: "discord", name: "Discord" }, { slug: "slack", name: "Slack" }],
+  targets: "shopify|whatnot|stockx|alias|goat|ebay|picqer|instagram|facebook|tiktok|x|twitter",
+  insteadChips: [
+    { id: "instead-soldout", text: "Sold-out sizes check on Shopify every 15 minutes" },
+    { id: "instead-lineup", text: "Whatnot show lineup sheet every day at 17:30" },
+    { id: "instead-summary", text: "Daily sales summary to Discord at 18:00" },
+  ],
 };
+
+/** Where a routine posts: the team tool its script writes to (a sheet unless it posts to a chat). */
+export function postsTo(p: Profile, kind: string): { slug: string; name: string } {
+  const uses = (p.kinds[kind] ?? p.kinds.custom).uses;
+  return p.posts.find((x) => uses.includes(x.slug === "google-sheets" ? "sheets" : x.slug)) ?? p.posts[0];
+}

@@ -1,7 +1,8 @@
 // A store demo's assistant (the Assistant section of /demo/<slug>): the same chat and scheduler as the sneaker demo
 // (lib/demo/schedule.ts, components/demo/SheetAssistant.tsx), with the routines a shop of these goods asks for, in the
-// shop's time zone: a low-stock reorder list for the buyer, the LIVE lineup, a sales summary to Slack, new arrivals
-// listed everywhere, a price check, a returns report and a pick list. No network, no AI: a deterministic parser.
+// shop's time zone: a low-stock reorder list for the buyer, the LIVE lineup sheet, a sales summary to Slack, a new
+// arrivals check, a price check, a returns report and a pick list. Beta: read-only, posting to the team's tools only.
+// No network, no AI: a deterministic parser.
 // No "@/" imports: node --test loads it.
 import { SNEAKER, type Chip, type KindDef, type Profile, type Schedule } from "../demo/schedule.ts";
 import type { DemoConfig } from "./types.ts";
@@ -66,16 +67,17 @@ export function storeAssistant(cfg: DemoConfig): Profile {
       ],
       dry: (n) => `${Math.round(n / 2) + 4} returns last week, most often "${cfg.returns.reasons[0]}"`,
     },
-    "new-arrivals": {
-      name: "New arrivals to every channel",
-      what: `Every new product in ${web.name} listed on ${join(others.map((c) => c.name))} with all its sizes and photos.`,
+    "arrivals-check": {
+      name: "New arrivals check",
+      what: `New products from the last day and the channels they are not on yet, in a sheet for the team.`,
       logo: web.logo,
-      uses: [mod(web.id), ...others.map((c) => mod(c.id))],
+      uses: [mod(web.id), ...others.map((c) => mod(c.id)), "sheets"],
       body: [
-        `const fresh = await ${mod(web.id)}.products({ published: "since last run" });`,
-        ...others.map((c) => `await ${mod(c.id)}.list(fresh, { sizes: "all", photos: true });`),
+        `const fresh = await ${mod(web.id)}.products({ published: "last 24 hours" });`,
+        `const on = { ${others.map((c) => `${mod(c.id)}: await ${mod(c.id)}.skus()`).join(", ")} };`,
+        `await sheets.write(SHEET, "New arrivals", fresh.map((p) => [p.title, ...${JSON.stringify(others.map((c) => mod(c.id)))}.map((c) => (on[c].has(p.sku) ? "listed" : "not yet"))]));`,
       ],
-      dry: (n) => `${Math.max(2, Math.round(n / 6))} new products to list on ${others.length} channels`,
+      dry: (n) => `${Math.max(2, Math.round(n / 6))} new products, ${Math.max(1, Math.round(n / 12))} not on every channel yet`,
     },
     "price-check": {
       name: `${market.name} price check`,
@@ -99,14 +101,14 @@ export function storeAssistant(cfg: DemoConfig): Profile {
   };
   if (live) {
     kinds["live-lineup"] = {
-      name: `${live.name} LIVE lineup`,
-      what: "It puts the sizes in stock into tonight's show list, so nothing sells that isn't there.",
+      name: `${live.name} LIVE lineup sheet`,
+      what: "The sizes in stock for tonight's show, in a sheet for the host, so nothing goes into the show that isn't there.",
       logo: live.logo,
-      uses: ["stock", mod(live.id)],
+      uses: ["stock", mod(live.id), "sheets"],
       body: [
         `const show = await ${mod(live.id)}.nextLive();`,
         "const sizes = await stock.sizes({ left: \">0\", tag: \"live\" });",
-        `await ${mod(live.id)}.setLineup(show.id, sizes.map((s) => ({ sku: s.sku, size: s.size, quantity: s.left })));`,
+        "await sheets.write(SHEET, show.title, sizes.map((s) => [s.sku, s.title, s.color, s.size, s.left]));",
       ],
       dry: (n) => `${n * 3} sizes in stock for the next show`,
     };
@@ -116,7 +118,7 @@ export function storeAssistant(cfg: DemoConfig): Profile {
   const seeded: Schedule[] = [
     { id: "reorder", kind: "reorder-list", name: kinds["reorder-list"].name, freq: { type: "daily", at: at(7) }, share: "the buyer", seeded: true, anchor: 0 },
     { id: "pick", kind: "pickup", name: "Pick list", freq: { type: "weekdays", at: at(8) }, share: `the ${cfg.stock.name.toLowerCase()}`, seeded: true, anchor: 0 },
-    { id: "arrivals", kind: "new-arrivals", name: kinds["new-arrivals"].name, freq: { type: "minutes", n: 15 }, share: null, seeded: true, anchor: 4 * MINUTE },
+    { id: "arrivals", kind: "arrivals-check", name: kinds["arrivals-check"].name, freq: { type: "daily", at: at(9) }, share: "the team", seeded: true, anchor: 0 },
     ...(live ? [{ id: "lineup", kind: "live-lineup", name: kinds["live-lineup"].name, freq: { type: "daily" as const, at: at(18, 30) }, share: "the show host", seeded: true, anchor: 0 }] : []),
     { id: "price", kind: "price-check", name: kinds["price-check"].name, freq: { type: "hours", n: 6 }, share: "the team", seeded: true, anchor: 11 * MINUTE },
     { id: "returns", kind: "returns-report", name: kinds["returns-report"].name, freq: { type: "weekly", day: 1, at: at(9) }, share: "the buyer", seeded: true, anchor: 0 },
@@ -125,9 +127,9 @@ export function storeAssistant(cfg: DemoConfig): Profile {
 
   const startChips: Chip[] = [
     { id: "reorder-morning", text: "Low-stock reorder list every morning at 7:00" },
-    ...(live ? [{ id: "lineup-daily", text: `${live.name} LIVE lineup every day at 18:30` }] : []),
+    ...(live ? [{ id: "lineup-daily", text: `${live.name} LIVE lineup sheet every day at 18:30` }] : []),
     { id: "summary-daily", text: `Daily sales summary to ${chat.name} at 18:00` },
-    { id: "arrivals-15", text: "New arrivals to every channel every 15 minutes" },
+    { id: "arrivals-morning", text: "New arrivals check every morning at 9:00" },
     { id: "returns-monday", text: "Weekly returns report every Monday at 9:00" },
   ];
 
@@ -136,7 +138,7 @@ export function storeAssistant(cfg: DemoConfig): Profile {
     if (live && /\b(live|show)\b/.test(t) && /\b(line ?-?up|list|sizes)\b/.test(t)) return k("live-lineup");
     if (/\b(summary|recap|digest)\b/.test(t) || (/\b(slack|discord|team chat)\b/.test(t) && /\b(sales|orders)\b/.test(t))) return k("daily-summary");
     if (/\b(low|reorder|re-order|restock|running out|running low)\b/.test(t)) return k("reorder-list");
-    if (/\bnew (arrivals?|products?|styles?|drops?)\b|\blist(ing)? new\b/.test(t)) return k("new-arrivals");
+    if (/\bnew (arrivals?|products?|styles?|drops?)\b/.test(t)) return k("arrivals-check");
     if (/\b(price|prices|pricing)\b/.test(t)) return k("price-check");
     if (/\breturns?\b|\brefunds?\b/.test(t)) return k("returns-report");
     if (/\bpick\s*-?\s*(up|list)s?\b|\bpicking\b|\bpacking\b|\bto pack\b|\bpick\b/.test(t)) return k("pickup");
@@ -154,17 +156,17 @@ export function storeAssistant(cfg: DemoConfig): Profile {
   return {
     kinds,
     kindOf,
-    greeting: `Hi! Tell me what should run on its own and when. I write the routine's script, test it on your live setup without changing anything, and put it on a schedule. For example: a low-stock reorder list every morning${live ? `, tonight's ${live.name} LIVE lineup` : ""}, or a daily sales summary to ${chat.name}.`,
+    greeting: `Hi! I'm in beta: I build routines that get data from your sync and post it to your team, in Google Sheets, Excel, ${chat.name} or ${chat.name === "Slack" ? "Discord" : "Slack"}. Tell me what you need and when. I write the routine's script, test it without changing anything, and put it on a schedule. For example: a low-stock reorder list every morning${live ? `, tonight's ${live.name} LIVE lineup sheet` : ""}, or a daily sales summary to ${chat.name}.`,
     startChips,
     whatChips: [
       { id: "what-reorder", text: "Low-stock reorder list" },
-      ...(live ? [{ id: "what-lineup", text: `${live.name} LIVE lineup` }] : []),
+      ...(live ? [{ id: "what-lineup", text: `${live.name} LIVE lineup sheet` }] : []),
       { id: "what-summary", text: "Daily sales summary" },
       { id: "what-pick", text: "Pick list" },
     ],
     whenChips: SNEAKER.whenChips,
-    askWhat: `What should run? A sheet (low-stock reorder list, pick list, returns report), a routine on a channel (${[live ? `${live.name} LIVE lineup` : "", "new arrivals to every channel", `${market.name} price check`].filter(Boolean).join(", ")}), or a sales summary for ${chat.name}.`,
-    askWhatWhen: (when) => `Sure, ${when}. What should run: a sheet (reorder list, pick list, returns report) or a routine on a channel, like new arrivals to every channel?`,
+    askWhat: `What should run? A sheet (low-stock reorder list, pick list, returns report), a check on a channel (${[live ? `${live.name} LIVE lineup sheet` : "", "new arrivals check", `${market.name} price check`].filter(Boolean).join(", ")}), or a sales summary for ${chat.name}.`,
+    askWhatWhen: (when) => `Sure, ${when}. What should run: a sheet (reorder list, pick list, returns report) or a check on a channel, like the new arrivals check?`,
     seeded,
     tz: cfg.tz,
     tzName: cfg.tz.split("/").pop()!.replace(/_/g, " "),
@@ -173,6 +175,16 @@ export function storeAssistant(cfg: DemoConfig): Profile {
     consts: (s) => [
       ...(s.kind === "custom" ? [`const NAME = ${JSON.stringify(s.name)};`] : []),
       ...(s.kind === "daily-summary" ? [`const CHANNEL = ${chatMod}.channel(${JSON.stringify(s.share ?? "#team")});`] : []),
+    ],
+    posts: [
+      { slug: "google-sheets", name: "Google Sheets" }, { slug: "excel", name: "Excel" },
+      ...(chatMod === "slack" ? [{ slug: "slack", name: "Slack" }, { slug: "discord", name: "Discord" }] : [{ slug: "discord", name: "Discord" }, { slug: "slack", name: "Slack" }]),
+    ],
+    targets: [...cfg.channels.map((c) => c.name.toLowerCase().split(" ")[0]), ...cfg.more.map((m) => m.name.toLowerCase().split(" ")[0]), "instagram", "facebook", "tiktok", "x", "twitter"].join("|"),
+    insteadChips: [
+      { id: "instead-arrivals", text: "New arrivals check every morning at 9:00" },
+      { id: "instead-reorder", text: "Low-stock reorder list every morning at 7:00" },
+      { id: "instead-summary", text: `Daily sales summary to ${chat.name} at 18:00` },
     ],
   };
 }

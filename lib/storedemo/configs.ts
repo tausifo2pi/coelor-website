@@ -51,8 +51,9 @@ export const WOMENS_BOUTIQUE: DemoConfig = {
   tools: [
     { slug: "google-sheets", name: "Google Sheets", role: "Daily stock sheet", detail: "Every size, sold and left, for the buying meeting", on: true },
     { slug: "slack", name: "Slack", role: "Team alerts", detail: "Sold-out best sellers, LIVE results and returns", on: true },
+    { slug: "claude", name: "Claude", role: "Use the assistant from Claude", detail: "Ask stock, orders and routines in the Claude app (beta, read-only)" },
+    { slug: "chatgpt", name: "ChatGPT", role: "Use the assistant from ChatGPT", detail: "Ask stock, orders and routines in the ChatGPT app (beta, read-only)" },
     { slug: "openai", name: "OpenAI", role: "Product texts", detail: "Titles, size charts and channel descriptions" },
-    { slug: "claude", name: "Claude", role: "AI assistant", detail: "Answers the team's stock and sales questions" },
     { slug: "excel", name: "Excel", role: "Stock and sales export", detail: "The same sheet for Microsoft 365" },
     { slug: "discord", name: "Discord", role: "Team alerts" },
     { slug: "gemini", name: "Gemini", role: "AI assistant" },

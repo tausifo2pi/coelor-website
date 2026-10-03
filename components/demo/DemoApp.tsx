@@ -12,15 +12,15 @@ import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { getJson } from "@/lib/demo/get";
 import { Automations, Connections, Dashboard, Listings, Orders, Products, type Ctx, type Live, type SectionId } from "@/components/demo/views";
 import { Extra } from "@/components/demo/Extra";
-import { Badge, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
+import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
 
 const CONTACT = "/case-studies/stock-sync#contact";
 const CASE = "/case-studies/stock-sync";
 const PRICING = "/pricing";
 
-const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string }[] = [
+const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "The sync right now: channels, orders and automations" },
-  { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines written, tested and scheduled from a chat" },
+  { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines that get data and post it to your team, written from a chat (beta)", beta: true },
   { id: "connections", label: "Connections", icon: Plug, title: "Connections", sub: "Sales channels, the warehouse and the tools, on one stock count" },
   { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the sync did with the stock" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Picqer products linked to the same size on every account" },
@@ -181,6 +181,7 @@ export default function DemoApp() {
                 >
                   <Ico size={18} />
                   {s.label}
+                  {s.beta && <BetaPill />}
                 </button>
               );
             })}
@@ -219,8 +220,9 @@ export default function DemoApp() {
             {/* phones: the sections as a scrolling row */}
             <nav className="flex gap-1 overflow-x-auto px-3 pb-2 [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden" aria-label="Demo sections">
               {SECTIONS.map((s) => (
-                <button key={s.id} type="button" onClick={() => go(s.id)} className={`h-8 shrink-0 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
+                <button key={s.id} type="button" onClick={() => go(s.id)} className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
                   {s.label}
+                  {s.beta && <BetaPill />}
                 </button>
               ))}
             </nav>

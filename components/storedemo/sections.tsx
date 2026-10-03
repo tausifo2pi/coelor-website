@@ -5,7 +5,9 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowLeftRight, ArrowRight, Check, Lock, Package, Plus, RotateCcw, Truck, X } from "lucide-react";
 import { Badge, BrandMark, Button, Card, CardHead, Empty, Pager, SearchInput, Skeleton, Tabs, ago, clock, fmt, type Tone } from "@/components/demo/ui";
+import { RoutinesCard } from "@/components/demo/SheetAssistant";
 import type { DemoTracker } from "@/lib/demo/track";
+import { storeAssistant } from "@/lib/storedemo/assistant";
 import type { ProductRow, StoreWorld } from "@/lib/storedemo/engine";
 import type { ChannelCfg, DemoConfig, Happening, Order, Step } from "@/lib/storedemo/types";
 
@@ -168,6 +170,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
   const w = ctx.world;
   const ov = useMemo(() => (w ? w.overview(ctx.now) : null), [w, ctx.now]);
   const rules = useMemo(() => (w ? w.rules(ctx.now) : []), [w, ctx.now]);
+  const assistant = useMemo(() => storeAssistant(ctx.cfg), [ctx.cfg]);
   if (!w || !ov) return <Loading />;
   const { cfg } = ctx;
   const k = ov.kpis;
@@ -254,6 +257,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
               ))}
             </ul>
           </Card>
+          <RoutinesCard ctx={ctx} profile={assistant} onAll={() => ctx.go("assistant")} />
           <Card pad={false}>
             <div className="px-5 pt-5">
               <CardHead title="Since the sync started" />
@@ -555,10 +559,12 @@ export function Connections({ ctx }: { ctx: SCtx }) {
     },
     {
       title: "Team, sheets and AI",
-      sub: "Where the team sees the numbers and gets the alerts, and the AI that works on the same data.",
+      sub: "Where the team sees the numbers and gets the alerts. The assistant's routines post only here, for data safety; Claude and ChatGPT ask the same data from their apps.",
       tiles: cfg.tools.map((x) => (
         <ConnTile key={x.slug} slug={x.slug} name={x.name} role={x.role} detail={x.detail} on={!!x.on}
-          onClick={x.on ? settings(x.name) : () => ctx.connect(x.slug, x.name, `View only in this demo. For your store we connect ${x.name} to the same stock count and orders: ${x.role.charAt(0).toLowerCase() + x.role.slice(1)}, without anyone copying numbers over.`)} />
+          onClick={x.on ? settings(x.name) : () => ctx.connect(x.slug, x.name, /claude|chatgpt/.test(x.slug)
+            ? `View only in this demo. For your store we connect your sync to ${x.name}, so your team asks it right in the ${x.name} app: stock, orders and routines. It reads the same data as the assistant and posts only to your team's sheets and chat: it never changes listings, prices or stock.`
+            : `View only in this demo. For your store we connect ${x.name} to the same stock count and orders: ${x.role.charAt(0).toLowerCase() + x.role.slice(1)}, without anyone copying numbers over.`)} />
       )),
     },
   ];

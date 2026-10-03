@@ -99,6 +99,7 @@ const MARKS: Record<string, { bg: string; fg?: string; ring?: boolean; scale?: n
   },
   discord: { bg: "#5865F2", fg: "#FFFFFF", glyph: (px) => <SiDiscord size={px} color="currentColor" title="" /> },
   openai: { bg: "#000000", fg: "#FFFFFF", glyph: (px) => <OpenAIKnot size={px} /> },
+  chatgpt: { bg: "#000000", fg: "#FFFFFF", glyph: (px) => <OpenAIKnot size={px} /> },
   slack: { bg: "#FFFFFF", ring: true, glyph: (px) => <SlackHash size={px} /> },
   claude: { bg: "#FAF9F5", fg: "#D97757", ring: true, glyph: (px) => <SiClaude size={px} color="currentColor" title="" /> },
 };
@@ -135,6 +136,11 @@ export function CoelorWordmark({ height = 20, className = "" }: { height?: numbe
       {INK_CELLS.map(([x, y]) => <rect key={`i${x}-${y}`} x={x} y={y} width={14} height={14} rx={3.2} fill="#0f172a" />)}
     </svg>
   );
+}
+
+/** "Beta" next to a menu item (the Assistant) */
+export function BetaPill() {
+  return <span className="ml-auto rounded-md bg-[#fef3c7] px-1.5 py-[1px] text-[10.5px] font-bold uppercase tracking-[0.04em] text-[#92400e]">Beta</span>;
 }
 
 export function Card({ children, className = "", pad = true }: { children: ReactNode; className?: string; pad?: boolean }) {

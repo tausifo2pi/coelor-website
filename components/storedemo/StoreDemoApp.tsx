@@ -6,7 +6,7 @@
 // "view only" dialog. lib/demo/track.ts records what the visitor looks at, like the sneaker demo.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Boxes, LayoutDashboard, Lock, Plug, Receipt, RefreshCw, Sparkles, Truck, X, Zap, type LucideIcon } from "lucide-react";
-import { Badge, BrandMark, Button, CoelorWordmark, ago, fmt, hasMark } from "@/components/demo/ui";
+import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, ago, fmt, hasMark } from "@/components/demo/ui";
 import { getJson } from "@/lib/demo/get";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { SheetAssistant } from "@/components/demo/SheetAssistant";
@@ -19,9 +19,9 @@ import { Automations, Connections, Dashboard, Orders, Products, Shipping, type S
 
 const PRICING = "/pricing";
 
-const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string }[] = [
+const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "The sync right now: channels, orders, parcels and automations" },
-  { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines written, tested and scheduled from a chat" },
+  { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines that get data and post it to your team, written from a chat (beta)", beta: true },
   { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the sync did with them" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Every size on one count, the same on every channel" },
   { id: "shipping", label: "Shipping & returns", icon: Truck, title: "Shipping & returns", sub: "Labels, tracking and returns, back into stock" },
@@ -186,6 +186,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
                   className={`flex h-10 shrink-0 items-center gap-3 rounded-lg px-3 text-left text-[14px] font-semibold transition-colors ${on ? "bg-[#eff6ff] text-[#1d4ed8]" : "text-[#475569] hover:bg-[#f4f5f7] hover:text-[#0f172a]"}`}>
                   <Ico size={18} />
                   {s.label}
+                  {s.beta && <BetaPill />}
                 </button>
               );
             })}
@@ -222,8 +223,9 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
             </div>
             <nav className="flex gap-1 overflow-x-auto px-3 pb-2 [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden" aria-label="Demo sections">
               {SECTIONS.map((s) => (
-                <button key={s.id} type="button" onClick={() => go(s.id)} className={`h-8 shrink-0 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
+                <button key={s.id} type="button" onClick={() => go(s.id)} className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
                   {s.label}
+                  {s.beta && <BetaPill />}
                 </button>
               ))}
             </nav>

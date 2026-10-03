@@ -6,19 +6,19 @@
 // its script. The answers come from a small deterministic parser (lib/demo/schedule.ts), with no network call; what
 // the visitor adds lives in this page only.
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { ArrowUp, Check, FileCode2, FileSpreadsheet, Info, Loader2, Lock, MapPin, PackageCheck, Sparkles, Store, X } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, FileCode2, FileSpreadsheet, Info, Loader2, Lock, MapPin, PackageCheck, ShieldCheck, Sparkles, Store, X } from "lucide-react";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
-import { Badge, BrandMark, Card, ago } from "@/components/demo/ui";
+import { Badge, BrandMark, Button, Card, CardHead, ago } from "@/components/demo/ui";
 import type { DemoTracker } from "@/lib/demo/track";
-import { SNEAKER, answer, cronOf, describe, freqKey, inText, nextRun, prevRun, runLabel, scriptOf, verifyOf, type Check as CheckStep, type Chip, type Pending, type Profile, type Schedule, type Script } from "@/lib/demo/schedule";
+import { SNEAKER, answer, cronOf, describe, freqKey, inText, nextRun, postsTo, prevRun, runLabel, scriptOf, verifyOf, type Check as CheckStep, type Chip, type Pending, type Profile, type Schedule, type Script } from "@/lib/demo/schedule";
 
 /** what the assistant needs from its demo page (the sneaker demo's Ctx and a store demo's SCtx both have it) */
-export type AssistantCtx = { now: number; t: DemoTracker | null; locked: (what: string, text?: string) => void };
+export type AssistantCtx = { now: number; t: DemoTracker | null; locked: (what: string, text?: string) => void; connect?: (slug: string, name: string, body?: string) => void };
 // the demo's routines, words and time zone (lib/demo/schedule.ts Profile): the sneaker demo's unless a page passes its own
 const ProfileOf = createContext<Profile>(SNEAKER);
 
 type Msg =
-  | { id: number; from: "bot" | "you"; text: string }
+  | { id: number; from: "bot" | "you"; text: string; beta?: boolean }
   | { id: number; from: "bot"; script: Script }
   | { id: number; from: "bot"; checks: CheckStep[]; shown: number };
 
@@ -78,7 +78,7 @@ export function SheetAssistant({ ctx, profile = SNEAKER }: { ctx: AssistantCtx; 
     if (!a.ok) {
       await later(TYPING_MS, () => {
         setTyping(false);
-        say({ from: "bot", text: a.text });
+        say({ from: "bot", text: a.text, beta: a.refused });
         setPending(a.pending);
         setChips(a.chips);
       });
@@ -129,9 +129,21 @@ export function SheetAssistant({ ctx, profile = SNEAKER }: { ctx: AssistantCtx; 
               <p className="flex items-center gap-2 text-[15px] font-semibold">
                 Assistant
                 <span className="rounded-md bg-[#0f172a] px-1.5 py-[1px] text-[11px] font-bold tracking-[0.04em] text-white">GPT</span>
+                <Badge tone="amber">Beta</Badge>
               </p>
-              <p className="truncate text-[12.5px] text-[#64748b]">Writes, tests and schedules routines on your sync</p>
+              <p className="truncate text-[12.5px] text-[#64748b]">Builds routines that get data from your sync and post it to your team</p>
             </div>
+          </div>
+          {/* the beta's promise: routines read, and post only to the team's sheets and chat */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-b border-[#fde68a] bg-[#fffbeb] px-4 py-2.5 text-[12.5px] leading-[1.5] text-[#92400e] sm:px-5">
+            <ShieldCheck size={14} className="shrink-0" />
+            <span><b className="font-semibold">Read-only beta.</b> Routines get data and post it only to your team:</span>
+            {profile.posts.map((x) => (
+              <span key={x.slug} className="inline-flex items-center gap-1 rounded-full bg-white py-0.5 pl-0.5 pr-2 font-medium text-[#334155] ring-1 ring-[#fde68a]">
+                <BrandMark slug={x.slug} name={x.name} size={16} className="!rounded-full" />{x.name}
+              </span>
+            ))}
+            <span>They never change listings, prices or stock.</span>
           </div>
 
           <div ref={list} className="flex h-[440px] flex-col gap-3 overflow-y-auto px-4 py-4 sm:px-5" aria-live="polite" aria-label="Chat with the assistant">
@@ -175,6 +187,26 @@ export function SheetAssistant({ ctx, profile = SNEAKER }: { ctx: AssistantCtx; 
           </form>
           <p className="flex items-center gap-1.5 px-4 pb-3.5 text-[12.5px] text-[#94a3b8] sm:px-5"><Info size={13} className="shrink-0" />Routines you add here are not saved.</p>
         </Card>
+      </section>
+
+      <section className="flex min-w-0 flex-col gap-4">
+        <Heading title="Use it from Claude or ChatGPT" sub="Connect your sync to the AI app your team already uses, and ask it there. The same read-only routines, posting only to your team." />
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {AI_APPS.map((x) => (
+            <Card key={x.slug} className="flex items-center gap-3 !p-4">
+              <BrandMark slug={x.slug} name={x.name} size={42} />
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-2 text-[14.5px] font-semibold">{x.name}<Badge tone="amber">Beta</Badge></p>
+                <p className="mt-0.5 text-[12.5px] leading-[1.5] text-[#64748b]">Ask from the {x.name} app: {x.ask}</p>
+              </div>
+              <Button small primary onClick={() => {
+                const body = `View only in this demo. For your store we connect your sync to ${x.name}, so your team can ask it right in the ${x.name} app, like ${x.ask} It reads the same data as this assistant and posts only to your team's tools: it never changes listings, prices or stock.`;
+                if (ctx.connect) ctx.connect(x.slug, x.name, body);
+                else ctx.locked(`connect:${x.slug}`, `Connecting ${x.name}`);
+              }}>Connect</Button>
+            </Card>
+          ))}
+        </div>
       </section>
 
       <section className="flex min-w-0 flex-col gap-4">
@@ -249,10 +281,23 @@ function Bubble({ m }: { m: Msg }) {
   return (
     <div className="flex items-start gap-2">
       <Avatar />
-      <p className="max-w-[min(85%,560px)] rounded-2xl rounded-tl-md bg-[#f1f5f9] px-3.5 py-2 text-[14px] leading-[1.5] text-[#0f172a] [overflow-wrap:anywhere]">{m.text}</p>
+      {m.beta ? (
+        <p className="max-w-[min(85%,560px)] rounded-2xl rounded-tl-md border border-[#fde68a] bg-[#fffbeb] px-3.5 py-2 text-[14px] leading-[1.5] text-[#0f172a] [overflow-wrap:anywhere]">
+          <span className="mb-1 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.04em] text-[#92400e]"><ShieldCheck size={13} />Not in this beta yet</span>
+          {m.text}
+        </p>
+      ) : (
+        <p className="max-w-[min(85%,560px)] rounded-2xl rounded-tl-md bg-[#f1f5f9] px-3.5 py-2 text-[14px] leading-[1.5] text-[#0f172a] [overflow-wrap:anywhere]">{m.text}</p>
+      )}
     </div>
   );
 }
+
+// the AI apps a team can ask the sync from (connected for a store, view only here)
+const AI_APPS = [
+  { slug: "claude", name: "Claude", ask: "“Which sizes sold out today, and where?”" },
+  { slug: "chatgpt", name: "ChatGPT", ask: "“Make me tomorrow's pick list for 8:00.”" },
+];
 
 /** A script as the assistant wrote it: the file name, then the code (comments dimmed). */
 function Code({ script, tall = false }: { script: Script; tall?: boolean }) {
@@ -323,7 +368,8 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const iso = (ms: number) => new Date(ms).toISOString();
 
 function Scheduler({ rows, ctx, onRemove, onScript }: { rows: Schedule[]; ctx: AssistantCtx; onRemove: (id: string) => void; onScript: (s: Schedule) => void }) {
-  const { tz } = useContext(ProfileOf);
+  const profile = useContext(ProfileOf);
+  const { tz } = profile;
   const view = rows.map((s) => {
     const next = nextRun(s, ctx.now, tz);
     const last = s.seeded ? prevRun(s, ctx.now, tz) : null;
@@ -361,7 +407,10 @@ function Scheduler({ rows, ctx, onRemove, onScript }: { rows: Schedule[]; ctx: A
           <span className="text-[14px] font-semibold leading-snug">{s.name}</span>
           {!s.seeded && <Badge tone="violet">New</Badge>}
         </div>
-        <div className="text-[12.5px] text-[#64748b] [overflow-wrap:anywhere]">{share}</div>
+        <div className="flex flex-wrap items-center gap-x-1.5 text-[12.5px] text-[#64748b] [overflow-wrap:anywhere]">
+          <span className="inline-flex items-center gap-1 font-medium text-[#334155]"><BrandMark slug={postsTo(profile, s.kind).slug} name={postsTo(profile, s.kind).name} size={14} className="!rounded" />{postsTo(profile, s.kind).name}</span>
+          <span>· {share}</span>
+        </div>
       </div>
     </div>
   );
@@ -422,3 +471,37 @@ function Scheduler({ rows, ctx, onRemove, onScript }: { rows: Schedule[]; ctx: A
     </Card>
   );
 }
+
+/** The dashboard's card: the assistant's routines, the next to run first, and where each posts. */
+export function RoutinesCard({ ctx, profile = SNEAKER, onAll }: { ctx: AssistantCtx; profile?: Profile; onAll: () => void }) {
+  const rows = profile.seeded
+    .map((s) => ({ s, next: nextRun(s, ctx.now, profile.tz), to: postsTo(profile, s.kind) }))
+    .sort((a, b) => (a.next ?? Infinity) - (b.next ?? Infinity))
+    .slice(0, 5);
+  return (
+    <ProfileOf.Provider value={profile}>
+      <Card pad={false}>
+        <div className="px-5 pt-5">
+          <CardHead title="Routines" sub="From the assistant, the next to run first" right={<><Badge tone="amber">Beta</Badge><Button small onClick={onAll}>All <ArrowRight size={14} /></Button></>} />
+        </div>
+        <ul className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
+          {rows.map(({ s, next, to }) => (
+            <li key={s.id} className="flex items-center gap-3 px-5 py-3">
+              <KindIcon kind={s.kind} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[13.5px] font-medium">{s.name}</p>
+                <p className="flex flex-wrap items-center gap-x-1.5 text-[12.5px] text-[#64748b]">
+                  {cap(describe(s.freq))} ·
+                  <span className="inline-flex items-center gap-1"><BrandMark slug={to.slug} name={to.name} size={13} className="!rounded" />{to.name}</span>
+                </p>
+              </div>
+              <span className="shrink-0 text-right text-[12.5px] font-semibold text-[#334155]">{next === null ? "on each order" : inText(next, ctx.now)}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="flex items-center gap-1.5 px-5 py-3 text-[12.5px] text-[#64748b]"><ShieldCheck size={13} className="shrink-0" />Read-only: routines post only to your team&apos;s sheets and chat.</p>
+      </Card>
+    </ProfileOf.Provider>
+  );
+}
+

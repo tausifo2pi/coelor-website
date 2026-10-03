@@ -23,7 +23,7 @@ test("plain requests pick the right routine; unclear ones ask what or when", () 
   assert.equal(parse("send me the sizes running low every morning", P).kind, "reorder-list");
   assert.equal(parse("tiktok live lineup at 6:30pm", P).kind, "live-lineup");
   assert.equal(parse("post sales to slack daily at 18:00", P).kind, "daily-summary");
-  assert.equal(parse("list new arrivals everywhere every 15 minutes", P).kind, "new-arrivals");
+  assert.equal(parse("new arrivals check every morning", P).kind, "arrivals-check");
   assert.equal(parse("returns report on mondays", P).kind, "returns-report");
   assert.equal(parse("pick list every weekday at 8", P).kind, "pickup");
   assert.equal(parse("brand sheet every day", P).kind, "custom");
@@ -35,13 +35,14 @@ test("plain requests pick the right routine; unclear ones ask what or when", () 
 });
 
 test("scripts and checks use the shop's channels and time zone", () => {
-  const a = answer("New arrivals to every channel every 15 minutes", null, NOW, P);
+  const a = answer("New arrivals check every morning at 9:00", null, NOW, P);
   assert.ok(a.ok);
   if (!a.ok) return;
   const s = scriptOf(a.schedule, P);
   assert.match(s.code, /tz: "America\/Chicago"/);
   for (const c of CFG.channels.slice(1)) assert.match(s.code, new RegExp(c.id.replace(/[^a-z]/g, "")));
   assert.doesNotMatch(s.code, /picqer|stockx|alias/i);
+  assert.doesNotMatch(s.code, /\.list\(|setLineup|\.hide\(/);
   const checks = verifyOf(a.schedule, NOW, P);
   assert.match(checks[1].detail, /TikTok Shop/);
   const sale = answer("pick list after every sale", null, NOW, P);
@@ -60,3 +61,17 @@ test("the sneaker assistant keeps its own routines and words", () => {
   assert.equal(SNEAKER.tz, "Europe/Amsterdam");
   assert.ok(P.seeded.every((s) => P.kinds[s.kind]));
 });
+
+test("beta: the shop's assistant refuses changes and posts only to the team's tools", () => {
+  for (const t of ["list new arrivals on Walmart every morning", "push new products to every channel every 15 minutes", "hide sold-out sizes on Poshmark", "lower prices on Amazon every night"]) {
+    const a = answer(t, null, NOW, P);
+    assert.equal(a.ok, false, t);
+    if (!a.ok) {
+      assert.equal(a.refused, true, t);
+      assert.match(a.text, /Google Sheets, Excel, Slack or Discord/);
+      for (const c of a.chips) assert.ok(answer(c.text, null, NOW, P).ok, c.text);
+    }
+  }
+  for (const s of P.seeded) assert.match(scriptOf(s, P).code, /sheets\.write|slack\.post/, s.id);
+});
+

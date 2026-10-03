@@ -5,6 +5,7 @@
 // Anything that would change the store (connect, sync now, link, pull a listing, reports) opens the "view only" dialog.
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { getJson } from "@/lib/demo/get";
+import { RoutinesCard } from "@/components/demo/SheetAssistant";
 import { ArrowLeftRight, ArrowRight, Check, Lock, Plus, Settings2, TriangleAlert } from "lucide-react";
 import { CHANNELS, PICQER, fromApi, type Channel as ChannelInfo } from "@/lib/demo/channels";
 import { STORES, type Connection, type Job, type Linked, type Listing, type Overview, type Page, type Platform, type Sale, type SellPlatform, type Step, type StoreId } from "@/lib/demo/shape";
@@ -298,6 +299,7 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
               ))}
             </ul>
           </Card>
+          <RoutinesCard ctx={ctx} onAll={() => ctx.go("assistant")} />
           <Card pad={false}>
             <div className="px-5 pt-5">
               <CardHead title="Since the sync started" />
@@ -495,7 +497,7 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
     {
       title: "Tools",
       what: "tool",
-      sub: "Sheets, alerts and AI the sync works with",
+      sub: "Sheets, alerts and AI. The assistant's routines post only here, for data safety",
       tiles: [
         {
           slug: "google-sheets", name: "Google Sheets", role: "Live stock sheet + consignment report", state: "on",
@@ -508,8 +510,12 @@ export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }
           body: "We send the sync's alerts to Slack for your team: sold-out sizes pulled, cancelled orders put back, and the not-listed report.",
         },
         {
-          slug: "claude", name: "Claude", role: "AI assistant", state: "off",
-          body: "We connect Claude to the sync for your store: it can read product names for sizes and colours, or answer your team's questions about stock and sales.",
+          slug: "claude", name: "Claude", role: "Use the assistant from Claude", detail: "Ask stock, orders and routines in the Claude app (beta, read-only)", state: "off",
+          body: "View only in this demo. For your store we connect your sync to Claude, so your team asks it right in the Claude app: “Which sizes sold out today, and where?” It reads the same data as the assistant and posts only to your team's sheets and chat: it never changes listings, prices or stock.",
+        },
+        {
+          slug: "chatgpt", name: "ChatGPT", role: "Use the assistant from ChatGPT", detail: "Ask stock, orders and routines in the ChatGPT app (beta, read-only)", state: "off",
+          body: "View only in this demo. For your store we connect your sync to ChatGPT, so your team asks it right in the ChatGPT app: “Make me tomorrow's pickup sheet for 8:00.” It reads the same data as the assistant and posts only to your team's sheets and chat: it never changes listings, prices or stock.",
         },
         ...MORE_TOOLS.map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off", body: `We connect ${m.name} to the sync for your store: ${m.role.charAt(0).toLowerCase() + m.role.slice(1)}, from the same Picqer stock and orders.` })),
       ],
