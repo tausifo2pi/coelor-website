@@ -307,8 +307,8 @@ export async function refreshDemo(): Promise<void> {
 
 let ticking: ReturnType<typeof setInterval> | null = null;
 /** From instrumentation.ts: a round at start, then every minute while the demo was used in the last 20 minutes and every
- * 10 minutes otherwise; every other minute this server also loads the demo page for itself, so it stays in memory
- * (a server-side load logs no tracking event). */
+ * 10 minutes otherwise; every other minute this server also loads the outreach pages (live demo, case study) for
+ * itself, so they stay in memory on the small server (a server-side load logs no tracking event). */
 export function startDemoRefresh() {
   if (ticking || process.env.NODE_ENV !== "production") return;
   const self = `http://127.0.0.1:${process.env.PORT || 3000}`;
@@ -316,7 +316,11 @@ export function startDemoRefresh() {
   const tick = () => {
     n += 1;
     if (Date.now() - lastUse < 20 * 60_000 || n % 10 === 0) refreshDemo().catch(() => {});
-    if (n % 2 === 0) fetch(`${self}/demo/multi-platform-sync`, { cache: "no-store", signal: AbortSignal.timeout(15_000) }).then((r) => r.arrayBuffer()).catch(() => {});
+    if (n % 2 === 0) {
+      for (const page of ["/demo/multi-platform-sync", "/case-studies/stock-sync"]) {
+        fetch(`${self}${page}`, { cache: "no-store", signal: AbortSignal.timeout(15_000) }).then((r) => r.arrayBuffer()).catch(() => {});
+      }
+    }
   };
   ticking = setInterval(tick, 60_000);
   ticking.unref?.();

@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import { cache } from "react";
-import { cookies } from "next/headers";
 import { adaptCase } from "@/lib/case-adapt";
-import { fetchCaseMix } from "@/lib/case-mix";
-import { TOKEN_COOKIE } from "@/lib/track";
 
-// The outreach case study for this request: a reader who came through their email link (the ct cookie set by
-// /r/<token>) gets the page told for a platform mix they recognise; everyone else gets the generic page. One lookup
-// per request (metadata and page share it).
-export const caseContent = cache(async () => adaptCase(await fetchCaseMix((await cookies()).get(TOKEN_COOKIE)?.value)));
+// The outreach case study: the real client's story, the same for every reader (user 2026-10-03: the page no longer
+// names the reader's own platforms). Static: built once, no lookup per visit; the email cookie still ties the visit to
+// the lead through the site tracker.
+export const caseContent = () => adaptCase(null);
 
-export async function caseMetadata(path: string): Promise<Metadata> {
-  const c = await caseContent();
+export function caseMetadata(path: string): Metadata {
+  const c = caseContent();
   return { title: c.seo.title, description: c.seo.description, robots: { index: false, follow: false }, alternates: { canonical: path } };
 }

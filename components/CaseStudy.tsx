@@ -6,8 +6,8 @@ import { Icon } from "@/components/icons";
 import { PlatformTile } from "@/components/PlatformLogo";
 import type { CaseContent } from "@/lib/case-adapt";
 
-// The outreach case study, rendered from its content: told for one reader's own setup, or the real client's story
-// (lib/case-adapt.ts). Used by /case-studies/stock-sync, /case-studies/sneakers and the panel preview /p/<token>.
+// The outreach case study, rendered from its content (lib/case-adapt.ts): the real client's story, the same for every
+// reader since 2026-10-03 (lib/case-page.ts). Used by /case-studies/stock-sync and /case-studies/sneakers.
 // Each platform's logo appears once, in the hero's setup card; the rest of the page is words. No motion but the
 // "Sync running" dot on the real client's setup (and on the demo button). Sneaker readers (and the real story) also get a
 // button to the live demo of that sync (/demo/multi-platform-sync): in the setup card and after "What we built". The real
