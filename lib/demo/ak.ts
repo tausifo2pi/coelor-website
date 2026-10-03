@@ -1,55 +1,60 @@
 // Server side of the live demo: reads the client's sync API (ak-api) and hands the page shaped data (lib/demo/shape.ts).
 // Only the GET reads listed here are ever called, with parameters built here (a page number, a store, a cleaned search
-// term), never a path from the browser. Answers are kept in memory for a short while, so visitors share one call; when
-// the API is slow or down the last good answer is used and marked stale.
+// term), never a path from the browser. A visitor never waits for the client's API when a copy exists: every read is
+// shared and refreshed behind the answer (lib/demo/cache.ts), a refresher keeps the copies fresh (startDemoRefresh, from
+// instrumentation.ts), and the answers the page shows first are kept on disk for the first visitor after a restart
+// (lib/demo/answers.ts). Only the very first read after a fresh install waits.
 // The generated channels (the lib/demo/channels.ts slots not in API_CHANNELS) come from lib/demo/sample.ts, with no API
 // call, and are merged into every answer in the same shape as the real rows.
+import path from "node:path";
+import { answerStore, type AnswerStore } from "@/lib/demo/answers";
+import { readCache } from "@/lib/demo/cache";
 import { CHANNELS, channel, fromApi } from "@/lib/demo/channels";
 import { SAMPLE } from "@/lib/demo/sample";
 import {
   STORES, listOf, listingOf, linkedOf, overviewOf, pageOf, picqerId, productOf, saleOf, searchTerm, storeById,
   type Linked, type Listing, type Overview, type Page, type Product, type Sale, type SellPlatform, type StoreId,
 } from "@/lib/demo/shape";
+import { TRACK_DIR } from "@/lib/track";
 
 const BASE = `${(process.env.AK_API_URL ?? "https://ak-api.coelor.com").replace(/\/+$/, "")}/api/v1`;
 const TIMEOUT_MS = 6000;
-const STALE_MS = 6 * 60 * 60 * 1000; // an old answer beats none for this long
+// a copy this old means its fresh reads keep failing: the page says "data from … ago"
+const STALE_SHOW_MS = 10 * 60_000;
 const MAX_ENTRIES = 300;
-
-type Entry = { at: number; data?: unknown; wait?: Promise<unknown> };
-const cache = new Map<string, Entry>();
 
 export type Live<T> = { data: T; at: string; stale: boolean };
 
-async function read(path: string, ttlMs: number): Promise<{ data: unknown; at: number; stale: boolean }> {
-  const hit = cache.get(path);
-  const now = Date.now();
-  if (hit?.data !== undefined && now - hit.at < ttlMs) return { data: hit.data, at: hit.at, stale: false };
-  if (hit?.wait) {
-    const data = await hit.wait.catch(() => undefined);
-    const e = cache.get(path);
-    if (data !== undefined && e?.data !== undefined) return { data: e.data, at: e.at, stale: false };
-  }
-  const wait = fetch(`${BASE}${path}`, { cache: "no-store", signal: AbortSignal.timeout(TIMEOUT_MS), headers: { accept: "application/json" } })
-    .then((r) => {
+const reads = readCache(
+  (p) =>
+    fetch(`${BASE}${p}`, { cache: "no-store", signal: AbortSignal.timeout(TIMEOUT_MS), headers: { accept: "application/json" } }).then((r) => {
       if (!r.ok) throw new Error(`ak-api ${r.status}`);
       return r.json() as Promise<unknown>;
-    });
-  cache.set(path, { at: hit?.at ?? 0, data: hit?.data, wait });
-  try {
-    const data = await wait;
-    cache.set(path, { at: Date.now(), data });
-    if (cache.size > MAX_ENTRIES) cache.delete(cache.keys().next().value as string);
-    return { data, at: Date.now(), stale: false };
-  } catch (err) {
-    cache.set(path, { at: hit?.at ?? 0, data: hit?.data });
-    if (hit?.data !== undefined && now - hit.at < STALE_MS) return { data: hit.data, at: hit.at, stale: true };
-    throw err;
-  }
-}
+    }),
+  {
+    staleAfterMs: STALE_SHOW_MS,
+    max: MAX_ENTRIES,
+    onError: (p, err) => console.error("demo: live read failed", p.split("?")[0], err instanceof Error ? err.message : err),
+  },
+);
+const read = (p: string, ttlMs: number) => reads.read(p, ttlMs);
 
 // Row key → Picqer product id, for the rows the demo has shown, so the browser opens a product by its row key only.
 const products = new Map<string, string>();
+
+let store: AnswerStore | null = null;
+/** the answers on disk (and the row key → product map with them), loaded on first use */
+function answers(): AnswerStore {
+  if (!store) {
+    store = answerStore(path.join(TRACK_DIR, "demo-answers.json"));
+    for (const [k, v] of store.get<[string, string][]>("_products") ?? []) {
+      if (typeof k === "string" && picqerId(v)) products.set(k, v);
+    }
+  }
+  return store;
+}
+const saveProducts = () => answers().put("_products", [...products].slice(-3000));
+
 function remember(rowKey: string, raw: unknown): boolean {
   const pid = picqerId((raw as { picqerProductId?: unknown })?.picqerProductId);
   if (!pid) return false;
@@ -210,4 +215,110 @@ export async function product(rowKey: string): Promise<Live<Product> | null> {
     read(`/alias/products/${pid}/active-listings`, T).catch(() => ({ data: null, at: Date.now(), stale: true })),
   ]);
   return { data: SAMPLE.withProductLinks(productOf({ product: p.data, stock: stock.data, matches: matches.data, aliasListings: al.data })), ...oldest(p, matches) };
+}
+
+/* ---------- requests: one key per answer, the disk copy when the live answer is slow, the refresher ---------- */
+
+/** What the page asked for, as one normalised key (the disk copy's name) and the work that answers it; null = no such view. */
+export function demoRequest(view: string, sp: URLSearchParams): { key: string; run: () => Promise<Live<unknown> | null> } | null {
+  switch (view) {
+    case "overview":
+      return { key: "overview", run: overview };
+    case "sales":
+    case "listings":
+    case "linked": {
+      const q = listQuery(sp);
+      const run = view === "sales" ? sales : view === "listings" ? listings : linked;
+      return { key: `${view}?${qs({ platform: q.platform, store: q.store, q: q.q, page: q.page })}`, run: () => run(q) };
+    }
+    case "product": {
+      const id = sp.get("id") ?? "";
+      return /^[a-z0-9]{1,10}$/.test(id) ? { key: `product?id=${id}`, run: () => product(id) } : { key: "product", run: async () => null };
+    }
+    default:
+      return null;
+  }
+}
+
+// the overview and the first page of every list without a search: what a visitor sees first
+const storable = (key: string) => key === "overview" || (/^(sales|listings|linked)\?/.test(key) && /(^|[?&])page=1($|&)/.test(key) && !/[?&]q=/.test(key));
+// with a disk copy in hand, a live answer gets this long before the copy is sent instead (an answer from copies in
+// memory takes a few ms; only a server that has just started has to read the client's API first)
+const FIRST_MS = 300;
+let lastUse = 0;
+
+/** The answer for one request: live when it comes quickly (and then kept on disk), else the last good one from disk.
+ * Throws only when there is neither. */
+export async function answer(key: string, run: () => Promise<Live<unknown> | null>): Promise<Live<unknown> | null> {
+  lastUse = Date.now();
+  const keep = storable(key);
+  const saved = keep ? answers().get<Live<unknown>>(key) : undefined;
+  if (!keep) answers(); // the row key → product map comes with the store
+  const work = run().then((a) => {
+    if (a && keep) answers().put(key, a);
+    if (a) saveProducts();
+    return a;
+  });
+  if (!saved) return work;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const first = await Promise.race([
+    work.then((a) => ({ a })),
+    new Promise<null>((r) => (timer = setTimeout(() => r(null), FIRST_MS))),
+  ]).catch(() => null);
+  clearTimeout(timer);
+  if (first) return first.a;
+  work.catch(() => {}); // it still finishes behind this answer and updates the copy
+  return { ...saved, stale: saved.stale || Date.now() - Date.parse(saved.at) > STALE_SHOW_MS };
+}
+
+// What the refresher keeps fresh: the views a visitor opens first, for every account read from the API.
+const REAL_STORES = STORES.filter((s) => fromApi(s.platform)).map((s) => s.id);
+const WARM: string[] = [
+  "overview",
+  "sales?page=1",
+  "listings?page=1",
+  ...REAL.flatMap((p) => [`sales?platform=${p}&page=1`, `listings?platform=${p}&page=1`]),
+  ...REAL_STORES.map((s) => `linked?store=${s}&page=1`), // the Products page always names its account
+];
+
+let refreshing = false;
+/** One round: every warm view once (stale copies start their fresh reads), then again once those reads are in, and
+ * the answers saved. */
+export async function refreshDemo(): Promise<void> {
+  if (refreshing) return;
+  refreshing = true;
+  try {
+    const jobs = WARM.map((k) => {
+      const [view, query = ""] = k.split("?");
+      return demoRequest(view, new URLSearchParams(query))!;
+    });
+    await Promise.allSettled(jobs.map((j) => j.run()));
+    await reads.settle();
+    const done = await Promise.allSettled(jobs.map((j) => j.run()));
+    done.forEach((r, i) => {
+      if (r.status === "fulfilled" && r.value) answers().put(jobs[i].key, r.value);
+    });
+    saveProducts();
+    answers().flush();
+  } finally {
+    refreshing = false;
+  }
+}
+
+let ticking: ReturnType<typeof setInterval> | null = null;
+/** From instrumentation.ts: a round at start, then every minute while the demo was used in the last 20 minutes and every
+ * 10 minutes otherwise; every other minute this server also loads the demo page for itself, so it stays in memory
+ * (a server-side load logs no tracking event). */
+export function startDemoRefresh() {
+  if (ticking || process.env.NODE_ENV !== "production") return;
+  const self = `http://127.0.0.1:${process.env.PORT || 3000}`;
+  let n = 0;
+  const tick = () => {
+    n += 1;
+    if (Date.now() - lastUse < 20 * 60_000 || n % 10 === 0) refreshDemo().catch(() => {});
+    if (n % 2 === 0) fetch(`${self}/demo/multi-platform-sync`, { cache: "no-store", signal: AbortSignal.timeout(15_000) }).then((r) => r.arrayBuffer()).catch(() => {});
+  };
+  ticking = setInterval(tick, 60_000);
+  ticking.unref?.();
+  setTimeout(() => refreshDemo().catch(() => {}), 3_000).unref?.();
 }

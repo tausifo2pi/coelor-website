@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import DemoApp from "@/components/demo/DemoApp";
-import type { SectionId } from "@/components/demo/views";
-import { overview } from "@/lib/demo/ak";
 
 // The live demo of the sync we run for a sneaker reseller (StockX, Alias, Picqer), linked from the case study
-// (/case-studies/stock-sync). Rendered per request with the live overview when it comes quickly (it is cached for
-// 30 s, so most visitors get it at once); otherwise the page loads it itself. Not indexed.
-export const dynamic = "force-dynamic";
+// (/case-studies/stock-sync) and from emails. A static page: built once, sent at once, with no data in it; the browser
+// reads the live data from /api/demo/* (answered from copies kept fresh on the server) and picks the section from
+// ?section=. Not indexed.
+export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: "Live demo: multi-platform sync · Coelor",
@@ -17,16 +16,6 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#0f172a", colorScheme: "light" };
 
-const SECTIONS: SectionId[] = ["dashboard", "assistant", "connections", "orders", "products", "listings", "automations"];
-
-export default async function DemoPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const sp = await searchParams;
-  // "extra" was the Assistant's old name: old links still open it
-  const want = typeof sp.section === "string" ? (sp.section === "extra" ? "assistant" : sp.section) : "";
-  const first = (SECTIONS as string[]).includes(want) ? (want as SectionId) : "dashboard";
-  const initial = await Promise.race([
-    overview().catch(() => null),
-    new Promise<null>((r) => setTimeout(() => r(null), 1500)),
-  ]);
-  return <DemoApp initial={initial} first={first} />;
+export default function DemoPage() {
+  return <DemoApp />;
 }

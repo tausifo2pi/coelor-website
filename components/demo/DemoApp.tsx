@@ -9,6 +9,7 @@ import { ArrowLeft, ArrowRight, Boxes, Lock, LayoutDashboard, Plug, Receipt, Ref
 import { PICQER } from "@/lib/demo/channels";
 import type { Overview, Product } from "@/lib/demo/shape";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
+import { getJson } from "@/lib/demo/get";
 import { Automations, Connections, Dashboard, Listings, Orders, Products, type Ctx, type Live, type SectionId } from "@/components/demo/views";
 import { Extra } from "@/components/demo/Extra";
 import { Badge, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
@@ -29,41 +30,46 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;
 
-export default function DemoApp({ initial, first }: { initial: Live<Overview> | null; first: SectionId }) {
-  const [section, setSection] = useState<SectionId>(first);
-  const [ov, setOv] = useState<Live<Overview> | null>(initial);
+/** the section the address asks for (?section=; "extra" was the Assistant's old name, old links still open it) */
+function sectionFromUrl(): SectionId {
+  const want = new URLSearchParams(location.search).get("section");
+  const s = want === "extra" ? "assistant" : want;
+  return SECTIONS.some((x) => x.id === s) ? (s as SectionId) : "dashboard";
+}
+
+// The page is static (built once, no data in it): the section and the live data are read here, in the browser.
+export default function DemoApp() {
+  const [section, setSection] = useState<SectionId>("dashboard");
+  const [ov, setOv] = useState<Live<Overview> | null>(null);
   const [ovFailed, setOvFailed] = useState(false);
-  // "x min ago" is first counted from the snapshot's time (the same on the server and in the browser, so the page
-  // hydrates cleanly), then from the browser's clock
-  const [now, setNow] = useState(() => (initial ? Date.parse(initial.at) : Date.now()));
+  const [now, setNow] = useState(() => Date.now());
   const [reload, setReload] = useState(0);
   const [busy, setBusy] = useState(false);
   const [dialog, setDialog] = useState<Dialog>(null);
   const [drawer, setDrawer] = useState<string | null>(null);
   const [t, setT] = useState<DemoTracker | null>(null);
   const tRef = useRef<DemoTracker | null>(null);
+  // one "data did not load" event per page view, however often a refresh fails after that
+  const failedSent = useRef(false);
 
-  useEffect(() => {
-    const tr = startDemoTracker(first);
-    tRef.current = tr;
-    setT(tr);
-    return () => tr.stop();
-  }, [first]);
-
-  // the overview (dashboard, connections, automations): fetched now if the page came without it, then every 30 s
+  // the overview (dashboard, connections, automations): fetched at once, then every 30 s while the tab is visible
   const loadOverview = useCallback(async () => {
     try {
-      const r = await fetch("/api/demo/overview", { headers: { accept: "application/json" } });
-      if (!r.ok) throw new Error(String(r.status));
-      setOv((await r.json()) as Live<Overview>);
+      setOv(await getJson<Live<Overview>>("/api/demo/overview"));
       setOvFailed(false);
     } catch {
       setOvFailed(true);
-      tRef.current?.error("overview");
+      if (!failedSent.current) tRef.current?.error("overview");
+      failedSent.current = true;
     }
   }, []);
   useEffect(() => {
-    if (!initial) loadOverview();
+    loadOverview();
+    const first = sectionFromUrl();
+    setSection(first);
+    const tr = startDemoTracker(first);
+    tRef.current = tr;
+    setT(tr);
     setNow(Date.now());
     const id = window.setInterval(() => {
       if (document.visibilityState === "visible") loadOverview();
@@ -72,8 +78,9 @@ export default function DemoApp({ initial, first }: { initial: Live<Overview> | 
     return () => {
       window.clearInterval(id);
       window.clearInterval(tick);
+      tr.stop();
     };
-  }, [initial, loadOverview]);
+  }, [loadOverview]);
 
   const go = useCallback((s: SectionId) => {
     setSection(s);
@@ -283,8 +290,7 @@ function ProductDrawer({ id, ctx, onClose }: { id: string; ctx: Ctx; onClose: ()
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     let alive = true;
-    fetch(`/api/demo/product?id=${encodeURIComponent(id)}`)
-      .then((r) => (r.ok ? (r.json() as Promise<Live<Product>>) : Promise.reject(r.status)))
+    getJson<Live<Product>>(`/api/demo/product?id=${encodeURIComponent(id)}`)
       .then((d) => alive && setP(d))
       .catch(() => alive && setFailed(true));
     const k = (e: KeyboardEvent) => e.key === "Escape" && onClose();

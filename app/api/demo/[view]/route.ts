@@ -1,7 +1,9 @@
 // The live demo's data (/demo/multi-platform-sync): read-only views of the client's running sync, shaped for a public
-// page by lib/demo/ak.ts. GET only; a small per-network limit keeps one visitor from hammering the client's API.
+// page by lib/demo/ak.ts. The page itself is static; its browser asks here. Answers come from copies kept fresh behind
+// them (never a wait for the client's API when a copy exists). GET only; a small per-network limit keeps one visitor
+// from hammering it.
 import { NextResponse, type NextRequest } from "next/server";
-import { linked, listQuery, listings, overview, product, sales } from "@/lib/demo/ak";
+import { answer, demoRequest } from "@/lib/demo/ak";
 
 export const dynamic = "force-dynamic";
 
@@ -29,25 +31,11 @@ const json = (body: unknown, status = 200) =>
 export async function GET(req: NextRequest, ctx: { params: Promise<{ view: string }> }) {
   if (limited(req)) return json({ error: "slow_down" }, 429);
   const { view } = await ctx.params;
-  const sp = req.nextUrl.searchParams;
+  const r = demoRequest(view, req.nextUrl.searchParams);
+  if (!r) return json({ error: "not_found" }, 404);
   try {
-    switch (view) {
-      case "overview":
-        return json(await overview());
-      case "sales":
-        return json(await sales(listQuery(sp)));
-      case "listings":
-        return json(await listings(listQuery(sp)));
-      case "linked":
-        return json(await linked(listQuery(sp)));
-      case "product": {
-        const id = sp.get("id") ?? "";
-        const p = /^[a-z0-9]{1,10}$/.test(id) ? await product(id) : null;
-        return p ? json(p) : json({ error: "not_found" }, 404);
-      }
-      default:
-        return json({ error: "not_found" }, 404);
-    }
+    const a = await answer(r.key, r.run);
+    return a ? json(a) : json({ error: "not_found" }, 404);
   } catch (err) {
     console.error("demo: live data unavailable", view, err instanceof Error ? err.message : err);
     return json({ error: "unavailable" }, 503);
