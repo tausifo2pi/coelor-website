@@ -7,7 +7,8 @@ import { PlatformTile } from "@/components/PlatformLogo";
 import type { CaseContent } from "@/lib/case-adapt";
 
 // The outreach case study, rendered from its content (lib/case-adapt.ts): the real client's story, the same for every
-// reader since 2026-10-03 (lib/case-page.ts). Used by /case-studies/stock-sync and /case-studies/sneakers.
+// reader since 2026-10-03 (lib/case-page.ts), used by /case-studies/stock-sync and /case-studies/sneakers; and the
+// category pages (lib/case-adapt.ts categoryCase), each with its own live demo, e.g. /case-studies/womens-boutique.
 // Each platform's logo appears once, in the hero's setup card; the rest of the page is words. No motion but the
 // "Sync running" dot on the real client's setup (and on the demo button). Sneaker readers (and the real story) also get a
 // button to the live demo of that sync (/demo/multi-platform-sync): in the setup card and after "What we built". The real
@@ -15,20 +16,21 @@ import type { CaseContent } from "@/lib/case-adapt";
 // load), so the site Tracker logs it as a click.
 
 const DEMO = "/demo/multi-platform-sync?src=case";
-const showsDemo = (c: CaseContent) => !c.adapted || c.words.item === "pair";
+// a category page (c.demo) links its own demo; otherwise the sneaker demo, for sneaker readers and the real story
+const showsDemo = (c: CaseContent) => !!c.demo || !c.adapted || c.words.item === "pair";
 
 // The live demo button: green like "live", a pulsing dot, the words a reader clicks on. `wide` fills its box.
-function DemoLink({ wide = true }: { wide?: boolean }) {
+function DemoLink({ c, wide = true }: { c: CaseContent; wide?: boolean }) {
   return (
     <a
-      href={DEMO}
+      href={c.demo?.href ?? DEMO}
       className={`group relative inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#34D399] to-[#10B981] px-6 py-3 text-center text-[16px] font-bold leading-[1.25] text-[#04150d] shadow-[0_12px_32px_-10px_rgba(52,211,153,0.85)] ring-1 ring-inset ring-white/25 transition-[filter,transform,box-shadow] hover:brightness-110 hover:shadow-[0_14px_40px_-8px_rgba(52,211,153,0.95)] active:translate-y-px ${wide ? "w-full" : "w-fit shrink-0"}`}
     >
       <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden>
         <span className="absolute inset-0 animate-ping rounded-full bg-[#04150d]/60 motion-reduce:animate-none" />
         <span className="relative h-2.5 w-2.5 rounded-full bg-[#04150d]" />
       </span>
-      Live Demo · Real Results
+      {c.demo?.label ?? "Live Demo · Real Results"}
       <Icon name="arrow-right" size={17} strokeWidth={2.6} className="shrink-0 transition-transform group-hover:translate-x-1" />
     </a>
   );
@@ -123,7 +125,7 @@ function SetupCard({ c }: { c: CaseContent }) {
           </ul>
         </div>
       )}
-      {showsDemo(c) && <DemoLink />}
+      {showsDemo(c) && <DemoLink c={c} />}
     </div>
   );
 }
@@ -271,10 +273,10 @@ function Setup({ c }: { c: CaseContent }) {
         {showsDemo(c) && (
           <div className="flex flex-col gap-4 rounded-[14px] border border-rule bg-white/[0.02] p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-1">
-              <span className="text-[17px] font-semibold text-ink">Look inside the sync</span>
-              <span className="text-[14px] leading-[1.6] text-ink-muted">Orders, stock, listings and automations in one place, read-only. Customer names and order numbers are hidden.</span>
+              <span className="text-[17px] font-semibold text-ink">{c.demo?.title ?? "Look inside the sync"}</span>
+              <span className="text-[14px] leading-[1.6] text-ink-muted">{c.demo?.body ?? "Orders, stock, listings and automations in one place, read-only. Customer names and order numbers are hidden."}</span>
             </div>
-            <DemoLink wide={false} />
+            <DemoLink c={c} wide={false} />
           </div>
         )}
       </div>

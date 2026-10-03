@@ -15,6 +15,8 @@ export type HookItem = { key: string; angle: string; needs: string; group: strin
 
 export type CaseContent = {
   adapted: boolean;
+  /** a category page's own live demo (its address and words); without it the sneaker demo, for sneaker readers */
+  demo?: { href: string; label: string; title: string; body: string };
   seo: { title: string; description: string };
   hero: {
     eyebrow: string;
@@ -165,5 +167,34 @@ export function adaptCase(mix: CaseMix | null): CaseContent {
     setup: { ...base.setup, headline: f(A.setupHeadline), body: f(A.setupBody),
       steps: A.steps.map((st) => ({ ...st, title: cap(f(st.title)), body: cap(f(st.body)) })), before: A.before.map(f), after: A.after.map(f) },
     faq: { ...base.faq, items: [{ q: f(A.faqTop.q), a: f(A.faqTop.a) }, ...base.faq.items] },
+  };
+}
+
+/** A category page (data/case-<category>.json): how the sync works for that kind of shop, with its own live demo. No
+ * client of that kind is claimed: the numbers are the first build's, told in neutral words with where it was built. */
+export type CategoryPage = {
+  seo: CaseContent["seo"];
+  hero: Pick<CaseContent["hero"], "eyebrow" | "headline" | "sub" | "setupTitle" | "setup" | "gapTitle" | "gap" | "fixTitle" | "fix">;
+  words: CaseWords;
+  hook: CaseContent["hook"];
+  setup: Omit<CaseContent["setup"], never>;
+  faqTop: { q: string; a: string };
+  demo: NonNullable<CaseContent["demo"]>;
+};
+
+export function categoryCase(d: CategoryPage): CaseContent {
+  return {
+    adapted: true,
+    demo: d.demo,
+    seo: d.seo,
+    hero: { ...base.hero, ...d.hero, status: null },
+    words: d.words,
+    hook: d.hook,
+    proof: { text: base.proof.neutral, origin: base.proof.origin },
+    stats: base.stats.neutral,
+    setup: d.setup,
+    offer: base.offer,
+    faq: { ...base.faq, items: [d.faqTop, ...base.faq.items] },
+    contact: base.contact,
   };
 }

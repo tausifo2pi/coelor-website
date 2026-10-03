@@ -4,8 +4,8 @@
 // "Connected" badges), apart from the dark site and from our own admin panel on purpose, so a seller sees the kind of
 // app they know from their other tools.
 import type { CSSProperties, ReactNode } from "react";
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
-import { SiClaude, SiDhl, SiDiscord, SiFedex, SiInstagram, SiUps } from "@icons-pack/react-simple-icons";
+import { ChevronLeft, ChevronRight, Search, Warehouse, X } from "lucide-react";
+import { SiAftership, SiClaude, SiDhl, SiDiscord, SiFedex, SiInstagram, SiUps, SiUsps } from "@icons-pack/react-simple-icons";
 import { PICQER, channel } from "@/lib/demo/channels";
 import { platformInfo } from "@/lib/platforms";
 
@@ -62,9 +62,20 @@ function SlackHash({ size }: { size: number }) {
   );
 }
 
+function Initials({ px, text }: { px: number; text: string }) {
+  return <span className="font-bold leading-none tracking-[-0.02em]" style={{ fontSize: Math.round(px * (text.length > 2 ? 0.42 : 0.62)) }}>{text}</span>;
+}
+
 // slug → tile colour and glyph (brand colours); anything else is a data/platforms.json logo
 const MARKS: Record<string, { bg: string; fg?: string; ring?: boolean; scale?: number; glyph: (px: number) => ReactNode }> = {
   ups: { bg: "#351C15", fg: "#FFB500", glyph: (px) => <SiUps size={px} color="currentColor" title="" /> },
+  usps: { bg: "#FFFFFF", fg: "#333366", ring: true, scale: 0.72, glyph: (px) => <SiUsps size={px} color="currentColor" title="" /> },
+  aftership: { bg: "#FF6B2B", fg: "#FFFFFF", glyph: (px) => <SiAftership size={px} color="currentColor" title="" /> },
+  // no published mark in the icon set: the name's initials on the brand colour
+  shipstation: { bg: "#84C225", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="SS" /> },
+  loop: { bg: "#111111", fg: "#FFFFFF", glyph: (px) => <Initials px={px} text="loop" /> },
+  // the shop's own stockroom (not a product): a warehouse glyph
+  stockroom: { bg: "#EFF6FF", fg: "#1D4ED8", ring: true, scale: 0.55, glyph: (px) => <Warehouse size={px} strokeWidth={2} /> },
   dhl: { bg: "#FFCC00", fg: "#D40511", scale: 0.8, glyph: (px) => <SiDhl size={px} color="currentColor" title="" /> },
   fedex: { bg: "#FFFFFF", fg: "#4D148C", ring: true, scale: 0.78, glyph: (px) => <SiFedex size={px} color="currentColor" title="" /> },
   instagram: {

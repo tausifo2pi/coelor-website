@@ -1,0 +1,63 @@
+{
+  "_note": "The women's clothing page (/case-studies/womens-boutique): how the sync works for a clothing shop that sells on its web store, TikTok Shop and Amazon, with the live demo /demo/womens-boutique. There is no clothing client to tell about, so the page says how it works and what we build; the numbers are the real first build's, attributed to it in neutral words (lib/case-adapt.ts proof.neutral / stats.neutral). Platforms: what US women's clothing shops use (lead-outreach research_notes/platform_map_2026-10-04.md). Read by lib/case-page.ts.",
+  "seo": {
+    "title": "Women's clothing: web store, TikTok Shop and Amazon on one stock count · Coelor",
+    "description": "How a clothing shop keeps every size in step across its web store, TikTok Shop and Amazon: sold-out sizes pulled everywhere, orders to labels and tracking, returns and restocks back on sale. With a live demo."
+  },
+  "hero": {
+    "eyebrow": "How it works · Women's clothing",
+    "headline": "Your web store, TikTok Shop and Amazon on one stock count.",
+    "sub": "For clothing shops that sell the same sizes in more than one place: every order comes off one count, the last size comes down everywhere, and labels, tracking and returns follow without retyping.",
+    "setupTitle": "A typical setup",
+    "setup": [
+      { "name": "Shopify", "slug": "shopify", "role": "web store" },
+      { "name": "TikTok Shop", "slug": "tiktok-shop", "role": "social shop and LIVE" },
+      { "name": "Amazon", "slug": "amazon", "role": "marketplace" },
+      { "name": "Your stockroom", "slug": "facet:warehouse", "role": "counts the stock" }
+    ],
+    "gapTitle": "Where it slips",
+    "gap": "The last medium sells during a TikTok LIVE while it is still for sale on the web store and on Amazon. Someone cancels an order and writes an apology.",
+    "fixTitle": "With the sync",
+    "fix": "Every order comes off one count within minutes, and the last size is pulled from every channel as soon as it sells, during live shows too."
+  },
+  "words": { "item": "piece", "items": "pieces", "variant": "size", "variants": "sizes" },
+  "hook": {
+    "num": "01",
+    "eyebrow": "Is this you?",
+    "headline": "Selling clothes in more than one place usually means this.",
+    "body": "Each row is work someone on your team does by hand today, and how often it comes back. Every one of them is a job the sync takes over.",
+    "footer": "Recognise two or more? That is exactly the work we automate.",
+    "lead": "Where it slips most",
+    "items": [
+      { "key": "twice", "angle": "*", "needs": "", "group": "double", "every": "when stock runs low", "title": "The last size sold twice", "body": "The last medium sells on TikTok Shop while it is still live on the web store and on Amazon. One buyer gets a cancellation, and the marketplace counts it against you." },
+      { "key": "live", "angle": "*", "needs": "", "group": "live", "every": "every show", "title": "Live shows that oversell", "body": "During a LIVE the stock moves faster than anyone can update the other channels, so sizes keep selling that are already gone." },
+      { "key": "drops", "angle": "*", "needs": "", "group": "listing", "every": "every new arrival", "title": "New arrivals listed three times", "body": "Each new style is entered on the web store, then again on TikTok Shop and Amazon, size by size and colour by colour, with the photos." },
+      { "key": "labels", "angle": "*", "needs": "", "group": "orders", "every": "every order", "title": "Orders copied into the label tool", "body": "TikTok Shop and Amazon orders are copied into the shipping tool by hand, and the tracking number is pasted back into each channel." },
+      { "key": "returns", "angle": "*", "needs": "", "group": "returns", "every": "every return", "title": "Returns that stay sold out online", "body": "A returned dress is checked and back on the rail, but still shows sold out on every channel until someone updates it." },
+      { "key": "restock", "angle": "*", "needs": "", "group": "restock", "every": "every delivery", "title": "Restocks counted in size by size", "body": "A wholesale delivery arrives and every size and colour is added to each channel by hand before it can sell." }
+    ]
+  },
+  "setup": {
+    "num": "02",
+    "eyebrow": "What we build for a clothing shop",
+    "headline": "One stock count behind every channel.",
+    "body": "Coelor sits between your web store, your marketplaces, your stockroom and your shipping tool. It links every size and colour once, keeps the same count on every channel, and moves orders, labels, tracking and returns along without anyone retyping them.",
+    "beforeLabel": "Before",
+    "before": ["Sizes paused by hand after each sale", "New arrivals entered once per channel", "Marketplace orders copied into the label tool", "Returns back on sale online days later"],
+    "afterLabel": "After",
+    "after": ["One count for every size and colour, on every channel", "Sold-out sizes pulled everywhere within minutes", "Labels bought and tracking sent back to each channel", "Returns and restocks back on sale at once"],
+    "steps": [
+      { "icon": "git-compare", "title": "Link every size and colour", "body": "Each product's sizes and colours are linked across the web store, TikTok Shop and Amazon, so a medium in sage is the same item everywhere." },
+      { "icon": "refresh", "title": "Pull sold-out sizes", "body": "When a size reaches zero it comes down on every channel within minutes, and during a LIVE on the same run as the show's orders." },
+      { "icon": "route", "title": "Move every order along", "body": "Orders from every channel come off the count, go to the label tool, and the tracking goes back to the channel the order came from." },
+      { "icon": "shield", "title": "Returns and restocks back in", "body": "Checked returns and wholesale deliveries go back on every channel at once. Every change can run in test mode first." }
+    ]
+  },
+  "faqTop": { "q": "We sell on TikTok LIVE. Does it keep up during a show?", "a": "Yes. Show orders come in every few minutes, and a size that sells out during the show is pulled from the web store and the marketplaces on the same run." },
+  "demo": {
+    "href": "/demo/womens-boutique?src=case",
+    "label": "See the live demo",
+    "title": "Look inside the sync",
+    "body": "Orders from every channel, stock per size, labels, returns and automations for a clothing store, read-only. Customer names and order numbers are hidden."
+  }
+}
