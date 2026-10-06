@@ -3,7 +3,7 @@ import { Icon } from "@/components/icons";
 import { OFFER, quote, usd } from "@/lib/offer";
 import { pricing } from "./content";
 
-// The three rules of the price (one-time, $500 per connection, on our engine) and a worked example of counting
+// What counts as a connection (three rules) and a worked example of counting
 // connections: three rows at $500, one of them free, total from lib/offer.ts. The example rows are generic parts of a
 // setup (dark icon tiles), never brands.
 
@@ -46,7 +46,7 @@ function CountExample() {
 export default function HowPriced() {
   const { how } = pricing;
   return (
-    <section id="how" aria-labelledby="how-title" className="scroll-mt-20 border-t border-rule bg-canvas2">
+    <section id="how" aria-labelledby="how-title" className="scroll-mt-20 border-t border-rule">
       <div className="mx-auto grid max-w-site grid-cols-1 gap-10 px-5 py-16 md:px-10 lg:grid-cols-[1fr_420px] lg:gap-20 lg:px-20 lg:py-[104px]">
         <div className="flex flex-col gap-10">
           <SectionHead id="how-title" num={how.num} eyebrow={how.eyebrow} headline={how.headline} size="md" className="max-w-[560px] [&_h2]:text-balance" />

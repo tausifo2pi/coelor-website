@@ -362,6 +362,16 @@
   }
 }
 
+/* A faint grid that fades out from the top right (the pricing hero). */
+.grid-fade {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 65% at 75% 35%, #000 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 65% at 75% 35%, #000 25%, transparent 75%);
+}
+
 /* ============ Motion ============ */
 
 @keyframes rise-in {

@@ -2,7 +2,8 @@ import SectionHead from "@/components/SectionHead";
 import { Icon } from "@/components/icons";
 import { pricing } from "./content";
 
-// Why the price is one-time: the engine exists, so a build pays for the client's version only. Then the proof that it
+// Why the price is one-time: the engine exists, so a build pays for the client's version only (what is and is not in
+// the price is in Included.tsx). Then the proof that it
 // runs today (the real client, kept anonymous and told generically: neutral icons, no platform names or logos). No link
 // to the live demo (email readers only). The proof block is its own tracked section (id="proof").
 
@@ -48,34 +49,9 @@ function Proof() {
 export default function Engine() {
   const { engine } = pricing;
   return (
-    <section id="engine" aria-labelledby="engine-title" className="scroll-mt-20">
+    <section id="engine" aria-labelledby="engine-title" className="scroll-mt-20 border-t border-rule bg-canvas2">
       <div className="mx-auto flex max-w-site flex-col gap-10 px-5 py-16 md:px-10 lg:gap-12 lg:px-20 lg:py-[104px]">
         <SectionHead id="engine-title" num={engine.num} eyebrow={engine.eyebrow} headline={engine.headline} body={engine.body} className="max-w-[720px] [&_h2]:text-balance" />
-
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
-          <div className="flex flex-col gap-4 rounded-[14px] border border-rule bg-white/[0.02] p-6">
-            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">{engine.notLabel}</span>
-            <ul className="flex flex-col gap-3">
-              {engine.not.map((b) => (
-                <li key={b} className="flex gap-2.5 text-[14px] leading-[1.5] text-ink-muted md:text-[15px]">
-                  <span className="mt-[10px] h-px w-3 shrink-0 bg-ink-soft" aria-hidden />
-                  {b}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex flex-col gap-4 rounded-[14px] border border-ok/25 bg-ok/[0.06] p-6">
-            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#8fe7c2]">{engine.yesLabel}</span>
-            <ul className="flex flex-col gap-3">
-              {engine.yes.map((a) => (
-                <li key={a} className="flex gap-2.5 text-[14px] leading-[1.5] text-ink md:text-[15px]">
-                  <Icon name="check" size={15} strokeWidth={2.4} className="mt-[3px] shrink-0 text-ok" />
-                  {a}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
 
         <Proof />
       </div>

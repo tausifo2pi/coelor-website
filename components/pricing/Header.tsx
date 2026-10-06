@@ -1,5 +1,6 @@
 import Logo from "@/components/Logo";
 import { Icon } from "@/components/icons";
+import { PREFILL } from "@/lib/offer";
 
 // The case study's header (logo home, "Book a call" to the form below). No live demo link: email readers only.
 // Not the homepage Navbar: its links are homepage anchors.
@@ -12,6 +13,9 @@ export default function PricingHeader() {
           <Logo height={32} priority className="hidden md:block" />
         </a>
         <div className="flex items-center gap-5">
+          <a href="#contact" data-prefill={PREFILL.trial} className="hidden text-[15px] font-medium text-ink-muted transition-colors hover:text-ink sm:inline">
+            Free trial
+          </a>
           <a
             href="#contact"
             className="inline-flex h-10 items-center gap-2 rounded-full border border-rule-strong bg-white/10 px-[18px] text-[15px] font-medium text-ink transition-colors hover:bg-white/15"

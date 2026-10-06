@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check } from "lucide-react";
+import { PREFILL } from "@/lib/offer";
 
 // The contact form, the only interactive part of the page: it gets its copy from the server component (Contact.tsx), so
 // the browser does not download the site's whole content file to show three fields.
@@ -38,6 +39,25 @@ export default function ContactForm({ copy }: { copy: ContactCopy }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState<{ name: string; email: string; ref: string } | null>(null);
+  const filled = useRef("");
+
+  // A link with data-prefill (the pricing page's trial and quote buttons) fills in the message, unless the visitor has
+  // written their own; so does ?plan=trial or ?plan=<connections> in the address (links from the demo pages).
+  useEffect(() => {
+    const plan = new URLSearchParams(window.location.search).get("plan") ?? "";
+    const start = plan === "trial" ? PREFILL.trial : /^[1-9]\d?$/.test(plan) ? PREFILL.quote(Number(plan)) : "";
+    const first = document.getElementById("c-message") as HTMLTextAreaElement | null;
+    if (start && first && !first.value) first.value = filled.current = start;
+    const onClick = (ev: MouseEvent) => {
+      const text = (ev.target as HTMLElement | null)?.closest<HTMLElement>("[data-prefill]")?.dataset.prefill;
+      const box = document.getElementById("c-message") as HTMLTextAreaElement | null;
+      if (!text || !box || (box.value.trim() && box.value !== filled.current)) return;
+      box.value = filled.current = text;
+      if (window.matchMedia("(pointer: fine)").matches) setTimeout(() => box.focus({ preventScroll: true }), 400); // no keyboard pop-up on phones
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
 
   const onSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
