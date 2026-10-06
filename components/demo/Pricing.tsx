@@ -136,7 +136,7 @@ function Quote({ contact, t }: { contact: string; t: DemoTracker | null }) {
 export function PricingView({ contact, t }: { contact: string; t: DemoTracker | null }) {
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_400px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_400px]">
         {/* the free trial */}
         <Box className="flex flex-col gap-5 border-[#86efac] bg-[#f0fdf4]">
           <div>
