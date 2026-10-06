@@ -185,11 +185,11 @@
         "icon": "phone",
         "when": "30 minutes",
         "title": "Call",
-        "body": "We map your sales channels, stock and tools, and agree what should run by itself. You get a fixed, one-time price."
+        "body": "We map your sales channels, stock and tools, and agree what should run by itself. We count your connections: $500 each, one-time, 3 for the price of 2."
       },
       {
         "icon": "wrench",
-        "when": "On our engine",
+        "when": "1-day setup",
         "title": "Build",
         "body": "We shape our engine to your requirements: what you need, nothing extra. It runs in test mode next to your team before it goes live."
       },
@@ -246,9 +246,10 @@
     "headline": "Pay once. Own the code.",
     "body": "Our engine is already built and reusable. We shape it to your requirements, so the price stays low and you never pay for extras you don't need.",
     "points": [
-      "One-time payment from $1,200, no monthly software fee",
+      "$500 per connection, one-time, no monthly software fee",
+      "3 connections for the price of 2",
+      "Set up in 1 day",
       "Unlimited orders and products",
-      "Price set by the number of connections",
       "The full codebase, yours to keep"
     ],
     "note": "A connection is one platform or account: a web store, a marketplace account, your warehouse system.",
@@ -275,8 +276,8 @@
         "a": "No monthly software fee. You pay once, get the full codebase, and there is no limit on orders or products. You can run it on your own server, or we set it up for you."
       },
       {
-        "q": "How long does a build take?",
-        "a": "It depends on the connections. You get the time together with the fixed price, after the call."
+        "q": "How long does set-up take?",
+        "a": "Set-up takes 1 day, once we have access to your platforms and accounts."
       },
       {
         "q": "What if one of our platforms is down?",
@@ -302,7 +303,7 @@
       "items": [
         "We reply within one business day",
         "A 30-minute call about your channels, stock and tools",
-        "A fixed, one-time price"
+        "$500 per connection, one-time, set up in 1 day"
       ]
     },
     "placeholders": {
@@ -317,7 +318,7 @@
       "next": [
         "We reply within one business day",
         "A 30-minute call about your channels, stock and tools",
-        "A fixed, one-time price"
+        "$500 per connection, one-time, set up in 1 day"
       ],
       "again": "Send another message"
     }

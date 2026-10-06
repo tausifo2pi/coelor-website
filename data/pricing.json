@@ -1,20 +1,19 @@
 {
-  "_note": "Copy and tiers of /pricing (app/pricing/page.tsx, components/pricing/*). PRICES (USD): the entry tier starts at 1200 (user, 2026-10-01); a tier whose `from` is null shows 'Fixed price / after a 30-minute call'. null shows 'Fixed price / after a 30-minute call'; a plain number (e.g. 4500, no currency sign, no dots or commas) shows 'From $4,500 / one-time'. `badge` (null or a short label such as 'Most common') puts a label on one card; only set it when it is true. Only true claims: one-time payment, full codebase handed over, unlimited orders and products, priced by connections, built on the existing engine. The real client stays anonymous and is told generically: no product-category words and no marketplace or warehouse brand names or logos on this page. Never name or compare with another vendor. The live demo and the case studies are never linked from this page (they are for email readers only).",
+  "_note": "Copy and tiers of /pricing (app/pricing/page.tsx, components/pricing/*). PRICES (USD, one-time; user 2026-10-07, replaced 'from $1,200'): $500 per connection; take 3 connections or more and one of them is free (3 for the price of 2); set up in 1 day. The numbers live in lib/offer.ts (the tier cards and the counting example compute their prices from it); the sentences here spell them out, and lib/offer.test.mts checks that they agree. A tier's `count` is its number of connections (`plus`: that many or more). `badge` (null or a short label) puts a label on one card; only set it when it is true. Only true claims: one-time payment, full codebase handed over, unlimited orders and products, priced by connections, built on the existing engine, set up in 1 day. The real client stays anonymous and is told generically: no product-category words and no marketplace or warehouse brand names or logos on this page. Never name or compare with another vendor. The live demo and the case studies are never linked from this page (they are for email readers only).",
   "seo": {
     "title": "Pricing · Coelor",
-    "description": "One-time price from $1,200, full codebase included, unlimited orders and products. Built on our integration engine, so you only pay for your connections."
+    "description": "$500 per connection, one-time, and 3 connections for the price of 2. Set up in 1 day on our integration engine. Full codebase included, unlimited orders and products."
   },
-  "currency": "USD",
   "price": {
-    "fromLabel": "From",
     "unit": "one-time",
-    "unsetTitle": "Fixed price",
-    "unsetUnit": "after a 30-minute call"
+    "free": "1 free",
+    "plusFor": "one-time for {n}",
+    "plusEach": "+{price} for each one after"
   },
   "hero": {
     "eyebrow": "Pricing",
     "headline": "Pay once. Own the code.",
-    "sub": "Builds start at $1,200, one-time. The price stays low because our integration engine is already built: we shape your version on your requirements, so you never pay for extras you don't need.",
+    "sub": "$500 per connection, one-time. Take 3 connections and you pay for 2. Set up in 1 day: our integration engine is already built, so we shape your version on your requirements and you never pay for extras you don't need.",
     "primaryCta": {
       "label": "Book a call",
       "href": "#contact"
@@ -24,32 +23,32 @@
       "href": "#included"
     },
     "points": [
-      "From $1,200, one-time",
-      "Unlimited orders and products",
-      "You own the code"
+      "$500 per connection, one-time",
+      "3 connections for the price of 2",
+      "Set up in 1 day"
     ],
     "card": {
       "title": "Every build",
       "badge": "One-time",
       "rows": [
         {
-          "label": "Starts at",
-          "value": "$1,200, one-time"
+          "label": "Per connection",
+          "value": "$500, one-time"
+        },
+        {
+          "label": "3 connections",
+          "value": "$1,000, 1 free"
+        },
+        {
+          "label": "Set-up",
+          "value": "1 day"
         },
         {
           "label": "Payment",
           "value": "Once, no subscription"
         },
         {
-          "label": "Priced by",
-          "value": "Connections"
-        },
-        {
-          "label": "Orders",
-          "value": "Unlimited"
-        },
-        {
-          "label": "Products",
+          "label": "Orders and products",
           "value": "Unlimited"
         },
         {
@@ -62,7 +61,7 @@
   "how": {
     "num": "01",
     "eyebrow": "How the price works",
-    "headline": "One price, set by what we connect.",
+    "headline": "$500 for each connection we make.",
     "items": [
       {
         "icon": "receipt",
@@ -71,13 +70,13 @@
       },
       {
         "icon": "link",
-        "title": "Priced by connections",
-        "body": "A connection is one platform or account we connect: a marketplace account, a web store, your warehouse system. The price follows how many there are."
+        "title": "$500 per connection",
+        "body": "A connection is one platform or account we connect: a marketplace account, a web store, your warehouse system. Each one is $500, one-time. Take 3 connections and one of them is free."
       },
       {
         "icon": "wrench",
         "title": "Built on our engine",
-        "body": "The engine is already built and runs in production. We shape your version on your requirements, so you pay for your connections and rules, not for building the basics. That is why the price is low."
+        "body": "The engine is already built and runs in production. We shape your version on your requirements, so you pay for your connections and rules, not for building the basics. That is why the price is low and set-up takes 1 day."
       }
     ],
     "example": {
@@ -89,10 +88,6 @@
           "label": "Marketplace account"
         },
         {
-          "icon": "store",
-          "label": "Second marketplace account"
-        },
-        {
           "icon": "bag",
           "label": "Web store"
         },
@@ -101,61 +96,61 @@
           "label": "Warehouse system"
         }
       ],
-      "each": "1 connection",
-      "totalLabel": "Total",
-      "total": "4 connections",
-      "note": "Every account counts once: two accounts on the same marketplace are two connections."
+      "totalLabel": "Total, one-time",
+      "note": "Every account counts once: two accounts on the same marketplace are two connections.",
+      "freeLabel": "3 for the price of 2"
     }
   },
   "tiers": {
     "num": "02",
     "eyebrow": "Pricing",
-    "headline": "Priced by the number of connections.",
-    "body": "The same engine in every build. What changes is how many platforms and accounts it connects.",
-    "cta": "Get your fixed price",
+    "headline": "$500 per connection. 3 for the price of 2.",
+    "body": "The same engine in every build, set up in 1 day. The price is the number of platforms and accounts it connects.",
+    "cta": "Get started",
     "exampleLabel": "For example",
     "common": [
       "Unlimited orders and products",
       "The full source code, yours",
       "Only the automations you need",
-      "Set-up and handover"
+      "Set up in 1 day, then handover"
     ],
     "items": [
       {
         "key": "two",
         "connections": "2 connections",
+        "count": 2,
         "title": "Two systems in step",
         "body": "One sales channel and the system behind it, working together.",
         "example": "A web store and your warehouse system.",
         "connectionsLine": "2 platforms or accounts connected",
-        "from": 1200,
         "badge": null
       },
       {
-        "key": "three-four",
-        "connections": "3–4 connections",
+        "key": "three",
+        "connections": "3 connections",
+        "count": 3,
         "title": "Selling in several places",
         "body": "Several sales channels or accounts kept in step with your stock.",
-        "example": "Two marketplace accounts, a web store and your warehouse system.",
-        "connectionsLine": "3 to 4 platforms or accounts connected",
-        "from": null,
-        "badge": null
+        "example": "Two marketplace accounts and your warehouse system.",
+        "connectionsLine": "3 platforms or accounts connected, 1 of them free",
+        "badge": "1 free"
       },
       {
-        "key": "five-plus",
-        "connections": "5+ connections",
+        "key": "four-plus",
+        "connections": "4+ connections",
+        "count": 4,
+        "plus": true,
         "title": "The whole operation",
         "body": "Every channel, region and back-office system on one engine.",
         "example": "Marketplace accounts in several regions, more than one web store and your warehouse system.",
-        "connectionsLine": "5 or more platforms or accounts connected",
-        "from": null,
+        "connectionsLine": "4 or more platforms or accounts connected, 1 of them free",
         "badge": null
       }
     ],
     "notes": [
       {
         "icon": "plus",
-        "text": "Adding a connection later? We quote it the same way."
+        "text": "Adding a connection later? $500, one-time."
       },
       {
         "icon": "phone",
@@ -191,7 +186,7 @@
       {
         "icon": "link",
         "title": "Every connection set up",
-        "body": "We connect each platform and account in your setup and match it to your data."
+        "body": "We connect each platform and account in your setup and match it to your data. Set-up takes 1 day."
       },
       {
         "icon": "power",
@@ -216,7 +211,7 @@
     "yes": [
       "Connecting your platforms and accounts",
       "The automations your operation needs, set to your rules",
-      "Set-up and handover",
+      "Set-up in 1 day, and handover",
       "The full codebase, yours to keep"
     ],
     "proof": {
@@ -267,6 +262,10 @@
         "a": "One platform or account we connect: a marketplace account, a web store, your warehouse system. Each account counts once, so two accounts on the same marketplace are two connections."
       },
       {
+        "q": "How does 3 for the price of 2 work?",
+        "a": "Take 3 connections or more and one of them is free. 2 connections are $1,000, 3 are $1,000, 4 are $1,500 and 5 are $2,000, one-time."
+      },
+      {
         "q": "Do we own the code?",
         "a": "Yes. You get the full codebase with the build. It is yours to keep, run and change, with no licence to renew."
       },
@@ -276,11 +275,11 @@
       },
       {
         "q": "Can we add a connection later?",
-        "a": "Yes. We quote it the same way: a fixed price for the extra connection, agreed before we start."
+        "a": "Yes. Each extra connection is $500, one-time, agreed before we start."
       },
       {
-        "q": "How long does a build take?",
-        "a": "It depends on the connections. We tell you the time together with the fixed price, after the call."
+        "q": "How long does set-up take?",
+        "a": "1 day, once we have access to your platforms and accounts. We connect them, set the automations to your rules and hand it over."
       },
       {
         "q": "Where does it run?",
@@ -290,7 +289,7 @@
   },
   "contact": {
     "num": "06",
-    "headline": "Get your fixed price.",
-    "body": "Tell us which platforms and accounts should work together. We go through them with you on a call, then send a fixed, one-time price."
+    "headline": "Set up in 1 day.",
+    "body": "Tell us which platforms and accounts should work together. We count them with you on a call: $500 per connection, one-time, 3 for the price of 2. Then we set it up in 1 day."
   }
 }

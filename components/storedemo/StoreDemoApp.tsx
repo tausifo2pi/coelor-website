@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Boxes, LayoutDashboard, Lock, Plug, Receipt, RefreshCw, Sparkles, Truck, X, Zap, type LucideIcon } from "lucide-react";
 import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, ago, fmt, hasMark } from "@/components/demo/ui";
+import { OfferCard, OfferLines, OfferNote } from "@/components/demo/Offer";
 import { getJson } from "@/lib/demo/get";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { SheetAssistant } from "@/components/demo/SheetAssistant";
@@ -194,6 +195,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
           <div className="m-3 rounded-xl border border-[#e3e6eb] bg-[#f8fafc] p-4">
             <p className="flex items-center gap-2 text-[13px] font-semibold"><Lock size={14} />Read-only demo</p>
             <p className="mt-1 text-[12.5px] leading-[1.5] text-[#64748b]">Your channels, your stockroom and your carriers on one stock count. We set up the same for yours.</p>
+            <OfferLines />
             <a href={cfg.contactHref} onClick={() => tRef.current?.cta("get_this", "Get this for your store (sidebar)")} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] text-[13.5px] font-semibold text-white hover:bg-[#1d4ed8]">
               Get this for your store
             </a>
@@ -245,6 +247,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
                 {section === "connections" && <Connections ctx={ctx} />}
               </>
             )}
+            <OfferCard contact={cfg.contactHref} t={tRef.current} />
             <p className="mt-8 text-center text-[12.5px] leading-[1.6] text-[#94a3b8]">
               Built and run by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a> · customer names and order numbers hidden
             </p>
@@ -279,6 +282,7 @@ function ViewOnly({ d, onClose, t, contact }: { d: NonNullable<Dialog>; onClose:
           <button type="button" onClick={onClose} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[#94a3b8] hover:bg-[#f4f5f7] hover:text-[#0f172a]" aria-label="Close"><X size={16} /></button>
         </div>
         <p className="mt-4 text-[14.5px] leading-[1.6] text-[#334155]">{d.body}</p>
+        <OfferNote name={d.slug ? name : undefined} />
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button onClick={onClose}>Keep looking</Button>
           <a href={contact} onClick={() => t?.cta("get_this", d.slug ? `Connect ${d.slug} for my store` : "Get this for your store (view only)")}

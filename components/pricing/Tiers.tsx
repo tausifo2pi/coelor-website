@@ -2,15 +2,15 @@ import SectionHead from "@/components/SectionHead";
 import { Icon } from "@/components/icons";
 import { pricing, priceLine } from "./content";
 
-// Three builds by number of connections. The price line comes from data/pricing.json (`from`, null until filled in);
-// a card gets a label only when its `badge` is set. On wide screens the cards share their six rows (CSS subgrid), so the
+// Three builds by number of connections. A card's price is computed from its `count` (lib/offer.ts: $500 per
+// connection, one-time, 3 for the price of 2); a card gets a label only when its `badge` is set. On wide screens the cards share their six rows (CSS subgrid), so the
 // price lines and buttons sit at the same height whatever the length of the text above them.
 
 type Tier = (typeof pricing.tiers.items)[number];
 
 function TierCard({ t }: { t: Tier }) {
   const { tiers } = pricing;
-  const price = priceLine(t.from);
+  const price = priceLine(t.count, "plus" in t && t.plus === true);
   const badge = (t.badge as string | null) ?? null;
   const includes = [t.connectionsLine, ...tiers.common];
   return (

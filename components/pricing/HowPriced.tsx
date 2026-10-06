@@ -1,12 +1,16 @@
 import SectionHead from "@/components/SectionHead";
 import { Icon } from "@/components/icons";
+import { OFFER, quote, usd } from "@/lib/offer";
 import { pricing } from "./content";
 
-// The three rules of the price (one-time, by connections, on our engine) and a worked example of counting connections.
-// The example rows are generic parts of a setup (dark icon tiles), never brands.
+// The three rules of the price (one-time, $500 per connection, on our engine) and a worked example of counting
+// connections: three rows at $500, one of them free, total from lib/offer.ts. The example rows are generic parts of a
+// setup (dark icon tiles), never brands.
 
 function CountExample() {
   const { example } = pricing.how;
+  const n = example.rows.length;
+  const free = n >= OFFER.freeAt;
   return (
     <div className="panel flex flex-col gap-5 self-start p-5 sm:p-6" aria-label={example.title}>
       <div className="flex items-center justify-between gap-3">
@@ -20,13 +24,19 @@ function CountExample() {
               <Icon name={r.icon} size={17} />
             </span>
             <span className="min-w-0 flex-1 text-[14px] font-medium text-ink">{r.label}</span>
-            <span className="shrink-0 font-mono text-[11px] text-ink-soft">{example.each}</span>
+            <span className="shrink-0 font-mono text-[11px] text-ink-soft">{usd(OFFER.perConnection)}</span>
           </li>
         ))}
       </ul>
+      {free && (
+        <div className="flex items-center justify-between gap-3 px-1 text-[13px]">
+          <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#8fe7c2]">{example.freeLabel}</span>
+          <span className="font-mono text-ink-muted">−{usd(OFFER.perConnection)}</span>
+        </div>
+      )}
       <div className="flex items-center justify-between gap-3 rounded-[12px] border border-accent/30 bg-accent/[0.07] px-4 py-3">
         <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-accent">{example.totalLabel}</span>
-        <span className="text-[16px] font-semibold text-ink">{example.total}</span>
+        <span className="text-[16px] font-semibold text-ink">{usd(quote(n))}</span>
       </div>
       <p className="text-[13px] leading-[1.55] text-ink-muted">{example.note}</p>
     </div>

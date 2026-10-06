@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Logo from "@/components/Logo";
 import { Icon } from "@/components/icons";
+import { OFFER, OFFER_LINES, usd } from "@/lib/offer";
 
 // The short page an email can link to (coelor.com/r/<token>?to=/demo): what the live demo shows and the link to it.
 // Static and small (no data, no client code of its own); the site Tracker logs the visit, the sections seen and the
 // click on the live link, tied to the lead by the email cookie. Email readers only: never linked from the site, not
-// indexed (robots.ts disallows /demo).
+// indexed (robots.ts disallows /demo). The offer (lib/offer.ts) sits under the list, with a link to the public /pricing.
 
 export const metadata: Metadata = {
   title: "Live demo · Coelor",
@@ -55,6 +56,23 @@ export default function DemoIntro() {
             </li>
           ))}
         </ul>
+
+        <div id="offer" className="panel flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex flex-col gap-1.5">
+            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">The same for your store</span>
+            <p className="flex flex-wrap items-baseline gap-x-2">
+              <span className="display text-[30px] leading-none text-ink">{usd(OFFER.perConnection)}</span>
+              <span className="text-[15px] text-ink-muted">per connection, one-time</span>
+            </p>
+            <p className="text-[14px] leading-[1.5] text-ink-muted">
+              {OFFER_LINES.free} · {OFFER_LINES.setup}
+            </p>
+          </div>
+          <a href="/pricing" className="inline-flex w-fit shrink-0 items-center gap-1.5 text-[14px] font-semibold text-accent hover:underline">
+            See pricing
+            <Icon name="arrow-right" size={14} strokeWidth={2.4} />
+          </a>
+        </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <a href={LIVE} className="btn-primary w-fit">

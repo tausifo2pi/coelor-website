@@ -13,6 +13,7 @@ import { getJson } from "@/lib/demo/get";
 import { Automations, Connections, Dashboard, Listings, Orders, Products, type Ctx, type Live, type SectionId } from "@/components/demo/views";
 import { Extra } from "@/components/demo/Extra";
 import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
+import { OfferCard, OfferLines, OfferNote } from "@/components/demo/Offer";
 
 const CONTACT = "/case-studies/stock-sync#contact";
 const CASE = "/case-studies/stock-sync";
@@ -189,6 +190,7 @@ export default function DemoApp() {
           <div className="m-3 rounded-xl border border-[#e3e6eb] bg-[#f8fafc] p-4">
             <p className="flex items-center gap-2 text-[13px] font-semibold"><Lock size={14} />Read-only demo</p>
             <p className="mt-1 text-[12.5px] leading-[1.5] text-[#64748b]">This is a real store&apos;s sync. We set up the same for yours.</p>
+            <OfferLines />
             <a href={CONTACT} onClick={() => tRef.current?.cta("get_this", "Get this for your store (sidebar)")} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] text-[13.5px] font-semibold text-white hover:bg-[#1d4ed8]">
               Get this for your store
             </a>
@@ -236,6 +238,7 @@ export default function DemoApp() {
             {section === "listings" && <Listings ctx={ctx} />}
             {section === "automations" && <Automations ov={ov} ctx={ctx} />}
             {section === "assistant" && <Extra ctx={ctx} />}
+            <OfferCard contact={CONTACT} t={tRef.current} />
             <p className="mt-8 text-center text-[12.5px] leading-[1.6] text-[#94a3b8]">
               Built and run by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a> · customer names and order numbers hidden
             </p>
@@ -270,6 +273,7 @@ function ViewOnly({ d, onClose, t }: { d: NonNullable<Dialog>; onClose: () => vo
           <button type="button" onClick={onClose} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[#94a3b8] hover:bg-[#f4f5f7] hover:text-[#0f172a]" aria-label="Close"><X size={16} /></button>
         </div>
         <p className="mt-4 text-[14.5px] leading-[1.6] text-[#334155]">{d.body}</p>
+        <OfferNote name={d.slug ? name : undefined} />
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button onClick={onClose}>Keep looking</Button>
           <a
