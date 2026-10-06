@@ -5,21 +5,21 @@
 // use. Read-only; every channel looks the same. Sections switch without a page load (?section= in the address);
 // lib/demo/track.ts records what the visitor looks at.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Boxes, Lock, LayoutDashboard, Plug, Receipt, RefreshCw, Sparkles, Tag, X, Zap, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, Lock, LayoutDashboard, Plug, Receipt, RefreshCw, Sparkles, Tag, X, Zap, type LucideIcon } from "lucide-react";
 import { PICQER } from "@/lib/demo/channels";
 import type { Overview, Product } from "@/lib/demo/shape";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { getJson } from "@/lib/demo/get";
 import { Automations, Connections, Dashboard, Listings, Orders, Products, type Ctx, type Live, type SectionId } from "@/components/demo/views";
 import { Extra } from "@/components/demo/Extra";
-import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
+import { Badge, BetaPill, TrialPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
 import { OfferCard, OfferLines, OfferNote } from "@/components/demo/Offer";
+import { PricingView, TrialStrip } from "@/components/demo/Pricing";
 
 const CONTACT = "/case-studies/stock-sync#contact";
 const CASE = "/case-studies/stock-sync";
-const PRICING = "/pricing";
 
-const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean }[] = [
+const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean; trial?: boolean }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "The sync right now: channels, orders and automations" },
   { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines that get data and post it to your team, written from a chat (beta)", beta: true },
   { id: "connections", label: "Connections", icon: Plug, title: "Connections", sub: "Sales channels, the warehouse and the tools, on one stock count" },
@@ -27,6 +27,7 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Picqer products linked to the same size on every account" },
   { id: "listings", label: "Listings", icon: Tag, title: "Listings", sub: "Channel listings the sync watches" },
   { id: "automations", label: "Automations", icon: Zap, title: "Automations", sub: "What runs on its own, and when it last ran" },
+  { id: "pricing", label: "Pricing & trial", icon: BadgeDollarSign, title: "Pricing & free trial", sub: "$500 per connection, one-time. Try 1 connection free for 7 days.", trial: true },
 ];
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;
@@ -147,9 +148,9 @@ export default function DemoApp() {
             <a href={CASE} onClick={() => tRef.current?.cta("back_case", "Case study")} className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
               <ArrowLeft size={14} className="hidden sm:block" />Case study
             </a>
-            <a href={PRICING} onClick={() => tRef.current?.cta("pricing", "Pricing (top bar)")} className="inline-flex h-8 items-center rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
+            <button type="button" onClick={() => { tRef.current?.cta("pricing", "Pricing (top bar)"); go("pricing"); }} className="inline-flex h-8 items-center rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
               Pricing
-            </a>
+            </button>
             <a href={CONTACT} onClick={() => tRef.current?.cta("get_this", "Get this for your store (top bar)")} className="ml-1 inline-flex h-8 items-center gap-1.5 rounded-lg bg-white px-2.5 text-[13px] font-semibold text-[#0f172a] hover:bg-[#e2e8f0] sm:px-3">
               <span className="sm:hidden">Get this</span>
               <span className="hidden sm:inline">Get this for your store</span>
@@ -183,6 +184,7 @@ export default function DemoApp() {
                   <Ico size={18} />
                   {s.label}
                   {s.beta && <BetaPill />}
+                  {s.trial && <TrialPill />}
                 </button>
               );
             })}
@@ -225,12 +227,15 @@ export default function DemoApp() {
                 <button key={s.id} type="button" onClick={() => go(s.id)} className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
                   {s.label}
                   {s.beta && <BetaPill />}
+                  {s.trial && <TrialPill />}
                 </button>
               ))}
             </nav>
           </header>
 
           <main className="mx-auto max-w-[1320px] p-4 md:p-6 lg:p-8">
+            {section !== "pricing" && <TrialStrip open={() => go("pricing")} contact={CONTACT} t={tRef.current} />}
+            {section === "pricing" && <PricingView contact={CONTACT} t={tRef.current} />}
             {section === "dashboard" && <Dashboard ov={ov} ctx={ctx} />}
             {section === "connections" && <Connections ov={ov} ctx={ctx} />}
             {section === "orders" && <Orders ctx={ctx} />}
@@ -238,7 +243,7 @@ export default function DemoApp() {
             {section === "listings" && <Listings ctx={ctx} />}
             {section === "automations" && <Automations ov={ov} ctx={ctx} />}
             {section === "assistant" && <Extra ctx={ctx} />}
-            <OfferCard contact={CONTACT} t={tRef.current} />
+            {section !== "pricing" && <OfferCard contact={CONTACT} t={tRef.current} open={() => go("pricing")} />}
             <p className="mt-8 text-center text-[12.5px] leading-[1.6] text-[#94a3b8]">
               Built and run by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a> · customer names and order numbers hidden
             </p>

@@ -26,7 +26,7 @@ export type Ctx = {
   connect: (slug: string, name: string, body?: string) => void;
   go: (section: SectionId) => void;
 };
-export type SectionId = "dashboard" | "connections" | "orders" | "products" | "listings" | "automations" | "assistant";
+export type SectionId = "dashboard" | "connections" | "orders" | "products" | "listings" | "automations" | "assistant" | "pricing";
 
 // the client's own channels (StockX, Alias), which have rules of their own on the automations page
 const REAL = CHANNELS.filter((c) => fromApi(c.id));

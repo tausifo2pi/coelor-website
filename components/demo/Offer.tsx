@@ -34,8 +34,39 @@ const TILES: Tile[] = [
 
 const TERMS = ["Unlimited orders and products", "The code is yours", OFFER_LINES.setup, "No monthly fee"];
 
+/** The free trial and three sizes as tiles, each with its button to the contact form (filled in with that plan). */
+export function PlanTiles({ contact, t, where, className = "" }: { contact: string; t: DemoTracker | null; where: string; className?: string }) {
+  return (
+    <ul className={`grid grid-cols-2 gap-2.5 sm:gap-3 xl:grid-cols-4 ${className}`}>
+      {TILES.map((x) => (
+        <li
+          key={x.key}
+          className={`relative flex flex-col gap-3 rounded-xl p-3.5 sm:p-4 ${x.trial ? "border border-dashed border-[#86efac] bg-[#f0fdf4]" : x.best ? "border border-[#2563eb] bg-[#f8fbff] ring-1 ring-[#2563eb]" : "border border-[#e3e6eb] bg-[#f8fafc]"}`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span className={`text-[11.5px] font-semibold uppercase tracking-[0.05em] sm:text-[12px] ${x.trial ? "text-[#15803d]" : "text-[#475569]"}`}>{x.head}</span>
+            {x.best && <span className="absolute -top-2.5 right-3 whitespace-nowrap rounded-full bg-[#2563eb] px-2 py-0.5 text-[11px] font-semibold text-white">Best value</span>}
+          </div>
+          <div>
+            <p className="text-[24px] font-bold leading-none tracking-[-0.02em] tabular-nums sm:text-[28px]">{x.price}</p>
+            <p className="mt-1.5 text-[12.5px] leading-[1.4] text-[#64748b]">{x.unit}</p>
+          </div>
+          <a
+            href={withPlan(contact, x.plan)}
+            onClick={() => t?.cta(x.trial ? "trial" : "get_this", x.trial ? `Start free trial (${where})` : `Quote ${x.plan} connections (${where})`)}
+            className={`mt-auto inline-flex h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2 text-[13.5px] font-semibold sm:px-3 ${x.best ? "bg-[#2563eb] text-white hover:bg-[#1d4ed8]" : x.trial ? "bg-[#16a34a] text-white hover:bg-[#15803d]" : "border border-[#d9dde3] bg-white text-[#334155] hover:bg-[#f1f5f9]"}`}
+          >
+            <span className="sm:hidden">{x.short}</span>
+            <span className="hidden sm:inline">{x.cta}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** Under every section: what the same sync costs for the visitor's store. */
-export function OfferCard({ contact, t }: { contact: string; t: DemoTracker | null }) {
+export function OfferCard({ contact, t, open }: { contact: string; t: DemoTracker | null; open?: () => void }) {
   return (
     <section aria-labelledby="offer-title" className="mt-8 overflow-hidden rounded-xl border border-[#e3e6eb] bg-white">
       <div className="flex flex-col gap-4 p-5 md:flex-row md:items-end md:justify-between md:p-6">
@@ -44,36 +75,18 @@ export function OfferCard({ contact, t }: { contact: string; t: DemoTracker | nu
           <h2 id="offer-title" className="mt-1 text-[19px] font-bold tracking-[-0.01em] md:text-[22px]">Get the same sync, {OFFER_LINES.setup.toLowerCase()}</h2>
           <p className="mt-1 text-[14px] leading-[1.5] text-[#64748b]">{per} per connection, one-time. Pay once, after it runs.</p>
         </div>
-        <a href={PRICING} onClick={() => t?.cta("pricing", "Pricing (offer)")} className="inline-flex shrink-0 items-center gap-1.5 text-[14px] font-semibold text-[#2563eb] hover:text-[#1d4ed8]">
-          Full pricing<ArrowRight size={15} />
-        </a>
+        {open ? (
+          <button type="button" onClick={open} className="inline-flex shrink-0 items-center gap-1.5 text-[14px] font-semibold text-[#2563eb] hover:text-[#1d4ed8]">
+            Pricing and free trial<ArrowRight size={15} />
+          </button>
+        ) : (
+          <a href={PRICING} onClick={() => t?.cta("pricing", "Pricing (offer)")} className="inline-flex shrink-0 items-center gap-1.5 text-[14px] font-semibold text-[#2563eb] hover:text-[#1d4ed8]">
+            Full pricing<ArrowRight size={15} />
+          </a>
+        )}
       </div>
 
-      <ul className="grid grid-cols-2 gap-2.5 px-4 pt-1 sm:gap-3 md:px-6 xl:grid-cols-4">
-        {TILES.map((x) => (
-          <li
-            key={x.key}
-            className={`relative flex flex-col gap-3 rounded-xl p-3.5 sm:p-4 ${x.trial ? "border border-dashed border-[#86efac] bg-[#f0fdf4]" : x.best ? "border border-[#2563eb] bg-[#f8fbff] ring-1 ring-[#2563eb]" : "border border-[#e3e6eb] bg-[#f8fafc]"}`}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className={`text-[11.5px] font-semibold uppercase tracking-[0.05em] sm:text-[12px] ${x.trial ? "text-[#15803d]" : "text-[#475569]"}`}>{x.head}</span>
-              {x.best && <span className="absolute -top-2.5 right-3 whitespace-nowrap rounded-full bg-[#2563eb] px-2 py-0.5 text-[11px] font-semibold text-white">Best value</span>}
-            </div>
-            <div>
-              <p className="text-[24px] font-bold leading-none tracking-[-0.02em] tabular-nums sm:text-[28px]">{x.price}</p>
-              <p className="mt-1.5 text-[12.5px] leading-[1.4] text-[#64748b]">{x.unit}</p>
-            </div>
-            <a
-              href={withPlan(contact, x.plan)}
-              onClick={() => t?.cta(x.trial ? "trial" : "get_this", x.trial ? "Start free trial (offer)" : `Quote ${x.plan} connections (offer)`)}
-              className={`mt-auto inline-flex h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2 text-[13.5px] font-semibold sm:px-3 ${x.best ? "bg-[#2563eb] text-white hover:bg-[#1d4ed8]" : x.trial ? "bg-[#16a34a] text-white hover:bg-[#15803d]" : "border border-[#d9dde3] bg-white text-[#334155] hover:bg-[#f1f5f9]"}`}
-            >
-              <span className="sm:hidden">{x.short}</span>
-              <span className="hidden sm:inline">{x.cta}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      <PlanTiles contact={contact} t={t} where="offer" className="px-4 pt-1 md:px-6" />
 
       <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#e3e6eb] bg-[#f8fafc] px-5 py-4 md:px-6">
         {TERMS.map((l) => (

@@ -141,6 +141,10 @@ export function CoelorWordmark({ height = 20, className = "" }: { height?: numbe
 }
 
 /** "Beta" next to a menu item (the Assistant) */
+export function TrialPill() {
+  return <span className="ml-auto rounded-md bg-[#dcfce7] px-1.5 py-[1px] text-[10.5px] font-bold uppercase tracking-[0.04em] text-[#15803d]">Free</span>;
+}
+
 export function BetaPill() {
   return <span className="ml-auto rounded-md bg-[#fef3c7] px-1.5 py-[1px] text-[10.5px] font-bold uppercase tracking-[0.04em] text-[#92400e]">Beta</span>;
 }
