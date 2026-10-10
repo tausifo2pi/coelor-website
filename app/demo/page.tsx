@@ -7,10 +7,11 @@ import { OFFER, OFFER_LINES, usd, withPlan } from "@/lib/offer";
 // Static and small (no data, no client code of its own); the site Tracker logs the visit, the sections seen and the
 // click on the live link, tied to the lead by the email cookie. Email readers only: never linked from the site, not
 // indexed (robots.ts disallows /demo). The offer (lib/offer.ts) sits under the list, with a link to the public /pricing.
+// The live demo is a demo shop's custom build with generated numbers (lib/demo/clients.ts, step 5b): the words say so.
 
 export const metadata: Metadata = {
   title: "Live demo · Coelor",
-  description: "One reseller's custom build at work: orders, stock, listings and automations, live and read-only. Yours is built for your own setup.",
+  description: "The kind of custom build we make for one sneaker reseller: orders, stock, listings and automations in a demo workspace with generated numbers. Read-only. Yours is built for your own setup.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/demo" },
 };
@@ -39,11 +40,11 @@ export default function DemoIntro() {
             <span className="pulse h-2 w-2 rounded-full bg-accent" aria-hidden />
             Live demo
           </span>
-          <h1 className="display text-balance text-[34px] leading-[1.1] text-ink sm:text-[44px]">One reseller&apos;s custom build, running right now.</h1>
+          <h1 className="display text-balance text-[34px] leading-[1.1] text-ink sm:text-[44px]">A custom build, running right now.</h1>
           <p className="max-w-[560px] text-[16px] leading-[1.6] text-ink-muted md:text-[18px]">
-            Look inside a build we made and run for one sneaker reseller, around their own marketplaces, warehouse and rules. It is
-            heavily customised for them, so it won&apos;t match your setup. Yours is built for exactly what you need. Read-only:
-            nothing you click changes anything.
+            Look inside a demo workspace: the kind of build we make for one sneaker reseller, around their own marketplaces,
+            warehouse and rules. Every build is heavily customised for one business, so it won&apos;t match your setup. Yours is
+            built for exactly what you need. Read-only: nothing you click changes anything.
           </p>
         </div>
 
@@ -96,7 +97,7 @@ export default function DemoIntro() {
             Ask a question
           </a>
         </div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft">Customer names and order numbers are hidden</p>
+        <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft">A demo shop; its numbers are generated</p>
       </section>
     </main>
   );

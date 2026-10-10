@@ -5,15 +5,18 @@
 // they would get as it is: theirs is made for exactly their own platforms, rules and team, and the demo only shows how
 // such a build behaves. Shown at the top of the first section until the reader closes it (remembered for the tab's
 // session); closing it is a demo_action ("notice:dismiss"), never a cta (every demo_cta is a phone push). No "sample"
-// or "real data" wording (memory: demo-no-sample-labels).
+// or "real data" wording (memory: demo-no-sample-labels). Step 5b: the demo is shown as a named demo shop
+// (lib/demo/clients.ts) with generated numbers, and the notice says so in plain words. It keeps Coelor's indigo, not the
+// client's colour: this is us talking about the demo, not part of the client's workspace.
 import { useEffect, useState } from "react";
 import { ArrowRight, Wrench, X } from "lucide-react";
+import type { DemoClient } from "@/lib/demo/clients";
 import type { DemoTracker } from "@/lib/demo/track";
 
 const KEY = "coelor_demo_notice";
 
-/** who: "one sneaker reseller"; setup: what their build is made around ("their StockX and Alias accounts, …"). */
-export function CustomNotice({ who, setup, contact, t }: { who: string; setup: string; contact: string; t: DemoTracker | null }) {
+/** client: the demo shop (its name, noticeWho "a sneaker reseller", noticeSetup "their StockX and Alias accounts, …"). */
+export function CustomNotice({ client, contact, t }: { client: DemoClient; contact: string; t: DemoTracker | null }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     let seen = false;
@@ -38,9 +41,10 @@ export function CustomNotice({ who, setup, contact, t }: { who: string; setup: s
         <div className="min-w-0">
           <h2 id="notice-title" className="text-[15.5px] font-bold text-[#1e1b4b]">A custom build, not a product</h2>
           <p className="mt-1 max-w-[880px] text-[14px] leading-[1.6] text-[#312e81]">
-            You&apos;re looking at {who}&apos;s own build, made around {setup}. It is heavily customised for them, so it will not match
-            your setup, and it isn&apos;t meant to. Yours is built for exactly what you need: your platforms, your rules, your team.
-            This demo only shows how a build like this behaves.
+            This demo shows the kind of build we make for one business: here {client.name}, {client.noticeWho}, made around{" "}
+            {client.noticeSetup}. {client.name} is a demo shop and its numbers are generated. Every build is heavily customised for
+            one business, so this one will not match your setup, and it isn&apos;t meant to. Yours is built for exactly what you
+            need: your platforms, your rules, your team. This demo only shows how a build like this behaves.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <a href={contact} onClick={() => t?.cta("get_this", "Plan my own build (notice)")} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-[#4338ca] px-3.5 text-[13.5px] font-semibold text-white hover:bg-[#3730a3]">
