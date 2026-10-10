@@ -3,9 +3,12 @@
 // The sections of a store demo (/demo/<slug>), drawn from lib/storedemo/engine.ts over the store's live catalogue. The
 // same look as the sneaker demo (components/demo): white cards on grey, platform logos, green "Connected" badges.
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowLeftRight, ArrowRight, Check, Lock, Package, Plus, RotateCcw, Truck, X, Zap } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, Check, Package, RotateCcw, Truck, X, Zap } from "lucide-react";
 import { Badge, BrandMark, Button, Card, CardHead, Empty, Pager, SearchInput, Skeleton, Tabs, ago, clock, fmt, type Tone } from "@/components/demo/ui";
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
+import { Rules, type RuleRun } from "@/components/demo/workspace/Rules";
+import { Systems, type SystemHealth } from "@/components/demo/workspace/Systems";
+import { FERNHOLLOW } from "@/lib/demo/clients";
 import type { DemoTracker } from "@/lib/demo/track";
 import { storeAssistant } from "@/lib/storedemo/assistant";
 import type { ProductRow, StoreWorld } from "@/lib/storedemo/engine";
@@ -464,125 +467,30 @@ export function Shipping({ ctx }: { ctx: SCtx }) {
   );
 }
 
-/* ---------- automations ---------- */
+/* ---------- custom rules (the "automations" section) ---------- */
 
+// each rule shows the last run of the engine rule it names (lib/demo/clients.ts `job`: orders, soldout, listing, labels,
+// tracking, returns, restock, low)
 export function Automations({ ctx }: { ctx: SCtx }) {
   const w = ctx.world;
   const rules = useMemo(() => (w ? w.rules(ctx.now) : null), [w, ctx.now]);
-  if (!rules) return <Loading />;
-  return (
-    <div className="flex flex-col gap-3">
-      <p className="text-[13.5px] text-[#64748b]">What the sync does on its own, and when each rule last ran.</p>
-      {rules.map((r) => {
-        const toggle = (cls: string) => (
-          <button type="button" onClick={() => ctx.locked(`toggle:${r.key}`, "Switching an automation off")} className={`relative h-6 w-11 shrink-0 rounded-full bg-[#16a34a] ${cls}`} role="switch" aria-checked="true" aria-label={`${r.name}: on`}>
-            <span className="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" />
-          </button>
-        );
-        return (
-          <Card key={r.key} className="flex flex-col gap-3 !p-4 xl:flex-row xl:items-center xl:gap-5">
-            <div className="flex min-w-0 flex-1 flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-4">
-              <div className="flex shrink-0 items-center justify-between gap-2 sm:w-[132px]">
-                <div className="flex -space-x-1.5">
-                  {[...new Set(r.tools)].slice(0, 4).map((s) => <BrandMark key={s} slug={s} name={s} size={28} className="ring-2 ring-white" />)}
-                </div>
-                {toggle("sm:hidden")}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[14.5px] font-semibold">{r.name}</p>
-                <p className="mt-0.5 text-[13.5px] text-[#334155]"><span className="font-semibold text-[#64748b]">When</span> {r.when.charAt(0).toLowerCase() + r.when.slice(1)} <span className="font-semibold text-[#64748b]">then</span> {r.then.charAt(0).toLowerCase() + r.then.slice(1)}</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[#f1f3f5] pt-3 xl:justify-end xl:border-0 xl:pt-0">
-              <span className="text-[12.5px] text-[#64748b]">{r.every} · {r.every.startsWith("real time") ? "last event" : "ran"} {ago(r.lastRun, ctx.now)}</span>
-              <Badge tone="green" dot>On schedule</Badge>
-              {toggle("hidden sm:block")}
-            </div>
-          </Card>
-        );
-      })}
-      <p className="flex items-center gap-2 pt-1 text-[12.5px] text-[#64748b]"><Lock size={13} />Switches are locked in this demo, so nothing changes in the store.</p>
-    </div>
-  );
+  const byKey = new Map((rules ?? []).map((r) => [r.key, r]));
+  const run = (key: string): RuleRun | undefined => {
+    const r = byKey.get(key);
+    return r && { every: r.every, lastRun: r.lastRun };
+  };
+  return <Rules client={FERNHOLLOW} run={run} now={ctx.now} loading={!rules} t={ctx.t} />;
 }
 
-/* ---------- connections ---------- */
-
-function ConnTile({ slug, name, role, detail, on, onClick }: { slug: string; name: string; role: string; detail?: string; on: boolean; onClick: () => void }) {
-  return (
-    <div className="flex min-w-0 items-center gap-3 rounded-xl border border-[#e3e6eb] bg-white p-3.5">
-      <BrandMark slug={slug} name={name} size={40} />
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="text-[14.5px] font-semibold">{name}</span>
-          {on && <Badge tone="green" dot>Connected</Badge>}
-        </div>
-        <p className="mt-0.5 truncate text-[12.5px] text-[#64748b]">{role}{detail ? ` · ${detail}` : ""}</p>
-      </div>
-      <Button small onClick={onClick}>{on ? "Settings" : <><Plus size={14} />Connect</>}</Button>
-    </div>
-  );
-}
+/* ---------- systems in this build (the "connections" section) ---------- */
 
 export function Connections({ ctx }: { ctx: SCtx }) {
-  const { cfg } = ctx;
   const w = ctx.world;
-  const ov = useMemo(() => (w ? w.overview(ctx.now) : null), [w, ctx.now]);
-  const settings = (name: string) => () => ctx.locked(`settings:${name}`, `${name}'s settings`);
-  const groups: { title: string; sub: string; tiles: ReactNode[] }[] = [
-    {
-      title: "Sales channels",
-      sub: "Where the store sells. Every order comes off the one stock count.",
-      tiles: [
-        ...cfg.channels.map((c) => <ConnTile key={c.id} slug={c.logo} name={c.name} role={c.role}
-          detail={`${ov ? `${fmt(ov.kpis.live[c.id] ?? 0)} listed · ` : ""}${c.realtime ? "orders in real time (webhooks)" : `orders read ${c.every}`}`} on onClick={settings(c.name)} />),
-        ...cfg.more.map((m) => (
-          <ConnTile key={m.slug} slug={m.slug} name={m.name} role={m.why} on={false}
-            onClick={() => ctx.connect(m.slug, m.name, `This demo is a store that is already running, so it is view only. For your store we connect ${m.name} to the same stock count: every sale there comes off the count, and sold-out sizes come down everywhere.`)} />
-        )),
-      ],
-    },
-    {
-      title: "Stock, shipping and returns",
-      sub: "Where the stock is counted and how the parcels go out and come back.",
-      tiles: [
-        <ConnTile key="stock" slug={cfg.stock.logo} name={cfg.stock.name} role={cfg.stock.role} detail={cfg.stock.detail} on onClick={settings(cfg.stock.name)} />,
-        <ConnTile key="ship" slug={cfg.shipping.tool.logo} name={cfg.shipping.tool.name} role={cfg.shipping.tool.role} detail={cfg.shipping.carriers.map((c) => c.name).join(", ")} on onClick={settings(cfg.shipping.tool.name)} />,
-        ...cfg.shipping.carriers.map((c) => <ConnTile key={c.name} slug={c.logo} name={c.name} role={c.service} detail={`Labels through ${cfg.shipping.tool.name}`} on onClick={settings(c.name)} />),
-        <ConnTile key="track" slug={cfg.tracking.logo} name={cfg.tracking.name} role={cfg.tracking.role} on onClick={settings(cfg.tracking.name)} />,
-        <ConnTile key="ret" slug={cfg.returns.logo} name={cfg.returns.name} role={cfg.returns.role} on onClick={settings(cfg.returns.name)} />,
-        <ConnTile key="restock" slug={cfg.restock.logo} name={cfg.restock.name} role={cfg.restock.role} on onClick={settings(cfg.restock.name)} />,
-        ...cfg.moreTools.map((m) => (
-          <ConnTile key={m.slug} slug={m.slug} name={m.name} role={m.why} on={false}
-            onClick={() => ctx.connect(m.slug, m.name, `View only in this demo. For your store we connect ${m.name} to the same stock count and the same orders, so nothing is typed over by hand.`)} />
-        )),
-      ],
-    },
-    {
-      title: "Team, sheets and AI",
-      sub: "Where the team sees the numbers and gets the alerts. The assistant's routines post only here, for data safety; Claude and ChatGPT ask the same data from their apps.",
-      tiles: cfg.tools.map((x) => (
-        <ConnTile key={x.slug} slug={x.slug} name={x.name} role={x.role} detail={x.detail} on={!!x.on}
-          onClick={x.on ? settings(x.name) : () => ctx.connect(x.slug, x.name, /claude|chatgpt/.test(x.slug)
-            ? `View only in this demo. For your store we connect your sync to ${x.name}, so your team asks it right in the ${x.name} app: stock, orders and routines. It reads the same data as the assistant and posts only to your team's sheets and chat: it never changes listings, prices or stock.`
-            : `View only in this demo. For your store we connect ${x.name} to the same stock count and orders: ${x.role.charAt(0).toLowerCase() + x.role.slice(1)}, without anyone copying numbers over.`)} />
-      )),
-    },
-  ];
-  // every group ends with the connection we build for a platform that is not listed
-  const custom = (what: string) => (
-    <ConnTile key="custom" slug="custom" name={`Your own ${what}`} role="Built for your setup, as required" detail="Any platform with an API, or its exports" on={false}
-      onClick={() => ctx.connect("custom", `your own ${what}`, `Not in the list? We build the connection your store needs: any ${what} with an API, or its exports where there is none, on the same stock count and orders. Tell us what you use.`)} />
-  );
-  const WHAT = ["sales channel", "system", "tool"];
-  return (
-    <div className="flex flex-col gap-5">
-      {groups.map((g, i) => (
-        <Card key={g.title}>
-          <CardHead title={g.title} sub={g.sub} />
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">{[...g.tiles, custom(WHAT[i] ?? "platform")]}</div>
-        </Card>
-      ))}
-    </div>
-  );
+  const rules = useMemo(() => (w ? w.rules(ctx.now) : null), [w, ctx.now]);
+  // a system's last sync: the newest run of the engine rules that work with it (by logo slug)
+  const health = (slug: string): SystemHealth | undefined => {
+    const last = (rules ?? []).filter((r) => r.tools.includes(slug)).reduce<string | null>((a, r) => (!a || r.lastRun > a ? r.lastRun : a), null);
+    return last ? { last } : undefined;
+  };
+  return <Systems client={FERNHOLLOW} health={health} now={ctx.now} connect={ctx.connect} />;
 }

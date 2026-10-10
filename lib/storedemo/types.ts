@@ -73,9 +73,9 @@ export type DemoConfig = {
   returns: Tool & { rate: number; reasons: string[] };
   restock: Tool & { weekday: number };
   sizes: Record<string, number>;
+  /** other places a shop like this sells: the assistant refuses to post onto them (lib/storedemo/assistant.ts) */
   more: { slug: string; name: string; why: string }[];
-  moreTools: { slug: string; name: string; why: string }[];
-  /** team, sheets and AI tools: connected ones first (`on`), then what can be added */
+  /** the team's sheets and chat (`on` = in the build): the assistant posts to the chat */
   tools: { slug: string; name: string; role: string; detail?: string; on?: boolean }[];
   caseHref: string;
   contactHref: string;

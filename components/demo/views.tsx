@@ -6,14 +6,17 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { getJson } from "@/lib/demo/get";
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
-import { ArrowLeftRight, ArrowRight, Check, Lock, Plus, Settings2, TriangleAlert, Zap } from "lucide-react";
-import { CHANNELS, PICQER, fromApi, type Channel as ChannelInfo } from "@/lib/demo/channels";
-import { STORES, type Connection, type Job, type Linked, type Listing, type Overview, type Page, type Platform, type Sale, type SellPlatform, type Step, type StoreId } from "@/lib/demo/shape";
+import { ArrowLeftRight, ArrowRight, Check, Plus, TriangleAlert, Zap } from "lucide-react";
+import { CHANNELS, PICQER, type Channel as ChannelInfo } from "@/lib/demo/channels";
+import { NORTHVALE } from "@/lib/demo/clients";
+import { STORES, type Connection, type Job, type Linked, type Listing, type Overview, type Page, type Sale, type SellPlatform, type Step, type StoreId } from "@/lib/demo/shape";
 import type { DemoTracker } from "@/lib/demo/track";
 import {
-  Badge, BrandMark, Button, Card, CardHead, Empty, Logo, Pager, SearchInput, Skeleton, Tabs, Td, Th,
+  Badge, Button, Card, CardHead, Empty, Logo, Pager, SearchInput, Skeleton, Tabs, Td, Th,
   ago, brandOf, clock, fmt, lag, type Tone,
 } from "@/components/demo/ui";
+import { Rules, type RuleRun } from "@/components/demo/workspace/Rules";
+import { Systems, type SystemHealth } from "@/components/demo/workspace/Systems";
 
 export type Live<T> = { data: T; at: string; stale: boolean };
 export type Ctx = {
@@ -27,11 +30,6 @@ export type Ctx = {
   go: (section: SectionId) => void;
 };
 export type SectionId = "dashboard" | "connections" | "orders" | "products" | "listings" | "automations" | "assistant" | "build" | "pricing";
-
-// the client's own channels (StockX, Alias), which have rules of their own on the automations page
-const REAL = CHANNELS.filter((c) => fromApi(c.id));
-// the other channels get the general rules
-const OTHER = CHANNELS.filter((c) => !fromApi(c.id));
 
 /* ---------- data ---------- */
 
@@ -331,235 +329,19 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
   );
 }
 
-/* ---------- connections: one list of integrations, the connected ones first in each group ---------- */
+/* ---------- systems in this build (the "connections" section) ---------- */
 
-type Tile = {
-  slug: string;
-  name: string;
-  role: string;
-  detail?: string;
-  last?: string | null;
-  state: "on" | "catching" | "off";
-  /** the button on a connected tile (default: its settings, locked) */
-  action?: { label: string; run: () => void };
-  /** the Connect dialog's text */
-  body?: string;
-};
-
-// more sales channels to connect: every one of these that is not one of CHANNELS already, in the order a sneaker
-// reseller sells the most there (the resale marketplaces like StockX and GOAT first, then the social and resale apps,
-// then the web stores). Only real marketplaces and stores: never a listing or stock-sync tool.
-const MORE_CHANNELS = [
-  { slug: "ebay", name: "eBay", role: "Authenticity Guarantee" },
-  { slug: "grailed", name: "Grailed", role: "Streetwear marketplace" },
-  { slug: "stadium-goods", name: "Stadium Goods", role: "Consignment marketplace" },
-  { slug: "kicks-crew", name: "Kicks Crew", role: "Sneaker marketplace" },
-  { slug: "klekt", name: "Klekt", role: "Sneaker marketplace (EU)" },
-  { slug: "laced", name: "Laced", role: "Sneaker marketplace (UK)" },
-  { slug: "tiktok-shop", name: "TikTok Shop", role: "Social shop and live selling" },
-  { slug: "depop", name: "Depop", role: "Resale app" },
-  { slug: "vinted", name: "Vinted", role: "Resale app (EU)" },
-  { slug: "poshmark", name: "Poshmark", role: "Resale app" },
-  { slug: "mercari", name: "Mercari", role: "Resale app" },
-  { slug: "facebook-marketplace", name: "Facebook Marketplace", role: "Local and shipped sales" },
-  { slug: "amazon", name: "Amazon", role: "Marketplace" },
-  // the European marketplaces sneakers sell on (logos from data/platforms.json)
-  { slug: "zalando", name: "Zalando", role: "Fashion marketplace (EU)" },
-  { slug: "kaufland", name: "Kaufland", role: "Marketplace (DE, EU)" },
-  { slug: "bol", name: "Bol", role: "Marketplace (NL, BE)" },
-  { slug: "otto", name: "OTTO", role: "Marketplace (DE)" },
-  { slug: "allegro", name: "Allegro", role: "Marketplace (PL)" },
-  { slug: "cdiscount", name: "Cdiscount", role: "Marketplace (FR)" },
-  { slug: "woocommerce", name: "WooCommerce", role: "Web store" },
-  { slug: "wix", name: "Wix", role: "Web store" },
-  { slug: "shopify", name: "Shopify", role: "Web store" },
-  { slug: "whatnot", name: "Whatnot", role: "Live selling" },
-].filter((m) => !CHANNELS.some((c) => c.logo === m.slug));
-
-// other systems a reseller counts stock in (an ERP, a warehouse app, a fulfilment warehouse)
-const MORE_STOCK = [
-  { slug: "odoo", name: "Odoo", role: "ERP, stock and orders", body: "We connect Odoo as your stock count: every sale on every channel comes off it, and a size that sells out comes down everywhere." },
-  { slug: "shiphero", name: "ShipHero", role: "Warehouse app", body: "We connect ShipHero for your store: orders from every channel go to the warehouse, and the stock it counts goes back to every channel." },
-  { slug: "shipbob", name: "ShipBob", role: "Fulfilment warehouse", body: "We connect ShipBob for your store: orders from every channel go to their warehouse, and the stock they hold goes back to every channel." },
-];
-
-// more tools the sync can work with (shown to add, view only)
-const MORE_TOOLS = [
-  { slug: "excel", name: "Excel", role: "Stock and sales export" },
-  { slug: "gemini", name: "Gemini", role: "AI assistant" },
-  { slug: "gmail", name: "Gmail", role: "Order and alert emails" },
-  { slug: "whatsapp", name: "WhatsApp", role: "Alerts to your phone" },
-  { slug: "quickbooks", name: "QuickBooks", role: "Sales into the books" },
-  { slug: "xero", name: "Xero", role: "Sales into the books" },
-  { slug: "notion", name: "Notion", role: "Buying notes" },
-  { slug: "airtable", name: "Airtable", role: "Product planning base" },
-  { slug: "google-drive", name: "Google Drive", role: "Product photos" },
-];
-
-const CHANNEL_BODY = (name: string) =>
-  `We connect ${name} for your store: every sale there comes off Picqer, and a size that sells out comes down everywhere.`;
-const SHIP_BODY = (name: string) =>
-  `We connect ${name} for your store: labels are made from the order in Picqer, and the tracking code goes back to the channel it sold on.`;
-const AGENT_BODY = (name: string) =>
-  `We set up an AI Sales Agent on ${name} for your store: it answers buyers from your live Picqer stock, and every sale it makes comes off the same stock count.`;
-
-function IntegrationTile({ t, ctx }: { t: Tile; ctx: Ctx }) {
-  const on = t.state !== "off";
-  const status = on ? (
-    <Badge tone={t.state === "on" ? "green" : "amber"} dot>{t.state === "on" ? "Connected" : "Catching up"}</Badge>
-  ) : (
-    <span className="min-w-0 truncate text-[12.5px] text-[#94a3b8]">Not connected</span>
-  );
-  const action =
-    on && t.action ? (
-      <Button small onClick={t.action.run}>{t.action.label}<ArrowRight size={14} /></Button>
-    ) : on ? (
-      <button
-        type="button"
-        onClick={() => ctx.locked(`settings:${t.slug}`, `${t.name} settings`)}
-        title={`${t.name} settings`}
-        aria-label={`${t.name} settings`}
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#d9dde3] bg-white text-[#475569] hover:bg-[#f8fafc] hover:text-[#0f172a]"
-      >
-        <Settings2 size={15} />
-      </button>
-    ) : (
-      <Button small onClick={() => ctx.connect(t.slug, t.slug === "custom" ? t.name.charAt(0).toLowerCase() + t.name.slice(1) : t.name, t.body)}><Plus size={14} />Connect</Button>
-    );
-  const details = (t.detail || t.last) && (
-    <>
-      {t.detail && <p className="text-[#334155]">{t.detail}</p>}
-      {t.last && <p className="text-[#64748b]">Last sync {ago(t.last, ctx.now)}</p>}
-    </>
-  );
-  // phones (one column): a compact row, the button at the right of the text. Wider: a tile, the status and button at
-  // its foot. The text always has its own space (min-w-0), so a button never sits on it.
-  return (
-    <div className="flex min-w-0 flex-col rounded-xl border border-[#e3e6eb] bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] min-[480px]:p-4">
-      <div className="flex min-w-0 items-start gap-3">
-        <BrandMark slug={t.slug} name={t.name} size={40} />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[14.5px] font-semibold leading-tight">{t.name}</p>
-          <p className="mt-0.5 text-[12.5px] leading-snug text-[#64748b]">{t.role}</p>
-          <div className="mt-1.5 flex flex-col gap-0.5 text-[12.5px] leading-snug min-[480px]:hidden">
-            {details}
-            {on && <div className="mt-1">{status}</div>}
-          </div>
-        </div>
-        <div className="shrink-0 min-[480px]:hidden">{action}</div>
-      </div>
-      {details && <div className="mt-2.5 hidden flex-col gap-1 text-[12.5px] leading-snug min-[480px]:flex">{details}</div>}
-      <div className="mt-auto hidden pt-3 min-[480px]:block">
-        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 border-t border-[#f1f3f5] pt-3">
-          {status}
-          {action}
-        </div>
-      </div>
-    </div>
-  );
+// a system's last sync: the newest run of the jobs on its platform; Picqer's is the newest of all, as every sale lands there
+function systemHealth(ov: Live<Overview> | null, slug: string): SystemHealth | undefined {
+  if (!ov) return undefined;
+  const last = ov.data.jobs
+    .filter((j) => slug === PICQER.logo || brandOf(j.platform).slug === slug)
+    .reduce<string | null>((a, j) => (!a || j.lastRun > a ? j.lastRun : a), null);
+  return last ? { last } : undefined;
 }
 
 export function Connections({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) {
-  if (!ov) return <Card pad={false}><Skeleton rows={8} /></Card>;
-  const state = (platform: Platform): Tile["state"] => {
-    const c = connOf(ov.data, platform);
-    return !c || c.healthy ? "on" : "catching";
-  };
-  // a channel's last sync: its connection's, or the newest run of its own jobs
-  const last = (platform: Platform): string | null => {
-    const c = connOf(ov.data, platform);
-    if (c) return c.lastSync;
-    return ov.data.jobs.filter((j) => j.platform === platform).reduce<string | null>((a, j) => (!a || j.lastRun > a ? j.lastRun : a), null);
-  };
-
-  // every group ends with the connection we build for a platform that is not listed
-  const customTile = (what: string): Tile => ({
-    slug: "custom", name: `Your own ${what}`, role: "Built for your setup, as required", detail: "Any platform with an API, or its exports", state: "off",
-    body: `Not in the list? We build the connection your store needs: any ${what} with an API, or its exports where there is none, on the same Picqer stock and orders. Tell us what you use.`,
-  });
-  const groups: { title: string; sub: string; what: string; tiles: Tile[] }[] = [
-    {
-      title: "Sales channels",
-      what: "sales channel",
-      sub: "Every sale comes off one stock count",
-      tiles: [
-        ...CHANNELS.map<Tile>((c) => ({
-          slug: c.logo, name: c.name, role: c.role, detail: accountsText(c), last: last(c.id), state: state(c.id),
-        })),
-        ...MORE_CHANNELS.map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off", body: CHANNEL_BODY(m.name) })),
-      ],
-    },
-    {
-      title: "Warehouse & stock",
-      what: "stock system",
-      sub: "Where the stock is counted",
-      tiles: [
-        { slug: PICQER.logo, name: PICQER.name, role: "Warehouse, counts the stock", detail: `1 warehouse · ${fmt(ov.data.kpis.products.total)} products`, last: last("picqer"), state: state("picqer") },
-        ...MORE_STOCK.map<Tile>((m) => ({ ...m, state: "off" })),
-      ],
-    },
-    {
-      title: "Shipping",
-      what: "carrier",
-      sub: "How the orders go out",
-      tiles: [
-        { slug: "ups", name: "UPS", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("UPS") },
-        { slug: "dhl", name: "DHL", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("DHL") },
-        { slug: "fedex", name: "FedEx", role: "Shipping labels and tracking", state: "off", body: SHIP_BODY("FedEx") },
-      ],
-    },
-    {
-      title: "AI sales agents",
-      what: "chat channel",
-      sub: "Sell in DMs and chats from the same stock",
-      tiles: [
-        { slug: "instagram", name: "Instagram", role: "AI Sales Agent", detail: "Answers buyers in DMs with the sizes in stock", state: "off", body: AGENT_BODY("Instagram") },
-        { slug: "tiktok-shop", name: "TikTok Shop", role: "AI Sales Agent", detail: "Answers buyers in chat with the sizes in stock", state: "off", body: AGENT_BODY("TikTok Shop") },
-      ],
-    },
-    {
-      title: "Tools",
-      what: "tool",
-      sub: "Sheets, alerts and AI. The assistant's routines post only here, for data safety",
-      tiles: [
-        {
-          slug: "google-sheets", name: "Google Sheets", role: "Live stock sheet + consignment report", state: "on",
-          action: { label: "View", run: () => { ctx.t?.action("open_assistant", "connections"); ctx.go("assistant"); } },
-        },
-        { slug: "discord", name: "Discord", role: "Alerts", detail: "Sold-out sizes, cancellations and the not-listed report", state: "on" },
-        { slug: "openai", name: "OpenAI", role: "GPT reads product names", detail: "Finds the size and colour in every Picqer name", state: "on" },
-        {
-          slug: "slack", name: "Slack", role: "Alerts", state: "off",
-          body: "We send the sync's alerts to Slack for your team: sold-out sizes pulled, cancelled orders put back, and the not-listed report.",
-        },
-        {
-          slug: "claude", name: "Claude", role: "Use the assistant from Claude", detail: "Ask stock, orders and routines in the Claude app (beta, read-only)", state: "off",
-          body: "View only in this demo. For your store we connect your sync to Claude, so your team asks it right in the Claude app: “Which sizes sold out today, and where?” It reads the same data as the assistant and posts only to your team's sheets and chat: it never changes listings, prices or stock.",
-        },
-        {
-          slug: "chatgpt", name: "ChatGPT", role: "Use the assistant from ChatGPT", detail: "Ask stock, orders and routines in the ChatGPT app (beta, read-only)", state: "off",
-          body: "View only in this demo. For your store we connect your sync to ChatGPT, so your team asks it right in the ChatGPT app: “Make me tomorrow's pickup sheet for 8:00.” It reads the same data as the assistant and posts only to your team's sheets and chat: it never changes listings, prices or stock.",
-        },
-        ...MORE_TOOLS.map<Tile>((m) => ({ slug: m.slug, name: m.name, role: m.role, state: "off", body: `We connect ${m.name} to the sync for your store: ${m.role.charAt(0).toLowerCase() + m.role.slice(1)}, from the same Picqer stock and orders.` })),
-      ],
-    },
-  ];
-
-  return (
-    <div className="flex flex-col gap-7">
-      {groups.map((g) => (
-        <section key={g.title}>
-          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h2 className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[#64748b]">{g.title}</h2>
-            <span className="text-[12.5px] text-[#94a3b8]">{g.sub}</span>
-          </div>
-          <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1400px]:grid-cols-5">
-            {[...g.tiles, customTile(g.what)].map((t) => <IntegrationTile key={t.slug} t={t} ctx={ctx} />)}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
+  return <Systems client={NORTHVALE} health={(slug) => systemHealth(ov, slug)} now={ctx.now} connect={ctx.connect} />;
 }
 
 /* ---------- orders ---------- */
@@ -840,88 +622,14 @@ export function Listings({ ctx }: { ctx: Ctx }) {
   );
 }
 
-/* ---------- automations ---------- */
+/* ---------- custom rules (the "automations" section) ---------- */
 
-// "real" = the client's live channels together; "chat" = the team chat (Discord)
-type Ends = Platform | "real" | "chat";
-type Rule = { id: string; job: string | null; from: Ends; to: Ends; when: string; then: string; every?: string };
-
-const AUTOMATIONS: Rule[] = [
-  { id: "stockx-sale", job: "stockx-orders", from: "stockx", to: "picqer", when: "A pair sells on StockX", then: "Take one off the Picqer stock, from the bin with the most free stock" },
-  { id: "alias-sale", job: "alias-orders", from: "alias", to: "picqer", when: "A pair sells on Alias", then: "Take one off the Picqer stock and confirm the order on Alias" },
-  ...OTHER.map<Rule>((c) => ({ id: `${c.id}-sale`, job: `${c.id}-orders`, from: c.id, to: "picqer", when: `A sale comes in on ${c.name}`, then: "Take one off the Picqer stock, so every other channel sees it" })),
-  { id: "last-pair", job: "alias-orders", from: "alias", to: "stockx", when: "The last pair sells on Alias", then: "Pull that size from StockX EU and StockX US" },
-  { id: "sold-out", job: "zero-stock", from: "picqer", to: "real", when: "A size is sold out in Picqer", then: "Pull its listings on StockX and Alias, and tell the team chat" },
-  ...OTHER.map<Rule>((c) => ({ id: `${c.id}-sold-out`, job: "zero-stock", from: "picqer", to: c.id, when: "A size sells out in Picqer", then: `Take it off ${c.name}, so it can't be sold twice` })),
-  ...OTHER.map<Rule>((c) => ({ id: `${c.id}-stock`, job: `${c.id}-stock`, from: "picqer", to: c.id, when: "The Picqer stock changes", then: `Send the new stock level to ${c.name}` })),
-  { id: "restock", job: "alias-restock", from: "alias", to: "picqer", when: "An Alias buyer cancels", then: "Put the pair back into stock, in the bin it came from" },
-  { id: "new-product", job: "picqer-products", from: "picqer", to: "real", when: "A new product is added in Picqer", then: "Link it to the same size on StockX and Alias, by style code and size" },
-  { id: "sx-listings", job: "stockx-products", from: "stockx", to: "picqer", when: "New listings on StockX", then: "Pick them up and link them to their Picqer product" },
-  { id: "al-listings", job: "alias-listings", from: "alias", to: "picqer", when: "New listings on Alias", then: "Keep the active listings current, so a sold-out size can be pulled" },
-  { id: "photos", job: "picqer-images", from: "picqer", to: "picqer", when: "A Picqer product has no photo", then: "Find the sneaker's product photo and add it in Picqer" },
-  { id: "unmatched", job: null, from: "real", to: "picqer", when: "An order can't be matched to a product", then: "Flag it in the orders list for a look, and leave the stock as it is", every: "with every order" },
-  { id: "not-listed", job: null, from: "picqer", to: "chat", when: "You ask for the not-listed report", then: "Send a spreadsheet of stock in Picqer that is not listed on StockX or Alias yet", every: "on demand" },
-];
-
-function End({ e }: { e: Ends }) {
-  if (e === "chat") return <BrandMark slug="discord" name="Discord" size={32} />;
-  if (e === "real") {
-    return (
-      <span className="flex -space-x-2">
-        {REAL.map((c) => <Logo key={c.id} slug={c.logo} name={c.name} size={32} className="ring-2 ring-white" />)}
-      </span>
-    );
-  }
-  return <PLogo platform={e} size={32} />;
-}
-
+// each rule shows the last run of the job it names (lib/demo/clients.ts `job`), as the overview has it
 export function Automations({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) {
-  if (!ov) return <Card pad={false}><Skeleton rows={8} /></Card>;
-  const jobs = new Map(ov.data.jobs.map((j) => [j.key, j]));
-  return (
-    <div className="flex flex-col gap-3">
-      <p className="text-[13.5px] text-[#64748b]">What the sync does on its own, and when each rule last ran.</p>
-      {AUTOMATIONS.map((a) => {
-        const j = a.job ? jobs.get(a.job) : undefined;
-        if (a.job && !j) return null;
-        const toggle = (cls: string) => (
-          <button
-            type="button"
-            onClick={() => ctx.locked(`toggle:${a.id}`, "Switching an automation off")}
-            className={`relative h-6 w-11 shrink-0 rounded-full bg-[#16a34a] ${cls}`}
-            role="switch"
-            aria-checked="true"
-            aria-label={`${a.when}: on`}
-          >
-            <span className="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" />
-          </button>
-        );
-        return (
-          <Card key={a.id} className="flex flex-col gap-3 !p-4 xl:flex-row xl:items-center xl:gap-5">
-            <div className="flex min-w-0 flex-1 flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-4">
-              {/* phones: the two ends and the switch on one row, the rule under them at full width */}
-              <div className="flex shrink-0 items-center justify-between gap-2 sm:w-[124px]">
-                <div className="flex items-center gap-2">
-                  <End e={a.from} />
-                  <ArrowRight size={16} className="text-[#94a3b8]" />
-                  <End e={a.to} />
-                </div>
-                {toggle("sm:hidden")}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[14.5px] font-semibold"><span className="text-[#64748b]">When</span> {a.when.charAt(0).toLowerCase() + a.when.slice(1)}</p>
-                <p className="mt-0.5 text-[13.5px] text-[#334155]"><span className="font-semibold text-[#64748b]">Then</span> {a.then.charAt(0).toLowerCase() + a.then.slice(1)}</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[#f1f3f5] pt-3 xl:justify-end xl:border-0 xl:pt-0">
-              <span className="text-[12.5px] text-[#64748b]">{j ? `${j.every} · ${j.every.startsWith("real time") ? "last order" : "ran"} ${ago(j.lastRun, ctx.now)}` : a.every}</span>
-              {j && <Badge tone={JOB_TONE[j.status]} dot>{JOB_TEXT[j.status]}</Badge>}
-              {toggle("hidden sm:block")}
-            </div>
-          </Card>
-        );
-      })}
-      <p className="flex items-center gap-2 pt-1 text-[12.5px] text-[#64748b]"><Lock size={13} />Switches are locked in this demo, so nothing changes in the live store.</p>
-    </div>
-  );
+  const jobs = new Map((ov?.data.jobs ?? []).map((j) => [j.key, j]));
+  const run = (key: string): RuleRun | undefined => {
+    const j = jobs.get(key);
+    return j && { every: j.every, lastRun: j.lastRun, running: j.status === "running" };
+  };
+  return <Rules client={NORTHVALE} run={run} now={ctx.now} loading={!ov} t={ctx.t} />;
 }
