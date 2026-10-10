@@ -6,9 +6,10 @@
 // "view only" dialog. lib/demo/track.ts records what the visitor looks at, like the sneaker demo.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, LayoutDashboard, Lock, Plug, Receipt, RefreshCw, Sparkles, Truck, X, Zap, type LucideIcon } from "lucide-react";
-import { Badge, BetaPill, TrialPill, BrandMark, Button, CoelorWordmark, ago, fmt, hasMark } from "@/components/demo/ui";
+import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, ago, fmt, hasMark } from "@/components/demo/ui";
 import { OfferCard, OfferLines, OfferNote } from "@/components/demo/Offer";
-import { PricingView, TrialStrip } from "@/components/demo/Pricing";
+import { PricingView } from "@/components/demo/Pricing";
+import { CustomNotice } from "@/components/demo/CustomNotice";
 import { getJson } from "@/lib/demo/get";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { SheetAssistant } from "@/components/demo/SheetAssistant";
@@ -20,15 +21,15 @@ import type { Catalog, DemoConfig } from "@/lib/storedemo/types";
 import { Automations, Connections, Dashboard, Orders, Products, Shipping, type SCtx, type SectionId } from "@/components/storedemo/sections";
 
 
-const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean; trial?: boolean }[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "The sync right now: channels, orders, parcels and automations" },
+const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean }[] = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "This build right now: channels, orders, parcels and automations" },
   { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines that get data and post it to your team, written from a chat (beta)", beta: true },
   { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the sync did with them" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Every size on one count, the same on every channel" },
   { id: "shipping", label: "Shipping & returns", icon: Truck, title: "Shipping & returns", sub: "Labels, tracking and returns, back into stock" },
   { id: "automations", label: "Automations", icon: Zap, title: "Automations", sub: "What runs on its own, and when it last ran" },
   { id: "connections", label: "Connections", icon: Plug, title: "Connections", sub: "Sales channels, stock, shipping and returns, on one count" },
-  { id: "pricing", label: "Pricing & trial", icon: BadgeDollarSign, title: "Pricing & free trial", sub: "$500 per connection, one-time. Try 1 connection free for 7 days.", trial: true },
+  { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try 1 connection free for 7 days." },
 ];
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;
@@ -130,11 +131,11 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
     },
     locked: (what, text) => {
       tRef.current?.action("locked", what);
-      setDialog({ title: "View only", body: `${text ?? "This"} is switched off in the demo, so nothing changes in the store. In your own setup it works with one click.` });
+      setDialog({ title: "View only", body: `${text ?? "This"} is switched off in the demo, so nothing changes in the store. In your own build it works the way you decide.` });
     },
     connect: (s, name, body) => {
       tRef.current?.connect(s);
-      setDialog({ title: `Connect ${name}`, slug: s, name, body: body ?? `View only in this demo. For your store we connect ${name} to the same stock count.` });
+      setDialog({ title: `Connect ${name}`, slug: s, name, body: body ?? `This demo is one boutique's custom build, so it is view only. In your own build, ${name} is connected the way your setup needs it: what comes in, what goes out and the rules are decided with you.` });
     },
   };
 
@@ -152,8 +153,8 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
             Live demo
           </span>
           <p className="order-3 w-full text-[12.5px] leading-[1.5] text-[#cbd5e1] xl:order-2 xl:w-auto xl:min-w-0 xl:flex-1 xl:text-[13px]">
-            <span className="sm:hidden">A store&apos;s sync, read-only.</span>
-            <span className="hidden sm:inline">A {cfg.goods.toLowerCase()} store&apos;s sync, read-only: nothing you click changes anything. We set up the same for yours.</span>
+            <span className="sm:hidden">One store&apos;s custom build. Read-only.</span>
+            <span className="hidden sm:inline">One {cfg.goods.toLowerCase()} store&apos;s custom build. Yours is built around your own platforms and rules. Read-only: nothing you click changes anything.</span>
           </p>
           <div className="order-2 ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1.5 xl:order-3">
             <a href={cfg.caseHref} onClick={() => tRef.current?.cta("back_case", "How it works")} className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
@@ -162,9 +163,9 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
             <button type="button" onClick={() => { tRef.current?.cta("pricing", "Pricing (top bar)"); go("pricing"); }} className="inline-flex h-8 items-center rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
               Pricing
             </button>
-            <a href={cfg.contactHref} onClick={() => tRef.current?.cta("get_this", "Get this for your store (top bar)")} className="ml-1 inline-flex h-8 items-center gap-1.5 rounded-lg bg-white px-2.5 text-[13px] font-semibold text-[#0f172a] hover:bg-[#e2e8f0] sm:px-3">
-              <span className="sm:hidden">Get this</span>
-              <span className="hidden sm:inline">Get this for your store</span>
+            <a href={cfg.contactHref} onClick={() => tRef.current?.cta("get_this", "Plan my own build (top bar)")} className="ml-1 inline-flex h-8 items-center gap-1.5 rounded-lg bg-white px-2.5 text-[13px] font-semibold text-[#0f172a] hover:bg-[#e2e8f0] sm:px-3">
+              <span className="sm:hidden">My build</span>
+              <span className="hidden sm:inline">Plan my own build</span>
               <ArrowRight size={14} className="hidden sm:block" />
             </a>
           </div>
@@ -189,17 +190,16 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
                   <Ico size={18} />
                   {s.label}
                   {s.beta && <BetaPill />}
-                  {s.trial && <TrialPill />}
                 </button>
               );
             })}
           </nav>
           <div className="m-3 rounded-xl border border-[#e3e6eb] bg-[#f8fafc] p-4">
-            <p className="flex items-center gap-2 text-[13px] font-semibold"><Lock size={14} />Read-only demo</p>
-            <p className="mt-1 text-[12.5px] leading-[1.5] text-[#64748b]">Your channels, your stockroom and your carriers on one stock count. We set up the same for yours.</p>
+            <p className="flex items-center gap-2 text-[13px] font-semibold"><Lock size={14} />One client&apos;s build</p>
+            <p className="mt-1 text-[12.5px] leading-[1.5] text-[#64748b]">Made for this boutique&apos;s channels, stockroom, carriers and rules. Yours is scoped with you and built for your own.</p>
             <OfferLines />
-            <a href={cfg.contactHref} onClick={() => tRef.current?.cta("get_this", "Get this for your store (sidebar)")} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] text-[13.5px] font-semibold text-white hover:bg-[#1d4ed8]">
-              Get this for your store
+            <a href={cfg.contactHref} onClick={() => tRef.current?.cta("get_this", "Plan my own build (sidebar)")} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] text-[13.5px] font-semibold text-white hover:bg-[#1d4ed8]">
+              Plan my own build
             </a>
           </div>
         </aside>
@@ -230,14 +230,13 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
                 <button key={s.id} type="button" onClick={() => go(s.id)} className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
                   {s.label}
                   {s.beta && <BetaPill />}
-                  {s.trial && <TrialPill />}
                 </button>
               ))}
             </nav>
           </header>
 
           <main className="mx-auto max-w-[1320px] p-4 md:p-6 lg:p-8">
-            {section !== "pricing" && <TrialStrip open={() => go("pricing")} contact={cfg.contactHref} t={tRef.current} />}
+            {section !== "pricing" && <CustomNotice who={cfg.who} setup={cfg.setup} contact={cfg.contactHref} t={tRef.current} />}
             {section === "pricing" && <PricingView contact={cfg.contactHref} t={tRef.current} />}
             {failed ? (
               <div className="rounded-xl border border-[#e3e6eb] bg-white p-8 text-center text-[14px] text-[#64748b]">The store could not be read just now. Refresh the page in a moment.</div>
@@ -254,7 +253,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
             )}
             {section !== "pricing" && <OfferCard contact={cfg.contactHref} t={tRef.current} open={() => go("pricing")} />}
             <p className="mt-8 text-center text-[12.5px] leading-[1.6] text-[#94a3b8]">
-              Built and run by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a> · customer names and order numbers hidden
+              A custom build by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a>, made for one store · customer names and order numbers hidden
             </p>
           </main>
         </div>
@@ -290,9 +289,9 @@ function ViewOnly({ d, onClose, t, contact }: { d: NonNullable<Dialog>; onClose:
         <OfferNote name={d.slug ? name : undefined} />
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button onClick={onClose}>Keep looking</Button>
-          <a href={contact} onClick={() => t?.cta("get_this", d.slug ? `Connect ${d.slug} for my store` : "Get this for your store (view only)")}
+          <a href={contact} onClick={() => t?.cta("get_this", d.slug ? `Add ${d.slug} to my build` : "Plan my own build (view only)")}
             className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] px-3.5 text-[14px] font-semibold text-white hover:bg-[#1d4ed8]">
-            {d.slug ? `Connect ${name} for my store` : "Get this for your store"}<ArrowRight size={15} />
+            {d.slug ? `Add ${name} to my build` : "Plan my own build"}<ArrowRight size={15} />
           </a>
         </div>
       </div>

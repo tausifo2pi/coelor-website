@@ -8,8 +8,8 @@ import DemoApp from "@/components/demo/DemoApp";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
-  title: "Live demo: multi-platform sync · Coelor",
-  description: "A multi-platform sync at work: marketplaces, web store and warehouse on one stock count. Orders, stock, listings and automations, read-only.",
+  title: "Live demo: a custom build · Coelor",
+  description: "One sneaker reseller's custom build at work: marketplaces, web store and warehouse on one stock count. Read-only. Yours is built for your own setup.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/demo/multi-platform-sync" },
 };

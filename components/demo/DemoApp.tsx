@@ -1,8 +1,8 @@
 "use client";
 
-// The live demo (/demo/multi-platform-sync): the sync we run for a Dutch sneaker reseller (StockX EU + US, Alias and
-// Alias USA, one Picqer warehouse) and the other channels of lib/demo/channels.ts, as an integration app a seller would
-// use. Read-only; every channel looks the same. Sections switch without a page load (?section= in the address);
+// The live demo (/demo/multi-platform-sync): the custom build we run for a Dutch sneaker reseller (StockX EU + US, Alias
+// and Alias USA, one Picqer warehouse) and the other channels of lib/demo/channels.ts. Shown as that one client's build
+// (CustomNotice: theirs is made for their own setup), not as a product to pick (step 5a, user 2026-10-11). Read-only; every channel looks the same. Sections switch without a page load (?section= in the address);
 // lib/demo/track.ts records what the visitor looks at.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, Lock, LayoutDashboard, Plug, Receipt, RefreshCw, Sparkles, Tag, X, Zap, type LucideIcon } from "lucide-react";
@@ -12,22 +12,23 @@ import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { getJson } from "@/lib/demo/get";
 import { Automations, Connections, Dashboard, Listings, Orders, Products, type Ctx, type Live, type SectionId } from "@/components/demo/views";
 import { Extra } from "@/components/demo/Extra";
-import { Badge, BetaPill, TrialPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
+import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
 import { OfferCard, OfferLines, OfferNote } from "@/components/demo/Offer";
-import { PricingView, TrialStrip } from "@/components/demo/Pricing";
+import { PricingView } from "@/components/demo/Pricing";
+import { CustomNotice } from "@/components/demo/CustomNotice";
 
 const CONTACT = "/case-studies/stock-sync#contact";
 const CASE = "/case-studies/stock-sync";
 
-const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean; trial?: boolean }[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "The sync right now: channels, orders and automations" },
+const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean }[] = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "This build right now: channels, orders and automations" },
   { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines that get data and post it to your team, written from a chat (beta)", beta: true },
   { id: "connections", label: "Connections", icon: Plug, title: "Connections", sub: "Sales channels, the warehouse and the tools, on one stock count" },
   { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the sync did with the stock" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Picqer products linked to the same size on every account" },
   { id: "listings", label: "Listings", icon: Tag, title: "Listings", sub: "Channel listings the sync watches" },
   { id: "automations", label: "Automations", icon: Zap, title: "Automations", sub: "What runs on its own, and when it last ran" },
-  { id: "pricing", label: "Pricing & trial", icon: BadgeDollarSign, title: "Pricing & free trial", sub: "$500 per connection, one-time. Try 1 connection free for 7 days.", trial: true },
+  { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try 1 connection free for 7 days." },
 ];
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;
@@ -113,7 +114,7 @@ export default function DemoApp() {
     },
     locked: (what, text) => {
       tRef.current?.action("locked", what);
-      setDialog({ title: "View only", body: `${text ?? "This"} is switched off in the demo, so nothing changes in the live store. In your own setup it works with one click.` });
+      setDialog({ title: "View only", body: `${text ?? "This"} is switched off in the demo, so nothing changes in the live store. In your own build it works the way you decide.` });
     },
     connect: (slug, name, body) => {
       tRef.current?.connect(slug);
@@ -121,7 +122,7 @@ export default function DemoApp() {
         title: `Connect ${name}`,
         slug,
         name,
-        body: body ?? `This demo is a live store that is already running, so it is view only. We connect ${name} to the same stock count for your store: every sale there comes off Picqer, and sold-out sizes come down everywhere.`,
+        body: body ?? `This demo is one reseller's custom build, already running, so it is view only. In your own build, ${name} is connected the way your setup needs it: what comes in, what goes out and the rules are decided with you.`,
       });
     },
   };
@@ -141,8 +142,8 @@ export default function DemoApp() {
             Live demo
           </span>
           <p className="order-3 w-full text-[12.5px] leading-[1.5] text-[#cbd5e1] xl:order-2 xl:w-auto xl:min-w-0 xl:flex-1 xl:text-[13px]">
-            <span className="sm:hidden">This is a real store&apos;s sync. Read-only.</span>
-            <span className="hidden sm:inline">This is a real store&apos;s sync. We set up the same for yours. Read-only: nothing you click changes the store.</span>
+            <span className="sm:hidden">One reseller&apos;s custom build. Read-only.</span>
+            <span className="hidden sm:inline">One sneaker reseller&apos;s custom build, running live. Yours is built around your own platforms and rules. Read-only: nothing you click changes anything.</span>
           </p>
           <div className="order-2 ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1.5 xl:order-3">
             <a href={CASE} onClick={() => tRef.current?.cta("back_case", "Case study")} className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
@@ -151,9 +152,9 @@ export default function DemoApp() {
             <button type="button" onClick={() => { tRef.current?.cta("pricing", "Pricing (top bar)"); go("pricing"); }} className="inline-flex h-8 items-center rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
               Pricing
             </button>
-            <a href={CONTACT} onClick={() => tRef.current?.cta("get_this", "Get this for your store (top bar)")} className="ml-1 inline-flex h-8 items-center gap-1.5 rounded-lg bg-white px-2.5 text-[13px] font-semibold text-[#0f172a] hover:bg-[#e2e8f0] sm:px-3">
-              <span className="sm:hidden">Get this</span>
-              <span className="hidden sm:inline">Get this for your store</span>
+            <a href={CONTACT} onClick={() => tRef.current?.cta("get_this", "Plan my own build (top bar)")} className="ml-1 inline-flex h-8 items-center gap-1.5 rounded-lg bg-white px-2.5 text-[13px] font-semibold text-[#0f172a] hover:bg-[#e2e8f0] sm:px-3">
+              <span className="sm:hidden">My build</span>
+              <span className="hidden sm:inline">Plan my own build</span>
               <ArrowRight size={14} className="hidden sm:block" />
             </a>
           </div>
@@ -167,7 +168,7 @@ export default function DemoApp() {
             <a href="/" onClick={() => tRef.current?.cta("home", "Coelor logo (sidebar)")} className="self-start rounded-md" aria-label="Coelor home page">
               <CoelorWordmark height={19} />
             </a>
-            <p className="truncate text-[12.5px] leading-tight text-[#64748b]"><b className="font-semibold text-[#334155]">Multi-platform sync</b> · Sneakers</p>
+            <p className="truncate text-[12.5px] leading-tight text-[#64748b]"><b className="font-semibold text-[#334155]">Custom build</b> · Sneaker reseller</p>
           </div>
           <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3" aria-label="Demo sections">
             {SECTIONS.map((s) => {
@@ -184,17 +185,16 @@ export default function DemoApp() {
                   <Ico size={18} />
                   {s.label}
                   {s.beta && <BetaPill />}
-                  {s.trial && <TrialPill />}
                 </button>
               );
             })}
           </nav>
           <div className="m-3 rounded-xl border border-[#e3e6eb] bg-[#f8fafc] p-4">
-            <p className="flex items-center gap-2 text-[13px] font-semibold"><Lock size={14} />Read-only demo</p>
-            <p className="mt-1 text-[12.5px] leading-[1.5] text-[#64748b]">This is a real store&apos;s sync. We set up the same for yours.</p>
+            <p className="flex items-center gap-2 text-[13px] font-semibold"><Lock size={14} />One client&apos;s build</p>
+            <p className="mt-1 text-[12.5px] leading-[1.5] text-[#64748b]">Made for this reseller&apos;s accounts, warehouse and rules. Yours is scoped with you and built for your own.</p>
             <OfferLines />
-            <a href={CONTACT} onClick={() => tRef.current?.cta("get_this", "Get this for your store (sidebar)")} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] text-[13.5px] font-semibold text-white hover:bg-[#1d4ed8]">
-              Get this for your store
+            <a href={CONTACT} onClick={() => tRef.current?.cta("get_this", "Plan my own build (sidebar)")} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] text-[13.5px] font-semibold text-white hover:bg-[#1d4ed8]">
+              Plan my own build
             </a>
           </div>
         </aside>
@@ -213,7 +213,7 @@ export default function DemoApp() {
               </div>
               {ov && (
                 <Badge tone={stale ? "amber" : "green"} dot>
-                  {stale ? "Paused" : "Live"}
+                  {stale ? "Updating" : "Live"}
                   <span className="hidden sm:inline">{stale ? ` · data from ${ago(ov.at, now)}` : ` · updated ${ago(ov.at, now)}`}</span>
                 </Badge>
               )}
@@ -227,14 +227,13 @@ export default function DemoApp() {
                 <button key={s.id} type="button" onClick={() => go(s.id)} className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
                   {s.label}
                   {s.beta && <BetaPill />}
-                  {s.trial && <TrialPill />}
                 </button>
               ))}
             </nav>
           </header>
 
           <main className="mx-auto max-w-[1320px] p-4 md:p-6 lg:p-8">
-            {section !== "pricing" && <TrialStrip open={() => go("pricing")} contact={CONTACT} t={tRef.current} />}
+            {section !== "pricing" && <CustomNotice who="one sneaker reseller" setup="their StockX and Alias accounts, their Picqer warehouse, their suppliers and their own rules" contact={CONTACT} t={tRef.current} />}
             {section === "pricing" && <PricingView contact={CONTACT} t={tRef.current} />}
             {section === "dashboard" && <Dashboard ov={ov} ctx={ctx} />}
             {section === "connections" && <Connections ov={ov} ctx={ctx} />}
@@ -245,7 +244,7 @@ export default function DemoApp() {
             {section === "assistant" && <Extra ctx={ctx} />}
             {section !== "pricing" && <OfferCard contact={CONTACT} t={tRef.current} open={() => go("pricing")} />}
             <p className="mt-8 text-center text-[12.5px] leading-[1.6] text-[#94a3b8]">
-              Built and run by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a> · customer names and order numbers hidden
+              A custom build by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a>, made for one reseller · customer names and order numbers hidden
             </p>
           </main>
         </div>
@@ -283,10 +282,10 @@ function ViewOnly({ d, onClose, t }: { d: NonNullable<Dialog>; onClose: () => vo
           <Button onClick={onClose}>Keep looking</Button>
           <a
             href={CONTACT}
-            onClick={() => t?.cta("get_this", d.slug ? `Connect ${d.slug} for my store` : "Get this for your store (view only)")}
+            onClick={() => t?.cta("get_this", d.slug ? `Add ${d.slug} to my build` : "Plan my own build (view only)")}
             className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] px-3.5 text-[14px] font-semibold text-white hover:bg-[#1d4ed8]"
           >
-            {d.slug ? `Connect ${name} for my store` : "Get this for your store"}<ArrowRight size={15} />
+            {d.slug ? `Add ${name} to my build` : "Plan my own build"}<ArrowRight size={15} />
           </a>
         </div>
       </div>

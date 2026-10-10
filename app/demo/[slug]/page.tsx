@@ -15,8 +15,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const d = demoBySlug((await params).slug);
   return {
-    title: `Live demo: ${d?.goods.toLowerCase() ?? "store"} sync · Coelor`,
-    description: "A multi-platform sync at work: web store, social shop, marketplace, stockroom and carriers on one stock count. Read-only.",
+    title: `Live demo: a ${d?.goods.toLowerCase() ?? "store"} custom build · Coelor`,
+    description: "One store's custom build at work: web store, social shop, marketplaces, stockroom and carriers on one stock count. Read-only. Yours is built for your own setup.",
     robots: { index: false, follow: false },
     alternates: { canonical: `/demo/${d?.slug ?? ""}` },
   };

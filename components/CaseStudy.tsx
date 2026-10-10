@@ -30,7 +30,7 @@ function DemoLink({ c, wide = true }: { c: CaseContent; wide?: boolean }) {
         <span className="absolute inset-0 animate-ping rounded-full bg-[#04150d]/60 motion-reduce:animate-none" />
         <span className="relative h-2.5 w-2.5 rounded-full bg-[#04150d]" />
       </span>
-      {c.demo?.label ?? "Live Demo · Real Results"}
+      {c.demo?.label ?? "Live demo · a custom build"}
       <Icon name="arrow-right" size={17} strokeWidth={2.6} className="shrink-0 transition-transform group-hover:translate-x-1" />
     </a>
   );

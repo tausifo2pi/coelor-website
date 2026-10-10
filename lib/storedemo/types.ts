@@ -55,6 +55,9 @@ export type DemoConfig = {
   /** shown in the sidebar: "<label> · <goods>" */
   label: string;
   goods: string;
+  /** the custom-build notice: whose build this is ("one women's boutique") and what it is made around */
+  who: string;
+  setup: string;
   /** the noun for one unit and many ("piece", "pieces") */
   item: string;
   items: string;

@@ -8,8 +8,10 @@ import type { DemoConfig } from "./types.ts";
 
 export const WOMENS_BOUTIQUE: DemoConfig = {
   slug: "womens-boutique",
-  label: "Multi-platform sync",
+  label: "Custom build",
   goods: "Women's clothing",
+  who: "one women's boutique",
+  setup: "their Shopify store, TikTok Shop, Amazon, Walmart and Poshmark, their stockroom, their carriers and their own rules",
   item: "piece",
   items: "pieces",
   store: { domain: "lane201.com", newest: 120, bestCollection: "bestsellers" },

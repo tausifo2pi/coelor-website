@@ -1,46 +1,22 @@
 "use client";
 
-// "Pricing & trial" inside the live demos (sneaker and store demos), in the demo's light look, so a reader sees the
-// price and the free trial without leaving the demo: the trial first, a live quote with every line of the price, the
-// plans, how it goes, and what is and is not in the price. A slim trial strip sits at the top of every other section
-// and opens this one. Numbers and words from lib/offer.ts (the same offer as the public /pricing). Buttons open the
+// "Your build & price" inside the live demos (sneaker and store demos), in the demo's light look, so a reader sees the
+// price and the free trial without leaving the demo: the trial first, a live quote with every line of the price, how it
+// goes, and what is and is not in the price. No plan tiles and no trial strip on every section (step 5a, user
+// 2026-10-11: plans read like an off-the-shelf product; every build is scoped for one business). Numbers and words from lib/offer.ts (the same offer as the public /pricing). Buttons open the
 // demo's contact form already filled in (?plan=, see ContactForm). The quote's stepper is not tracked (only "Get this
 // quote"): every demo_cta is a phone notification.
 import { useState } from "react";
 import { ArrowRight, Check, Minus, Plus } from "lucide-react";
 import { OFFER, OFFER_LINES, TRIAL, breakdown, usd, withPlan } from "@/lib/offer";
 import type { DemoTracker } from "@/lib/demo/track";
-import { PlanTiles } from "@/components/demo/Offer";
 
 const per = usd(OFFER.perConnection);
 const PRICING = "/pricing";
 
-/** The top of every section: the free trial in one line, and the way to the pricing section. */
-export function TrialStrip({ open, contact, t }: { open: () => void; contact: string; t: DemoTracker | null }) {
-  return (
-    <div className="mb-5 flex flex-col gap-3 rounded-xl border border-[#bbf7d0] bg-[#f0fdf4] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-      <p className="flex items-start gap-2.5 text-[13.5px] leading-[1.5] text-[#14532d]">
-        <span className="mt-[6px] h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#22c55e]" aria-hidden />
-        <span>
-          <b className="font-semibold">Free {TRIAL.days}-day trial:</b> we connect {TRIAL.connections} platform of yours, no card.
-          <span className="hidden md:inline"> After that {per} per connection, one-time, {OFFER_LINES.free.toLowerCase()}.</span>
-        </span>
-      </p>
-      <div className="flex shrink-0 items-center gap-2">
-        <button type="button" onClick={open} className="inline-flex h-8 items-center rounded-lg px-2.5 text-[13px] font-semibold text-[#166534] hover:bg-[#dcfce7]">
-          Pricing
-        </button>
-        <a href={withPlan(contact, "trial")} onClick={() => t?.cta("trial", "Start free trial (strip)")} className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#16a34a] px-3 text-[13px] font-semibold text-white hover:bg-[#15803d]">
-          Start free trial<ArrowRight size={14} />
-        </a>
-      </div>
-    </div>
-  );
-}
-
 const STEPS = [
-  { when: "Day 0", title: "30-minute call", body: "We list your platforms and accounts together. You get the exact price in writing before anything starts." },
-  { when: "Day 1", title: "Set-up", body: "We connect your platforms and accounts and set the automations to your rules." },
+  { when: "Day 0", title: "30-minute call", body: "We go through your platforms, accounts and the way you work. You get the scope and the exact price in writing before anything starts." },
+  { when: "Day 1", title: "Your build", body: "We build it for your platforms and accounts, with the automations set to your rules." },
   { when: `Days 2–${TRIAL.days + 1}`, title: "Free trial", body: `${TRIAL.connections} connection free for ${TRIAL.days} days on your real data. No card.`, optional: true },
   { when: "Once it runs", title: "Pay once", body: "One payment, the price agreed on the call. Never before it works." },
   { when: "Then", title: "Handover", body: "The full source code and a walkthrough. It's yours." },
@@ -144,7 +120,7 @@ export function PricingView({ contact, t }: { contact: string; t: DemoTracker | 
             <h2 className="mt-1 text-[24px] font-bold tracking-[-0.02em] md:text-[28px]">Try it free for {TRIAL.days} days</h2>
             <p className="mt-2 max-w-[560px] text-[15px] leading-[1.6] text-[#334155]">
               We connect {TRIAL.connections} platform or account of your store and set it up in 1 day. It then runs for {TRIAL.days} days on your real data, like the
-              sync in this demo. No card, no commitment.
+              build in this demo. No card, no commitment.
             </p>
           </div>
           <ul className="grid gap-2.5 sm:grid-cols-2">
@@ -170,17 +146,6 @@ export function PricingView({ contact, t }: { contact: string; t: DemoTracker | 
         </Box>
         <Quote contact={contact} t={t} />
       </div>
-
-      <Box>
-        <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <Label>Plans</Label>
-            <h3 className="mt-1 text-[19px] font-bold tracking-[-0.01em]">{per} per connection, {OFFER_LINES.free.toLowerCase()}</h3>
-          </div>
-          <p className="text-[13px] text-[#64748b]">A connection is one platform or account: a marketplace account, a web store, a warehouse system.</p>
-        </div>
-        <PlanTiles contact={contact} t={t} where="pricing" className="pt-2" />
-      </Box>
 
       <Box>
         <Label>How it goes</Label>

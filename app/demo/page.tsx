@@ -10,7 +10,7 @@ import { OFFER, OFFER_LINES, usd, withPlan } from "@/lib/offer";
 
 export const metadata: Metadata = {
   title: "Live demo · Coelor",
-  description: "A multi-platform sync at work: orders, stock, listings and automations, live and read-only.",
+  description: "One reseller's custom build at work: orders, stock, listings and automations, live and read-only. Yours is built for your own setup.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/demo" },
 };
@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 const LIVE = "/demo/multi-platform-sync?src=live";
 
 const SEES = [
-  { icon: "activity", text: "Orders coming in from every channel, and what the sync did with the stock" },
+  { icon: "activity", text: "Orders coming in from every channel, and what the build did with the stock" },
   { icon: "warehouse", text: "One stock count behind every marketplace, web store and account" },
-  { icon: "refresh", text: "The automations that run on their own, with their last run" },
+  { icon: "refresh", text: "The rules made for this reseller, running on their own, with their last run" },
 ];
 
 export default function DemoIntro() {
@@ -39,10 +39,11 @@ export default function DemoIntro() {
             <span className="pulse h-2 w-2 rounded-full bg-accent" aria-hidden />
             Live demo
           </span>
-          <h1 className="display text-balance text-[34px] leading-[1.1] text-ink sm:text-[44px]">A real store&apos;s sync, running right now.</h1>
+          <h1 className="display text-balance text-[34px] leading-[1.1] text-ink sm:text-[44px]">One reseller&apos;s custom build, running right now.</h1>
           <p className="max-w-[560px] text-[16px] leading-[1.6] text-ink-muted md:text-[18px]">
-            Look inside the sync we built and run for a reseller: read-only, nothing you click changes the store. We set up the
-            same for yours.
+            Look inside a build we made and run for one sneaker reseller, around their own marketplaces, warehouse and rules. It is
+            heavily customised for them, so it won&apos;t match your setup. Yours is built for exactly what you need. Read-only:
+            nothing you click changes anything.
           </p>
         </div>
 
@@ -60,7 +61,7 @@ export default function DemoIntro() {
         <div id="offer" className="panel overflow-hidden">
           <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
             <div className="flex flex-col gap-1.5">
-              <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">The same for your store</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">Your own build</span>
               <p className="flex flex-wrap items-baseline gap-x-2">
                 <span className="display text-[34px] leading-none text-ink">{usd(OFFER.perConnection)}</span>
                 <span className="text-[15px] text-ink-muted">per connection, one-time</span>
