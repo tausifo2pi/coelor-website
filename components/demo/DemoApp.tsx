@@ -5,20 +5,27 @@
 // (CustomNotice: theirs is made for their own setup), not as a product to pick (step 5a, user 2026-10-11). Read-only; every channel looks the same. Sections switch without a page load (?section= in the address);
 // lib/demo/track.ts records what the visitor looks at.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, Lock, LayoutDashboard, Plug, Receipt, RefreshCw, Sparkles, Tag, X, Zap, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, History, Lock, LayoutDashboard, Plug, Receipt, RefreshCw, Sparkles, Tag, X, Zap, type LucideIcon } from "lucide-react";
 import { PICQER } from "@/lib/demo/channels";
 import type { Overview, Product } from "@/lib/demo/shape";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { getJson } from "@/lib/demo/get";
 import { Automations, Connections, Dashboard, Listings, Orders, Products, type Ctx, type Live, type SectionId } from "@/components/demo/views";
 import { Extra } from "@/components/demo/Extra";
-import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
-import { OfferCard, OfferLines, OfferNote } from "@/components/demo/Offer";
+import { Badge, BetaPill, BrandMark, Button, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
+import { OfferCard, OfferNote } from "@/components/demo/Offer";
 import { PricingView } from "@/components/demo/Pricing";
 import { CustomNotice } from "@/components/demo/CustomNotice";
+import { NORTHVALE } from "@/lib/demo/clients";
+import { BuildLog } from "@/components/demo/workspace/BuildLog";
+import { accentVars } from "@/components/demo/workspace/ClientMark";
+import { DemoFooter, PageTitle, TopBarText, WorkspaceFoot, WorkspaceHead, navItem, navPill, primaryBtn } from "@/components/demo/workspace/Shell";
+import { possessive } from "@/components/demo/workspace/format";
 
 const CONTACT = "/case-studies/stock-sync#contact";
 const CASE = "/case-studies/stock-sync";
+// the demo shop this workspace is shown as (lib/demo/clients.ts): its name, colours, team and build log
+const CLIENT = NORTHVALE;
 
 const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "This build right now: channels, orders and automations" },
@@ -28,6 +35,7 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Picqer products linked to the same size on every account" },
   { id: "listings", label: "Listings", icon: Tag, title: "Listings", sub: "Channel listings the sync watches" },
   { id: "automations", label: "Automations", icon: Zap, title: "Automations", sub: "What runs on its own, and when it last ran" },
+  { id: "build", label: "Build log", icon: History, title: "Build log", sub: "Every change to this build: what the team asked for, and when it went live" },
   { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try 1 connection free for 7 days." },
 ];
 
@@ -114,7 +122,7 @@ export default function DemoApp() {
     },
     locked: (what, text) => {
       tRef.current?.action("locked", what);
-      setDialog({ title: "View only", body: `${text ?? "This"} is switched off in the demo, so nothing changes in the live store. In your own build it works the way you decide.` });
+      setDialog({ title: "View only", body: `${text ?? "This"} is switched off in the demo, so nothing in ${possessive(CLIENT.name)} build changes. In your own build it works the way you decide.` });
     },
     connect: (slug, name, body) => {
       tRef.current?.connect(slug);
@@ -122,7 +130,7 @@ export default function DemoApp() {
         title: `Connect ${name}`,
         slug,
         name,
-        body: body ?? `This demo is one reseller's custom build, already running, so it is view only. In your own build, ${name} is connected the way your setup needs it: what comes in, what goes out and the rules are decided with you.`,
+        body: body ?? `This demo is ${possessive(CLIENT.name)} build, so it is view only. In your own build, ${name} is connected the way your setup needs it: what comes in, what goes out and the rules are decided with you.`,
       });
     },
   };
@@ -133,7 +141,7 @@ export default function DemoApp() {
   const stale = ov?.stale || ovFailed;
 
   return (
-    <div data-track="off" className="min-h-screen bg-[#f4f5f7] font-sans text-[#0f172a] [color-scheme:light]">
+    <div data-track="off" className="min-h-screen bg-[#f4f5f7] font-sans text-[#0f172a] [color-scheme:light]" style={accentVars(CLIENT)}>
       {/* the demo's frame: what this is, and the way back. Phones: the label and the links, then one line of text */}
       <div className="bg-[#0f172a] text-white">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 md:px-6 xl:py-2.5">
@@ -142,8 +150,7 @@ export default function DemoApp() {
             Live demo
           </span>
           <p className="order-3 w-full text-[12.5px] leading-[1.5] text-[#cbd5e1] xl:order-2 xl:w-auto xl:min-w-0 xl:flex-1 xl:text-[13px]">
-            <span className="sm:hidden">One reseller&apos;s custom build. Read-only.</span>
-            <span className="hidden sm:inline">One sneaker reseller&apos;s custom build, running live. Yours is built around your own platforms and rules. Read-only: nothing you click changes anything.</span>
+            <TopBarText client={CLIENT} />
           </p>
           <div className="order-2 ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1.5 xl:order-3">
             <a href={CASE} onClick={() => tRef.current?.cta("back_case", "Case study")} className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
@@ -162,15 +169,9 @@ export default function DemoApp() {
       </div>
 
       <div className="md:grid md:grid-cols-[248px_minmax(0,1fr)]">
-        <aside className="sticky top-0 hidden h-screen flex-col border-r border-[#e3e6eb] bg-white md:flex">
-          {/* the same height as the header (72 px + its 1 px border), so their bottom borders are one line */}
-          <div className="flex h-[73px] shrink-0 flex-col justify-center gap-2 border-b border-[#e3e6eb] px-5">
-            <a href="/" onClick={() => tRef.current?.cta("home", "Coelor logo (sidebar)")} className="self-start rounded-md" aria-label="Coelor home page">
-              <CoelorWordmark height={19} />
-            </a>
-            <p className="truncate text-[12.5px] leading-tight text-[#64748b]"><b className="font-semibold text-[#334155]">Custom build</b> · Sneaker reseller</p>
-          </div>
-          <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3" aria-label="Demo sections">
+        <aside className="sticky top-0 hidden h-screen flex-col overflow-y-auto border-r border-[#e3e6eb] bg-white md:flex">
+          <WorkspaceHead client={CLIENT} />
+          <nav className="flex flex-col gap-0.5 p-3" aria-label="Demo sections">
             {SECTIONS.map((s) => {
               const on = s.id === section;
               const Ico = s.icon;
@@ -180,7 +181,8 @@ export default function DemoApp() {
                   type="button"
                   onClick={() => go(s.id)}
                   aria-current={on ? "page" : undefined}
-                  className={`flex h-10 shrink-0 items-center gap-3 rounded-lg px-3 text-left text-[14px] font-semibold transition-colors ${on ? "bg-[#eff6ff] text-[#1d4ed8]" : "text-[#475569] hover:bg-[#f4f5f7] hover:text-[#0f172a]"}`}
+                  // our own section (the reader's build and its price) sits apart from the client's workspace
+                  className={`${navItem(on)} ${s.id === "pricing" ? "mt-2.5" : ""}`}
                 >
                   <Ico size={18} />
                   {s.label}
@@ -189,28 +191,13 @@ export default function DemoApp() {
               );
             })}
           </nav>
-          <div className="m-3 rounded-xl border border-[#e3e6eb] bg-[#f8fafc] p-4">
-            <p className="flex items-center gap-2 text-[13px] font-semibold"><Lock size={14} />One client&apos;s build</p>
-            <p className="mt-1 text-[12.5px] leading-[1.5] text-[#64748b]">Made for this reseller&apos;s accounts, warehouse and rules. Yours is scoped with you and built for your own.</p>
-            <OfferLines />
-            <a href={CONTACT} onClick={() => tRef.current?.cta("get_this", "Plan my own build (sidebar)")} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] text-[13.5px] font-semibold text-white hover:bg-[#1d4ed8]">
-              Plan my own build
-            </a>
-          </div>
+          <WorkspaceFoot client={CLIENT} made="Made for their accounts, warehouse and rules." contact={CONTACT} t={t} />
         </aside>
 
         <div className="min-w-0">
           <header className="sticky top-0 z-20 border-b border-[#e3e6eb] bg-white/95 backdrop-blur">
             <div className="flex h-[60px] items-center gap-2.5 px-4 sm:gap-3 md:h-[72px] md:px-6">
-              {/* phones (no sidebar): our logo at the left */}
-              <a href="/" onClick={() => tRef.current?.cta("home", "Coelor logo (header)")} className="shrink-0 rounded-md md:hidden" aria-label="Coelor home page">
-                <CoelorWordmark height={15} />
-              </a>
-              <span className="h-6 w-px shrink-0 bg-[#e3e6eb] md:hidden" aria-hidden />
-              <div className="min-w-0 flex-1">
-                <h1 className="truncate text-[17px] font-bold leading-tight tracking-[-0.01em] sm:text-[19px] md:text-[21px]">{cur.title}</h1>
-                <p className="hidden truncate text-[13px] text-[#64748b] sm:block">{cur.sub}</p>
-              </div>
+              <PageTitle client={CLIENT} title={cur.title} sub={cur.sub} />
               {ov && (
                 <Badge tone={stale ? "amber" : "green"} dot>
                   {stale ? "Updating" : "Live"}
@@ -224,7 +211,7 @@ export default function DemoApp() {
             {/* phones: the sections as a scrolling row */}
             <nav className="flex gap-1 overflow-x-auto px-3 pb-2 [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden" aria-label="Demo sections">
               {SECTIONS.map((s) => (
-                <button key={s.id} type="button" onClick={() => go(s.id)} className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
+                <button key={s.id} type="button" onClick={() => go(s.id)} aria-current={s.id === section ? "page" : undefined} className={navPill(s.id === section)}>
                   {s.label}
                   {s.beta && <BetaPill />}
                 </button>
@@ -233,7 +220,7 @@ export default function DemoApp() {
           </header>
 
           <main className="mx-auto max-w-[1320px] p-4 md:p-6 lg:p-8">
-            {section !== "pricing" && <CustomNotice who="one sneaker reseller" setup="their StockX and Alias accounts, their Picqer warehouse, their suppliers and their own rules" contact={CONTACT} t={tRef.current} />}
+            {section !== "pricing" && <CustomNotice client={CLIENT} contact={CONTACT} t={tRef.current} />}
             {section === "pricing" && <PricingView contact={CONTACT} t={tRef.current} />}
             {section === "dashboard" && <Dashboard ov={ov} ctx={ctx} />}
             {section === "connections" && <Connections ov={ov} ctx={ctx} />}
@@ -242,10 +229,9 @@ export default function DemoApp() {
             {section === "listings" && <Listings ctx={ctx} />}
             {section === "automations" && <Automations ov={ov} ctx={ctx} />}
             {section === "assistant" && <Extra ctx={ctx} />}
+            {section === "build" && <BuildLog client={CLIENT} ctx={ctx} />}
             {section !== "pricing" && <OfferCard contact={CONTACT} t={tRef.current} open={() => go("pricing")} />}
-            <p className="mt-8 text-center text-[12.5px] leading-[1.6] text-[#94a3b8]">
-              A custom build by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a>, made for one reseller · customer names and order numbers hidden
-            </p>
+            <DemoFooter client={CLIENT} t={t} />
           </main>
         </div>
       </div>
@@ -269,7 +255,7 @@ function ViewOnly({ d, onClose, t }: { d: NonNullable<Dialog>; onClose: () => vo
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-[#0f172a]/40 p-4 sm:items-center" onClick={onClose} role="presentation">
       <div role="dialog" aria-modal="true" aria-labelledby="vo-title" onClick={(e) => e.stopPropagation()} className="max-h-[calc(100dvh-2rem)] w-full max-w-[440px] overflow-y-auto rounded-2xl bg-white p-6 shadow-[0_24px_60px_-12px_rgba(15,23,42,0.35)]">
         <div className="flex items-start gap-3">
-          {d.slug && hasMark(d.slug) ? <BrandMark slug={d.slug} name={name} size={44} /> : <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#eff6ff] text-[#1d4ed8]"><Lock size={20} /></span>}
+          {d.slug && hasMark(d.slug) ? <BrandMark slug={d.slug} name={name} size={44} /> : <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[color:var(--ws-soft)] text-[color:var(--ws-ink)]"><Lock size={20} /></span>}
           <div className="min-w-0 flex-1">
             <h2 id="vo-title" className="text-[17px] font-bold">{d.title}</h2>
             <p className="mt-0.5 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#b45309]"><Lock size={12} />View only in this demo</p>
@@ -283,7 +269,7 @@ function ViewOnly({ d, onClose, t }: { d: NonNullable<Dialog>; onClose: () => vo
           <a
             href={CONTACT}
             onClick={() => t?.cta("get_this", d.slug ? `Add ${d.slug} to my build` : "Plan my own build (view only)")}
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] px-3.5 text-[14px] font-semibold text-white hover:bg-[#1d4ed8]"
+            className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg px-3.5 text-[14px] font-semibold ${primaryBtn}`}
           >
             {d.slug ? `Add ${name} to my build` : "Plan my own build"}<ArrowRight size={15} />
           </a>

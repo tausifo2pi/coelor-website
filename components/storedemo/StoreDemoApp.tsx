@@ -5,11 +5,15 @@
 // lib/storedemo/engine.ts tells the sync around it. Read-only, every click that would change something opens the
 // "view only" dialog. lib/demo/track.ts records what the visitor looks at, like the sneaker demo.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, LayoutDashboard, Lock, Plug, Receipt, RefreshCw, Sparkles, Truck, X, Zap, type LucideIcon } from "lucide-react";
-import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, ago, fmt, hasMark } from "@/components/demo/ui";
-import { OfferCard, OfferLines, OfferNote } from "@/components/demo/Offer";
+import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, History, LayoutDashboard, Lock, Plug, Receipt, RefreshCw, Sparkles, Truck, X, Zap, type LucideIcon } from "lucide-react";
+import { Badge, BetaPill, BrandMark, Button, ago, fmt, hasMark } from "@/components/demo/ui";
+import { OfferCard, OfferNote } from "@/components/demo/Offer";
 import { PricingView } from "@/components/demo/Pricing";
 import { CustomNotice } from "@/components/demo/CustomNotice";
+import { BuildLog } from "@/components/demo/workspace/BuildLog";
+import { accentVars } from "@/components/demo/workspace/ClientMark";
+import { DemoFooter, PageTitle, TopBarText, WorkspaceFoot, WorkspaceHead, navItem, navPill, primaryBtn } from "@/components/demo/workspace/Shell";
+import { possessive, storeClient } from "@/components/demo/workspace/format";
 import { getJson } from "@/lib/demo/get";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { SheetAssistant } from "@/components/demo/SheetAssistant";
@@ -29,6 +33,7 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
   { id: "shipping", label: "Shipping & returns", icon: Truck, title: "Shipping & returns", sub: "Labels, tracking and returns, back into stock" },
   { id: "automations", label: "Automations", icon: Zap, title: "Automations", sub: "What runs on its own, and when it last ran" },
   { id: "connections", label: "Connections", icon: Plug, title: "Connections", sub: "Sales channels, stock, shipping and returns, on one count" },
+  { id: "build", label: "Build log", icon: History, title: "Build log", sub: "Every change to this build: what the team asked for, and when it went live" },
   { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try 1 connection free for 7 days." },
 ];
 
@@ -65,6 +70,8 @@ async function loadCatalog(cfg: DemoConfig): Promise<Catalog> {
 
 export default function StoreDemoApp({ slug }: { slug: string }) {
   const cfg = demoBySlug(slug)!;
+  // the demo shop this workspace is shown as (lib/demo/clients.ts): its name, colours, team and build log
+  const client = storeClient(slug);
   const [section, setSection] = useState<SectionId>("dashboard");
   const [cat, setCat] = useState<Catalog | null>(null);
   const [failed, setFailed] = useState(false);
@@ -131,11 +138,11 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
     },
     locked: (what, text) => {
       tRef.current?.action("locked", what);
-      setDialog({ title: "View only", body: `${text ?? "This"} is switched off in the demo, so nothing changes in the store. In your own build it works the way you decide.` });
+      setDialog({ title: "View only", body: `${text ?? "This"} is switched off in the demo, so nothing in ${possessive(client.name)} build changes. In your own build it works the way you decide.` });
     },
     connect: (s, name, body) => {
       tRef.current?.connect(s);
-      setDialog({ title: `Connect ${name}`, slug: s, name, body: body ?? `This demo is one boutique's custom build, so it is view only. In your own build, ${name} is connected the way your setup needs it: what comes in, what goes out and the rules are decided with you.` });
+      setDialog({ title: `Connect ${name}`, slug: s, name, body: body ?? `This demo is ${possessive(client.name)} build, so it is view only. In your own build, ${name} is connected the way your setup needs it: what comes in, what goes out and the rules are decided with you.` });
     },
   };
 
@@ -145,7 +152,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
   const live = world?.liveNow(now);
 
   return (
-    <div data-track="off" className="min-h-screen bg-[#f4f5f7] font-sans text-[#0f172a] [color-scheme:light]">
+    <div data-track="off" className="min-h-screen bg-[#f4f5f7] font-sans text-[#0f172a] [color-scheme:light]" style={accentVars(client)}>
       <div className="bg-[#0f172a] text-white">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 md:px-6 xl:py-2.5">
           <span className="order-1 inline-flex shrink-0 items-center gap-2 text-[13px] font-semibold">
@@ -153,8 +160,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
             Live demo
           </span>
           <p className="order-3 w-full text-[12.5px] leading-[1.5] text-[#cbd5e1] xl:order-2 xl:w-auto xl:min-w-0 xl:flex-1 xl:text-[13px]">
-            <span className="sm:hidden">One store&apos;s custom build. Read-only.</span>
-            <span className="hidden sm:inline">One {cfg.goods.toLowerCase()} store&apos;s custom build. Yours is built around your own platforms and rules. Read-only: nothing you click changes anything.</span>
+            <TopBarText client={client} />
           </p>
           <div className="order-2 ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1.5 xl:order-3">
             <a href={cfg.caseHref} onClick={() => tRef.current?.cta("back_case", "How it works")} className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-[13px] font-semibold text-[#cbd5e1] hover:text-white sm:px-2.5">
@@ -173,20 +179,15 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
       </div>
 
       <div className="md:grid md:grid-cols-[248px_minmax(0,1fr)]">
-        <aside className="sticky top-0 hidden h-screen flex-col border-r border-[#e3e6eb] bg-white md:flex">
-          <div className="flex h-[73px] shrink-0 flex-col justify-center gap-2 border-b border-[#e3e6eb] px-5">
-            <a href="/" onClick={() => tRef.current?.cta("home", "Coelor logo (sidebar)")} className="self-start rounded-md" aria-label="Coelor home page">
-              <CoelorWordmark height={19} />
-            </a>
-            <p className="truncate text-[12.5px] leading-tight text-[#64748b]"><b className="font-semibold text-[#334155]">{cfg.label}</b> · {cfg.goods}</p>
-          </div>
-          <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3" aria-label="Demo sections">
+        <aside className="sticky top-0 hidden h-screen flex-col overflow-y-auto border-r border-[#e3e6eb] bg-white md:flex">
+          <WorkspaceHead client={client} />
+          <nav className="flex flex-col gap-0.5 p-3" aria-label="Demo sections">
             {SECTIONS.map((s) => {
               const on = s.id === section;
               const Ico = s.icon;
               return (
-                <button key={s.id} type="button" onClick={() => go(s.id)} aria-current={on ? "page" : undefined}
-                  className={`flex h-10 shrink-0 items-center gap-3 rounded-lg px-3 text-left text-[14px] font-semibold transition-colors ${on ? "bg-[#eff6ff] text-[#1d4ed8]" : "text-[#475569] hover:bg-[#f4f5f7] hover:text-[#0f172a]"}`}>
+                // our own section (the reader's build and its price) sits apart from the client's workspace
+                <button key={s.id} type="button" onClick={() => go(s.id)} aria-current={on ? "page" : undefined} className={`${navItem(on)} ${s.id === "pricing" ? "mt-2.5" : ""}`}>
                   <Ico size={18} />
                   {s.label}
                   {s.beta && <BetaPill />}
@@ -194,27 +195,13 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
               );
             })}
           </nav>
-          <div className="m-3 rounded-xl border border-[#e3e6eb] bg-[#f8fafc] p-4">
-            <p className="flex items-center gap-2 text-[13px] font-semibold"><Lock size={14} />One client&apos;s build</p>
-            <p className="mt-1 text-[12.5px] leading-[1.5] text-[#64748b]">Made for this boutique&apos;s channels, stockroom, carriers and rules. Yours is scoped with you and built for your own.</p>
-            <OfferLines />
-            <a href={cfg.contactHref} onClick={() => tRef.current?.cta("get_this", "Plan my own build (sidebar)")} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] text-[13.5px] font-semibold text-white hover:bg-[#1d4ed8]">
-              Plan my own build
-            </a>
-          </div>
+          <WorkspaceFoot client={client} made="Made for their channels, stockroom and rules." contact={cfg.contactHref} t={t} />
         </aside>
 
         <div className="min-w-0">
           <header className="sticky top-0 z-20 border-b border-[#e3e6eb] bg-white/95 backdrop-blur">
             <div className="flex h-[60px] items-center gap-2.5 px-4 sm:gap-3 md:h-[72px] md:px-6">
-              <a href="/" onClick={() => tRef.current?.cta("home", "Coelor logo (header)")} className="shrink-0 rounded-md md:hidden" aria-label="Coelor home page">
-                <CoelorWordmark height={15} />
-              </a>
-              <span className="h-6 w-px shrink-0 bg-[#e3e6eb] md:hidden" aria-hidden />
-              <div className="min-w-0 flex-1">
-                <h1 className="truncate text-[17px] font-bold leading-tight tracking-[-0.01em] sm:text-[19px] md:text-[21px]">{cur.title}</h1>
-                <p className="hidden truncate text-[13px] text-[#64748b] sm:block">{cur.sub}</p>
-              </div>
+              <PageTitle client={client} title={cur.title} sub={cur.sub} />
               {live && <span className="hidden lg:inline-flex"><Badge tone="red" dot>{cfg.channels.find((c) => c.id === live)?.name} LIVE now</Badge></span>}
               {world && (
                 <Badge tone="green" dot>
@@ -227,7 +214,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
             </div>
             <nav className="flex gap-1 overflow-x-auto px-3 pb-2 [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden" aria-label="Demo sections">
               {SECTIONS.map((s) => (
-                <button key={s.id} type="button" onClick={() => go(s.id)} className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${s.id === section ? "bg-[#0f172a] text-white" : "bg-[#eef0f3] text-[#475569]"}`}>
+                <button key={s.id} type="button" onClick={() => go(s.id)} aria-current={s.id === section ? "page" : undefined} className={navPill(s.id === section)}>
                   {s.label}
                   {s.beta && <BetaPill />}
                 </button>
@@ -236,9 +223,11 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
           </header>
 
           <main className="mx-auto max-w-[1320px] p-4 md:p-6 lg:p-8">
-            {section !== "pricing" && <CustomNotice who={cfg.who} setup={cfg.setup} contact={cfg.contactHref} t={tRef.current} />}
+            {section !== "pricing" && <CustomNotice client={client} contact={cfg.contactHref} t={tRef.current} />}
             {section === "pricing" && <PricingView contact={cfg.contactHref} t={tRef.current} />}
-            {failed ? (
+            {/* the build log is the client's own record, not the catalogue: it shows even when the store can't be read */}
+            {section === "build" && <BuildLog client={client} ctx={ctx} />}
+            {section === "pricing" || section === "build" ? null : failed ? (
               <div className="rounded-xl border border-[#e3e6eb] bg-white p-8 text-center text-[14px] text-[#64748b]">The store could not be read just now. Refresh the page in a moment.</div>
             ) : (
               <>
@@ -252,9 +241,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
               </>
             )}
             {section !== "pricing" && <OfferCard contact={cfg.contactHref} t={tRef.current} open={() => go("pricing")} />}
-            <p className="mt-8 text-center text-[12.5px] leading-[1.6] text-[#94a3b8]">
-              A custom build by <a href="/" className="font-semibold text-[#64748b] hover:text-[#0f172a]">Coelor</a>, made for one store · customer names and order numbers hidden
-            </p>
+            <DemoFooter client={client} t={t} />
           </main>
         </div>
       </div>
@@ -278,7 +265,7 @@ function ViewOnly({ d, onClose, t, contact }: { d: NonNullable<Dialog>; onClose:
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-[#0f172a]/40 p-4 sm:items-center" onClick={onClose} role="presentation">
       <div role="dialog" aria-modal="true" aria-labelledby="vo-title" onClick={(e) => e.stopPropagation()} className="max-h-[calc(100dvh-2rem)] w-full max-w-[440px] overflow-y-auto rounded-2xl bg-white p-6 shadow-[0_24px_60px_-12px_rgba(15,23,42,0.35)]">
         <div className="flex items-start gap-3">
-          {d.slug && hasMark(d.slug) ? <BrandMark slug={d.slug} name={name} size={44} /> : <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#eff6ff] text-[#1d4ed8]"><Lock size={20} /></span>}
+          {d.slug && hasMark(d.slug) ? <BrandMark slug={d.slug} name={name} size={44} /> : <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[color:var(--ws-soft)] text-[color:var(--ws-ink)]"><Lock size={20} /></span>}
           <div className="min-w-0 flex-1">
             <h2 id="vo-title" className="text-[17px] font-bold">{d.title}</h2>
             <p className="mt-0.5 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#b45309]"><Lock size={12} />View only in this demo</p>
@@ -290,7 +277,7 @@ function ViewOnly({ d, onClose, t, contact }: { d: NonNullable<Dialog>; onClose:
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button onClick={onClose}>Keep looking</Button>
           <a href={contact} onClick={() => t?.cta("get_this", d.slug ? `Add ${d.slug} to my build` : "Plan my own build (view only)")}
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#2563eb] px-3.5 text-[14px] font-semibold text-white hover:bg-[#1d4ed8]">
+            className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg px-3.5 text-[14px] font-semibold ${primaryBtn}`}>
             {d.slug ? `Add ${name} to my build` : "Plan my own build"}<ArrowRight size={15} />
           </a>
         </div>

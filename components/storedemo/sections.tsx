@@ -11,7 +11,7 @@ import { storeAssistant } from "@/lib/storedemo/assistant";
 import type { ProductRow, StoreWorld } from "@/lib/storedemo/engine";
 import type { ChannelCfg, DemoConfig, Happening, Order, Step } from "@/lib/storedemo/types";
 
-export type SectionId = "dashboard" | "assistant" | "orders" | "products" | "shipping" | "automations" | "connections" | "pricing";
+export type SectionId = "dashboard" | "assistant" | "orders" | "products" | "shipping" | "automations" | "connections" | "build" | "pricing";
 
 export type SCtx = {
   cfg: DemoConfig;
