@@ -70,13 +70,13 @@
           "id": "e1",
           "icon": "package-x",
           "title": "Last pair: pulled",
-          "detail": "StockX EU + US"
+          "detail": "eBay + 2 more accounts"
         },
         {
           "id": "e2",
           "icon": "warehouse",
           "title": "Sale off warehouse stock",
-          "detail": "Alias → warehouse"
+          "detail": "Amazon → warehouse"
         },
         {
           "id": "e3",
@@ -571,7 +571,7 @@
     ]
   },
   "contact": {
-    "num": "05",
+    "num": "09",
     "eyebrow": "Contact",
     "headline": "Try it free, or get your price.",
     "body": "Three fields. We reply within one business day.",

@@ -20,7 +20,7 @@ import Footer from "@/components/Footer";
 export default function Page() {
   return (
     <>
-      <a href="#main" className="skip-link">Skip to content</a>
+      <a href="#main" className="skip-link" data-track="off">Skip to content</a>
       <Navbar brand={content.brand.name} links={content.nav} cta={content.navCta} />
       <main id="main">
         <Hero />

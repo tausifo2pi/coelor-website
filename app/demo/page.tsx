@@ -43,7 +43,7 @@ export default function DemoIntro() {
           <h1 className="display text-balance text-[34px] leading-[1.1] text-ink sm:text-[44px]">A custom build, running right now.</h1>
           <p className="max-w-[560px] text-[16px] leading-[1.6] text-ink-muted md:text-[18px]">
             Look inside a demo workspace: the kind of build we make for one sneaker reseller, around their own marketplaces,
-            warehouse and rules. Every build is heavily customised for one business, so it won&apos;t match your setup. Yours is
+            warehouse and rules. Every build is heavily customized for one business, so it won&apos;t match your setup. Yours is
             built for exactly what you need. Read-only: nothing you click changes anything.
           </p>
         </div>

@@ -335,7 +335,7 @@ function Faq({ c }: { c: CaseContent }) {
 export default function CaseStudy({ c }: { c: CaseContent }) {
   return (
     <>
-      <a href="#main" className="skip-link">Skip to content</a>
+      <a href="#main" className="skip-link" data-track="off">Skip to content</a>
       <Header />
       <main id="main">
         <Hero c={c} />
