@@ -4,10 +4,10 @@ import StoreDemoApp from "@/components/storedemo/StoreDemoApp";
 import { STORE_DEMOS, demoBySlug } from "@/lib/storedemo/configs";
 import { storeClient } from "@/components/demo/workspace/format";
 
-// The store demos (lib/storedemo/configs.ts), one static page each, built once: the browser reads the store's live
-// catalogue itself (components/storedemo/StoreDemoApp.tsx). Email-only, not indexed (robots.ts disallows /demo).
-// /demo/multi-platform-sync is its own page (the sneaker demo) and wins over this route. Each is shown as a demo shop's
-// custom build (components/demo/workspace/format.ts storeClient: the boutique demo is Fernhollow).
+// The store demos (lib/storedemo/configs.ts), one static page each, built once: the browser builds the shop's
+// generated catalogue itself (components/storedemo/StoreDemoApp.tsx). Email-only, not indexed (robots.ts disallows
+// /demo). /demo/multi-platform-sync is its own page (the sneaker demo) and wins over this route. Each is shown as a demo
+// shop's custom build (components/demo/workspace/format.ts storeClient: the boutique demo is Fernhollow).
 export const dynamicParams = false;
 
 export function generateStaticParams() {
