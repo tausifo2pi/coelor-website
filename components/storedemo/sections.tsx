@@ -47,7 +47,7 @@ function Steps({ steps, max = 3 }: { steps: Step[]; max?: number }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {steps.slice(-max).map((s) => (
-        <Badge key={s.kind + s.at} tone={STEP_TONE[s.kind]}>
+        <Badge key={s.kind + s.at} tone={STEP_TONE[s.kind]} wrap>
           {s.kind === "cancel" ? <X size={12} /> : s.kind === "return" ? <RotateCcw size={12} /> : <Check size={12} strokeWidth={2.6} />}
           {s.text}
         </Badge>

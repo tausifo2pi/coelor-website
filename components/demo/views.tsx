@@ -79,8 +79,8 @@ function Steps({ steps }: { steps: Step[] }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {steps.map((s) => (
-        <Badge key={s.kind} tone={STEP_TONE[s.kind]}>
-          {s.kind === "flag" ? <TriangleAlert size={12} /> : <Check size={12} strokeWidth={2.6} />}
+        <Badge key={s.kind} tone={STEP_TONE[s.kind]} wrap>
+          {s.kind === "flag" ? <TriangleAlert size={12} className="shrink-0" /> : <Check size={12} strokeWidth={2.6} className="shrink-0" />}
           {s.text}
         </Badge>
       ))}

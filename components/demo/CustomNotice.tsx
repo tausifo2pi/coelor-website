@@ -41,10 +41,10 @@ export function CustomNotice({ client, contact, t }: { client: DemoClient; conta
         <div className="min-w-0">
           <h2 id="notice-title" className="text-[15.5px] font-bold text-[#1e1b4b]">A custom build, not a product</h2>
           <p className="mt-1 max-w-[880px] text-[14px] leading-[1.6] text-[#312e81]">
-            This demo shows the kind of build we make for one business: here {client.name}, {client.noticeWho}, made around{" "}
-            {client.noticeSetup}. {client.name} is a demo shop and its numbers are generated. Every build is heavily customised for
-            one business, so this one will not match your setup, and it isn&apos;t meant to. Yours is built for exactly what you
-            need: your platforms, your rules, your team. This demo only shows how a build like this behaves.
+            {`This demo shows the kind of build we make for one business: here ${client.name}, ${client.noticeWho}, made around ${client.noticeSetup}. ` +
+              `${client.name} is a demo shop and its numbers are generated. Every build is heavily customised for one business, so this one will not ` +
+              `match your setup, and it isn't meant to. Yours is built for exactly what you need: your platforms, your rules, your team. ` +
+              `This demo only shows how a build like this behaves.`}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <a href={contact} onClick={() => t?.cta("get_this", "Plan my own build (notice)")} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-[#4338ca] px-3.5 text-[13.5px] font-semibold text-white hover:bg-[#3730a3]">

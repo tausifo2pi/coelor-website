@@ -175,9 +175,10 @@ const TONES = {
 } as const;
 export type Tone = keyof typeof TONES;
 
-export function Badge({ tone = "gray", dot = false, children }: { tone?: Tone; dot?: boolean; children: ReactNode }) {
+/** wrap: a long text may break over lines on a narrow phone (an order's steps), instead of pushing the page wider */
+export function Badge({ tone = "gray", dot = false, wrap = false, children }: { tone?: Tone; dot?: boolean; wrap?: boolean; children: ReactNode }) {
   return (
-    <span className={`inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[12px] font-semibold ring-1 ring-inset ${TONES[tone]}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 text-[12px] font-semibold ring-1 ring-inset ${wrap ? "min-h-6 max-w-full py-0.5 leading-[1.35]" : "h-6 whitespace-nowrap"} ${TONES[tone]}`}>
       {dot && <span className="h-1.5 w-1.5 rounded-full bg-current" />}
       {children}
     </span>
