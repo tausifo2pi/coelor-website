@@ -69,7 +69,7 @@ test("the live sheet: A1 'Last Updated', the header in row 2 (frozen), one photo
   // the photo column: one cell per product, as tall as its sizes
   const photos = data.map((r) => r.cells[1]).filter((c) => c);
   assert.equal(photos.length, new Set(rows.map((r) => r.sku)).size);
-  for (const p of photos) assert.match(p!.formula!, /^=IMAGE\("https:\/\/images\.stockx\.com\/images\/[A-Za-z0-9.-]+\.jpg", 1\)$/);
+  for (const p of photos) assert.match(p!.formula!, /^=IMAGE\(VLOOKUP\(C\d+, Photos!A:B, 2, FALSE\), 1\)$/);
   assert.equal(photos.reduce((n, p) => n + (p!.rows ?? 1), 0), rows.length);
   // formats: € and $ with cents, quantity as a number
   const first = data[0].cells;

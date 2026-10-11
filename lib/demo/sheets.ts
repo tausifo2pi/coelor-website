@@ -159,9 +159,9 @@ function stockCells(r: StockRow, images: boolean, bg?: string): Cell[] {
   return cells;
 }
 
-// the product photo address as the sheets write it (the catalogue's image host, named after the product)
-const imageUrl = (name: string) =>
-  `https://images.stockx.com/images/${name.replace(/[()'’]/g, "").trim().replace(/\s+/g, "-")}.jpg`;
+// the photo cell as the sheets write it: a lookup in the workbook's own Photos tab (the build fills that tab from Picqer's
+// product photos), so no image host shows in the formula bar
+const photoRef = (row: number) => `VLOOKUP(C${row + 3}, Photos!A:B, 2, FALSE)`;
 
 /** One photo per product: runs of the same SKU share one merged cell (as live.gs imageGroups). */
 export function mergeImages(rows: StockRow[], cells: (Cell | null)[][], col = 1) {
@@ -169,7 +169,7 @@ export function mergeImages(rows: StockRow[], cells: (Cell | null)[][], col = 1)
     let end = start + 1;
     while (end < rows.length && rows[end].sku === rows[start].sku) end++;
     const first = cells[start][col]!;
-    cells[start][col] = { ...first, image: rows[start].tone, rows: end - start > 1 ? end - start : undefined, align: "center", formula: `=IMAGE("${imageUrl(rows[start].name)}", 1)` };
+    cells[start][col] = { ...first, image: rows[start].tone, rows: end - start > 1 ? end - start : undefined, align: "center", formula: `=IMAGE(${photoRef(start)}, 1)` };
     for (let i = start + 1; i < end; i++) cells[i][col] = null;
     start = end;
   }

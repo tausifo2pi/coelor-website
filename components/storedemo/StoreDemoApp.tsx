@@ -28,7 +28,7 @@ import { Automations, Connections, Dashboard, Orders, Products, Shipping, type S
 const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "This build right now: channels, orders, parcels and automations" },
   { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines that get data and post it to your team, written from a chat (beta)", beta: true },
-  { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the sync did with them" },
+  { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the build did with them" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Every size on one count, the same on every channel" },
   { id: "shipping", label: "Shipping & returns", icon: Truck, title: "Shipping & returns", sub: "Labels, tracking and returns, back into stock" },
   { id: "automations", label: "Custom rules", icon: FileCode2, title: "Custom rules", sub: "Fernhollow's own rules: asked for by the team, built into their code" },
