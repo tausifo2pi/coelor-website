@@ -1,48 +1,59 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import PricingHeader from "@/components/pricing/Header";
 import PricingHero from "@/components/pricing/Hero";
-import HowPriced from "@/components/pricing/HowPriced";
-import Plans from "@/components/pricing/Plans";
+import Connection from "@/components/pricing/Connection";
+import Setups from "@/components/pricing/Setups";
+import Trial from "@/components/pricing/Trial";
+import Compare from "@/components/pricing/Compare";
 import Process from "@/components/pricing/Process";
 import Included from "@/components/pricing/Included";
-import Engine from "@/components/pricing/Engine";
+import After from "@/components/pricing/After";
+import Proof from "@/components/pricing/Proof";
 import PricingFaq from "@/components/pricing/Faq";
 import { pricing } from "@/components/pricing/content";
 
-// Pricing: $500 per connection, one-time, 3 for 2, 1-day set-up, 7-day free trial (lib/offer.ts; copy in
-// data/pricing.json): live quote, plans, how it goes, what is in the price, counting, proof, questions, the form. Not in the
-// homepage nav or the sitemap, and not indexed yet; the owner decides later whether it goes in the main nav.
+// Pricing (rebuilt 2026-10-11, lead-outreach docs/website/REBUILD_BRIEF_2026-10-11.md): $500 per connection, one-time,
+// 3 for 2, live in about a day once we have access, free trial "your first link" (lib/offer.ts; copy in
+// data/pricing.json). The live quote, what a connection is, example setups, the trial, the first 12 months compared,
+// how it goes, what is in the price, after handover, the proof line, questions, the form. Indexed. Every section is a
+// server-rendered <section id> inside <main> (the Tracker); ids in components/pricing/ids.ts.
 
-export const metadata: Metadata = {
-  title: pricing.seo.title,
-  description: pricing.seo.description,
-  robots: { index: false, follow: true },
-  alternates: { canonical: "/pricing" },
-  openGraph: {
+/** The page's own title and description; the share image is the site's (layout), whatever it is. */
+export async function generateMetadata(_props: unknown, parent: ResolvingMetadata): Promise<Metadata> {
+  const images = (await parent).openGraph?.images ?? [];
+  return {
     title: pricing.seo.title,
     description: pricing.seo.description,
-    url: "/pricing",
-    siteName: "Coelor",
-    images: [{ url: "/logo-white-on-dark.png", width: 1200, height: 400 }],
-    type: "website",
-  },
-};
+    alternates: { canonical: "/pricing" },
+    openGraph: {
+      title: pricing.seo.title,
+      description: pricing.seo.description,
+      url: "/pricing",
+      siteName: "Coelor",
+      images,
+      type: "website",
+    },
+  };
+}
 
 export default function PricingPage() {
   const { contact } = pricing;
   return (
     <>
-      <a href="#main" className="skip-link">Skip to content</a>
+      <a href="#main" className="skip-link" data-track="off">Skip to content</a>
       <PricingHeader />
       <main id="main">
         <PricingHero />
-        <Plans />
+        <Connection />
+        <Setups />
+        <Trial />
+        <Compare />
         <Process />
         <Included />
-        <HowPriced />
-        <Engine />
+        <After />
+        <Proof />
         <PricingFaq />
         <Contact num={contact.num} headline={contact.headline} body={contact.body} />
       </main>

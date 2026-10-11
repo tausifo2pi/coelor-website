@@ -1,14 +1,15 @@
 "use client";
 
-// The hero's live quote: pick a number of connections and see every line of the price, like an invoice (n × $500, the
-// free one from 3 on, what is $0, the one-time total). Numbers from lib/offer.ts, words from data/pricing.json (passed
-// in by the server, so the browser does not download the page's whole copy). "Get this quote" and the trial link fill
-// in the contact form below (ContactForm listens for [data-prefill]). The stepper sits in data-track="off": every
-// tracked click is a phone notification.
+// The hero's live quote: pick a number of connections (platforms or accounts) and see every line of the price, like an
+// invoice (n × $500, the free one from 3 on, what is included or $0, the one-time total). Numbers from lib/offer.ts,
+// words from data/pricing.json (passed in by the server, so the browser does not download the page's whole copy).
+// "Get this quote" and the trial link fill in the contact form below (ContactForm listens for [data-prefill]). The
+// stepper sits in data-track="off": every tracked click is a phone notification.
 import { useState } from "react";
 import { ArrowRight, Minus, Plus } from "lucide-react";
 import { OFFER, PREFILL, breakdown, usd } from "@/lib/offer";
 import type { pricing } from "./content";
+import { IDS } from "./ids";
 
 type Copy = (typeof pricing)["quote"];
 
@@ -30,11 +31,8 @@ export default function QuoteBuilder({ copy, start = OFFER.freeAt }: { copy: Cop
         </div>
 
         {/* the number of connections */}
-        <div data-track="off" className="mt-6 flex items-center justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-[16px] font-semibold text-ink">{copy.countLabel}</p>
-            <p className="text-[13px] leading-[1.4] text-ink-soft">{copy.countHint}</p>
-          </div>
+        <div data-track="off" className="mt-5 flex items-center justify-between gap-4">
+          <p className="min-w-0 text-[16px] font-semibold leading-[1.35] text-ink">{copy.countLabel}</p>
           <div className="flex shrink-0 items-center rounded-full border border-rule-strong bg-black/20 p-1">
             <button type="button" onClick={() => set(n - 1)} disabled={n <= MIN} aria-label="One connection less" className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent">
               <Minus size={16} strokeWidth={2.4} />
@@ -45,17 +43,18 @@ export default function QuoteBuilder({ copy, start = OFFER.freeAt }: { copy: Cop
             </button>
           </div>
         </div>
+        <p className="mt-1.5 text-[13px] leading-[1.4] text-ink-soft">{copy.countHint}</p>
 
         {/* the lines of the price */}
-        <dl className="mt-6 flex flex-col border-t border-dashed border-rule-strong pt-4 text-[14px]">
-          <div className="flex items-baseline justify-between gap-4 py-2">
+        <dl className="mt-5 flex flex-col border-t border-dashed border-rule-strong pt-4 text-[14px]">
+          <div className="flex items-baseline justify-between gap-4 py-1.5 sm:py-2">
             <dt className="text-ink">
               {copy.lineEachLabel} <span className="font-mono text-[12px] text-ink-soft">{fill(copy.lineEach, { n, price: usd(OFFER.perConnection) })}</span>
             </dt>
             <dd className="font-mono tabular-nums text-ink">{usd(b.gross)}</dd>
           </div>
           {b.discount > 0 ? (
-            <div className="flex items-baseline justify-between gap-4 py-2">
+            <div className="flex items-baseline justify-between gap-4 py-1.5 sm:py-2">
               <dt className="flex items-center gap-2 text-[#8fe7c2]">
                 {copy.lineFree}
                 <span className="rounded-full bg-ok/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.06em]">1 free</span>
@@ -63,17 +62,17 @@ export default function QuoteBuilder({ copy, start = OFFER.freeAt }: { copy: Cop
               <dd className="font-mono tabular-nums text-[#8fe7c2]">−{usd(b.discount)}</dd>
             </div>
           ) : (
-            <div className="flex items-center justify-between gap-4 py-2">
+            <div className="flex items-center justify-between gap-4 py-1.5 sm:py-2">
               <dt className="text-accent">{fill(copy.lineToFree, { k: b.toFree })}</dt>
               <dd data-track="off">
-                <button type="button" onClick={() => set(OFFER.freeAt)} className="rounded-full border border-accent/40 px-2.5 py-0.5 font-mono text-[11px] uppercase tracking-[0.06em] text-accent transition-colors hover:bg-accent/10">
+                <button type="button" onClick={() => set(OFFER.freeAt)} className="min-h-[28px] rounded-full border border-accent/40 px-3 py-0.5 font-mono text-[11px] uppercase tracking-[0.06em] text-accent transition-colors hover:bg-accent/10">
                   Add
                 </button>
               </dd>
             </div>
           )}
           {copy.rows.map((r) => (
-            <div key={r.label} className="flex items-baseline justify-between gap-4 py-2">
+            <div key={r.label} className="flex items-baseline justify-between gap-4 py-1.5 sm:py-2">
               <dt className="text-ink-muted">{r.label}</dt>
               <dd className="font-mono tabular-nums text-ink-muted">{r.value}</dd>
             </div>
@@ -90,14 +89,15 @@ export default function QuoteBuilder({ copy, start = OFFER.freeAt }: { copy: Cop
           </span>
         </div>
 
-        <a href="#contact" data-prefill={PREFILL.quote(n)} className="btn-primary mt-6 w-full">
+        <a href={`#${IDS.contact}`} data-prefill={PREFILL.quote(n)} className="btn-primary mt-6 w-full">
           {copy.cta}
           <ArrowRight size={15} strokeWidth={2.4} aria-hidden />
         </a>
         <p className="mt-4 text-center text-[12.5px] leading-[1.5] text-ink-soft">{copy.payNote}</p>
       </div>
 
-      <a href="#contact" data-prefill={PREFILL.trial} className="group mx-auto inline-flex items-center gap-2 text-[14px] font-medium text-ink-muted transition-colors hover:text-ink">
+      {/* at least 44 px tall: an easy tap target on phones */}
+      <a href={`#${IDS.contact}`} data-prefill={PREFILL.trial} className="group mx-auto inline-flex min-h-[44px] items-center gap-2 px-3 text-[14px] font-medium text-ink-muted transition-colors hover:text-ink">
         <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden />
         {copy.trialLink}
         <ArrowRight size={14} strokeWidth={2.4} className="transition-transform group-hover:translate-x-0.5" aria-hidden />

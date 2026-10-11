@@ -4,11 +4,11 @@
 // section, a line in the sidebar card and a line in the "view only" dialog. The demo is one business's custom build
 // (components/demo/CustomNotice.tsx), so the card sells a build made for the reader's own setup, scoped on a call, not
 // "the same sync" or a plan to pick (lead-outreach PLAN_followups_custom_demo.md step 5a, user 2026-10-11). Numbers and
-// wording from lib/offer.ts ($500 per connection, one-time, 3 for the price of 2, set up in 1 day, 7-day free trial with
-// 1 connection, pay once after it runs). The button opens the demo's contact form; "How pricing works" opens the
+// wording from lib/offer.ts ($500 per connection, one-time, 3 for the price of 2, live in about a day once we have
+// access, free 7-day trial of "your first link" = two of the reader's platforms, pay once after it runs). The button opens the demo's contact form; "How pricing works" opens the
 // demo's pricing section.
 import { ArrowRight, Check } from "lucide-react";
-import { OFFER, OFFER_LINES, TRIAL, usd } from "@/lib/offer";
+import { OFFER, OFFER_LINES, TRIAL, TRIAL_WHAT, usd } from "@/lib/offer";
 import type { DemoTracker } from "@/lib/demo/track";
 
 const PRICING = "/pricing";
@@ -26,7 +26,7 @@ export function OfferCard({ contact, t, open }: { contact: string; t: DemoTracke
           <h2 id="offer-title" className="mt-1 text-[19px] font-bold tracking-[-0.01em] md:text-[22px]">Made for your setup, not copied from this one</h2>
           <p className="mt-1.5 text-[14px] leading-[1.6] text-[#64748b]">
             Tell us which platforms, accounts and tools you use and how you work. We build it around that: {per} per connection, one-time,{" "}
-            {OFFER_LINES.free.toLowerCase()}. Pay once, after it runs. {OFFER_LINES.trial}.
+            {OFFER_LINES.free.toLowerCase()}. Pay once, after it runs. {OFFER_LINES.trial}: {TRIAL_WHAT}.
           </p>
         </div>
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
@@ -62,7 +62,7 @@ export function OfferCard({ contact, t, open }: { contact: string; t: DemoTracke
 export function OfferLines() {
   return (
     <p className="mt-2 text-[12.5px] leading-[1.5] text-[#64748b]">
-      <b className="font-semibold text-[#0f172a]">{OFFER_LINES.price}.</b> {OFFER_LINES.free}. Free {TRIAL.days}-day trial.
+      <b className="font-semibold text-[#0f172a]">{OFFER_LINES.price}.</b> {OFFER_LINES.free}. {OFFER_LINES.trial}.
     </p>
   );
 }
@@ -71,7 +71,9 @@ export function OfferLines() {
 export function OfferNote({ name }: { name?: string }) {
   return (
     <p className="mt-4 rounded-lg bg-[#f0fdf4] px-3 py-2.5 text-[13px] leading-[1.5] text-[#166534] ring-1 ring-[#bbf7d0]">
-      {name ? `${name} in your own build: one connection, ${per} one-time, or free for ${TRIAL.days} days as your trial.` : `${OFFER_LINES.price}, or free for ${TRIAL.days} days with 1 connection.`}{" "}
+      {name
+        ? `${name} in your own build: one connection, ${per} one-time. It can be part of ${TRIAL.label}, free for ${TRIAL.days} days.`
+        : `${OFFER_LINES.price}. ${OFFER_LINES.trial}: ${TRIAL_WHAT}.`}{" "}
       {OFFER_LINES.free}, {OFFER_LINES.setup.toLowerCase()}.
     </p>
   );

@@ -1,23 +1,17 @@
 {
-  "_note": "Copy of /pricing (app/pricing/page.tsx, components/pricing/*). OFFER (USD, one-time; user 2026-10-07, replaced 'from $1,200'): $500 per connection; take 3 connections or more and one of them is free (3 for the price of 2); set up in 1 day. FREE TRIAL: 1 connection for 7 days, no card; keep it = a normal $500 connection that counts toward 3 for 2; stop = switched off, nothing to pay. PAYMENT: once, after it runs and before handover. Hosting and support after handover are not promised on this page (user 2026-10-07): keep the 'Where does it run?' answer as it is. The numbers live in lib/offer.ts (the quote, the plan cards and the counting example compute their prices from it); the sentences here spell them out, and lib/offer.test.mts checks that they agree. A plan's `count` is its number of connections (`plus`: that many or more); `badge` only when true. The real client stays anonymous and is told generically: no product-category words and no marketplace or warehouse brand names or logos on this page. Never name or compare with another vendor. The live demo and the case studies are never linked from this page (they are for email readers only).",
+  "_note": "Copy of /pricing (app/pricing/page.tsx, components/pricing/*), rebuilt 2026-10-11 (lead-outreach docs/website/REBUILD_BRIEF_2026-10-11.md). OFFER (USD, one-time; lib/offer.ts): $500 per connection; 3 connections or more and one of them is free (3 for the price of 2); live in about a day once we have access (some marketplaces approve API access first). FREE TRIAL: 'your first link', two of the reader's platforms connected for 7 days, no card; keep it = those connections billed as normal ($500 each, they count toward 3 for 2); don't keep it = switched off, nothing to pay. PAYMENT: once, after it runs and before handover. AFTER HANDOVER: 90 days of fixes included, also platform API changes; then a fixed price per fix, agreed first, or any developer (the client has the code). HOSTING: the client's own cloud account, billed by the host, usually $5-20 a month; we charge nothing monthly. A connection is one platform or account we build for; whether a team tool or supplier file is priced on its own is NOT promised here (we list everything on the call, price in writing first). The example setups' totals are computed from their parts (lib/offer.ts quote()); the sentences here spell the numbers out and lib/offer.test.mts checks that they agree (every dollar amount is a price of the offer or one of the market/hosting figures listed in the test). The real client stays anonymous: no marketplace or warehouse brand names next to 'Netherlands', claim only what its build really does. Compare by category only, never name another vendor or tool. Never link the live demo or the case studies from this page (email readers only). Plain US English, short sentences, no idioms ('nothing hidden', 'pick a size', 'in step', 'counts once').",
   "seo": {
-    "title": "Pricing · Coelor",
-    "description": "$500 per connection, one-time. 3 connections for the price of 2, set up in 1 day, and a 7-day free trial with one connection. No monthly fee, unlimited orders and products, full codebase included."
-  },
-  "price": {
-    "unit": "one-time",
-    "free": "1 free",
-    "plusFor": "one-time for {n}",
-    "plusEach": "+{price} for each one after"
+    "title": "Pricing: custom ecommerce integrations from $500 · Coelor",
+    "description": "Custom integrations for online sellers: $500 per connection, paid once. 3 for the price of 2. Free 7-day trial, no card. You own the code."
   },
   "hero": {
     "eyebrow": "Pricing",
-    "headline": "$500 per connection. Nothing hidden.",
-    "sub": "One-time, no monthly fee. 3 connections for the price of 2, set up in 1 day. Not sure yet? Try 1 connection free for 7 days before you pay anything.",
-    "trialCta": "Start 7-day free trial",
-    "callCta": "Book a call",
+    "headline": "Custom-built for your shop. $500 per connection, paid once.",
+    "sub": "We build the integration your shop runs on, made for your platforms and your rules. 3 connections for the price of 2. No monthly fee.",
+    "trialCta": "Start free 7-day trial",
+    "secondCta": "See example setups",
     "fine": [
-      "No card for the trial",
+      "No card",
       "Pay once, after it runs",
       "You own the code"
     ]
@@ -25,15 +19,19 @@
   "quote": {
     "title": "Your quote",
     "badge": "One-time",
-    "countLabel": "Connections",
-    "countHint": "Platforms or accounts we connect",
+    "countLabel": "Connections (platforms or accounts)",
+    "countHint": "Your store, each marketplace account, your warehouse system",
     "lineEach": "{n} × {price}",
     "lineEachLabel": "Connections",
     "lineFree": "3 for the price of 2",
     "lineToFree": "Add {k} more and one is free",
     "rows": [
       {
-        "label": "Set-up, 1 day",
+        "label": "Build, live in about a day",
+        "value": "Included"
+      },
+      {
+        "label": "90 days of fixes after handover",
         "value": "Included"
       },
       {
@@ -41,7 +39,7 @@
         "value": "$0"
       },
       {
-        "label": "Monthly fee",
+        "label": "Monthly fee to us",
         "value": "$0"
       },
       {
@@ -52,150 +50,217 @@
     "totalLabel": "Total, one-time",
     "save": "You save {amount}",
     "cta": "Get this quote",
-    "payNote": "Pay once, after it runs and before handover. We confirm the price in writing on the call.",
-    "trialLink": "Or try 1 connection free for 7 days"
+    "payNote": "Pay once, after it runs and before handover. You get the exact price in writing first.",
+    "trialLink": "Or try your first link free for 7 days"
   },
-  "plans": {
+  "connection": {
     "num": "01",
-    "eyebrow": "Plans",
-    "headline": "Pick a size, or start free.",
-    "body": "The same engine in every build. What changes is how many platforms and accounts it connects.",
-    "trial": {
-      "label": "Free trial",
-      "price": "$0",
-      "unit": "1 connection, 7 days, no card",
-      "title": "See it run first",
-      "points": [
-        "1 platform or account connected",
-        "Set up in 1 day",
-        "Runs 7 days on your real data",
-        "No card, no commitment"
-      ],
-      "after": "After 7 days: keep it for $500 one-time, or we switch it off and you pay nothing.",
-      "cta": "Start free trial"
-    },
+    "eyebrow": "What a connection is",
+    "headline": "A connection is one platform or account we build for.",
+    "body": "Your web store, a marketplace account, your warehouse system: each one is a connection. $500 per connection, one-time.",
     "items": [
       {
-        "key": "two",
-        "connections": "2 connections",
-        "count": 2,
-        "title": "Two systems in step",
-        "points": [
-          "2 platforms or accounts connected",
-          "Set up in 1 day",
-          "Pay once, after it runs"
-        ],
-        "example": "A web store and your warehouse system.",
-        "badge": null
+        "icon": "copy",
+        "title": "Each account is a connection",
+        "body": "Two accounts on the same marketplace are two connections. An account in another region is its own connection."
       },
       {
-        "key": "three",
-        "connections": "3 connections",
-        "count": 3,
-        "title": "Selling in several places",
-        "points": [
-          "3 platforms or accounts connected",
-          "1 of the 3 is free",
-          "Set up in 1 day",
-          "Pay once, after it runs"
-        ],
-        "example": "Two marketplace accounts and your warehouse system.",
-        "badge": "Best value"
+        "icon": "file-spreadsheet",
+        "title": "Team tools and supplier files",
+        "body": "A stock sheet, team alerts or a supplier file? Tell us on the call. We list everything your build needs, and you get the exact price in writing first."
       },
       {
-        "key": "four-plus",
-        "connections": "4+ connections",
-        "count": 4,
-        "plus": true,
-        "title": "The whole operation",
-        "points": [
-          "4 or more platforms or accounts",
-          "1 of them is free",
-          "Set up in 1 day",
-          "Pay once, after it runs"
-        ],
-        "example": "Accounts in several regions, more than one web store and your warehouse system.",
-        "badge": null
+        "icon": "plus",
+        "title": "Add one later",
+        "body": "A new connection later is $500, one-time. We agree on it before we start."
       }
-    ],
-    "exampleLabel": "For example",
-    "cta": "Get this quote",
-    "commonLabel": "Every plan",
-    "common": [
-      "Unlimited orders and products",
-      "The full source code, yours",
-      "Automations set to your rules",
-      "Set up in 1 day",
-      "Handover and a walkthrough"
     ]
   },
-  "process": {
+  "setups": {
     "num": "02",
+    "eyebrow": "Example setups",
+    "headline": "What a setup costs.",
+    "typical": "A typical setup: $1,000–1,500, one-time.",
+    "note": "Your setup is different? We count it with you on the call.",
+    "freeLabel": "1 free",
+    "items": [
+      {
+        "key": "store",
+        "title": "Web store and warehouse",
+        "parts": [
+          {
+            "icon": "bag",
+            "label": "Your web store"
+          },
+          {
+            "icon": "store",
+            "label": "A marketplace account"
+          },
+          {
+            "icon": "warehouse",
+            "label": "Your warehouse system"
+          }
+        ]
+      },
+      {
+        "key": "reseller",
+        "title": "Reseller on resale marketplaces",
+        "parts": [
+          {
+            "icon": "store",
+            "label": "Resale marketplace, EU account"
+          },
+          {
+            "icon": "store",
+            "label": "Resale marketplace, US account"
+          },
+          {
+            "icon": "bag",
+            "label": "Your web store"
+          },
+          {
+            "icon": "warehouse",
+            "label": "Your warehouse system"
+          }
+        ]
+      },
+      {
+        "key": "live",
+        "title": "Live selling",
+        "parts": [
+          {
+            "icon": "live",
+            "label": "Your live-selling app"
+          },
+          {
+            "icon": "bag",
+            "label": "Your web store"
+          },
+          {
+            "icon": "store",
+            "label": "A marketplace account"
+          }
+        ]
+      }
+    ]
+  },
+  "trial": {
+    "num": "03",
+    "eyebrow": "Free trial",
+    "headline": "Try your first link free for 7 days.",
+    "body": "Your first link is two of your platforms, connected and working. For example your store and one marketplace, or a marketplace and your warehouse. No card.",
+    "points": [
+      {
+        "title": "What it runs",
+        "body": "It goes live in about a day once we have access. Then it runs 7 days on your real orders and stock, with your rules."
+      },
+      {
+        "title": "Keep it",
+        "body": "Those two connections are billed as normal: $500 each, one-time. They count toward 3 for the price of 2."
+      },
+      {
+        "title": "Don't keep it",
+        "body": "We switch it off. You pay nothing."
+      }
+    ],
+    "cta": "Start free 7-day trial"
+  },
+  "compare": {
+    "num": "04",
+    "eyebrow": "Compared",
+    "headline": "The first 12 months, compared.",
+    "body": "Typical prices for each kind of option.",
+    "cols": [
+      "Option",
+      "What you pay",
+      "After 12 months"
+    ],
+    "rows": [
+      {
+        "who": "Monthly apps",
+        "pay": "$20–330 a month, or 1–1.5% of sales",
+        "after": "You keep paying and never own it. Fixed rules; resale marketplaces and warehouses are often missing."
+      },
+      {
+        "who": "Freelancer",
+        "pay": "$1,500–8,000 per integration",
+        "after": "Built from a blank page. Upkeep costs extra."
+      },
+      {
+        "who": "Agency",
+        "pay": "$5,000–25,000, plus upkeep",
+        "after": "Built from a blank page. Upkeep keeps costing."
+      },
+      {
+        "who": "Coelor",
+        "pay": "$1,000–1,500 once, for a typical setup",
+        "after": "Paid off. You own the code. Free trial first, 90 days of fixes after.",
+        "us": true
+      }
+    ],
+    "monthly": "$1,000 once is about $42 a month over two years. Then it's paid off."
+  },
+  "process": {
+    "num": "05",
     "eyebrow": "How it goes",
-    "headline": "From call to running in a day.",
+    "headline": "From call to running in about a day.",
     "steps": [
       {
         "when": "Day 0",
         "title": "30-minute call",
-        "body": "We list your platforms and accounts together. You get the exact price in writing before anything starts.",
+        "body": "We list your platforms, accounts and rules. You get the exact price in writing.",
         "icon": "phone"
       },
       {
-        "when": "Day 1",
-        "title": "Set-up",
-        "body": "We connect your platforms and accounts and set the automations to your rules.",
+        "when": "About a day",
+        "title": "We build it",
+        "body": "Live in about a day once we have access to your accounts. Some marketplaces approve API access first.",
         "icon": "wrench"
       },
       {
-        "when": "Days 2–8",
+        "when": "7 days",
         "title": "Free trial",
-        "tag": "Optional",
-        "body": "Start with 1 connection free for 7 days on your real data. No card.",
+        "body": "Your first link runs on your real orders and stock. No card.",
         "icon": "activity"
       },
       {
         "when": "Once it runs",
         "title": "Pay once",
-        "body": "One payment, the price agreed on the call. Never before it works.",
+        "body": "One payment, the price agreed on the call. If it doesn't work, you don't pay.",
         "icon": "receipt"
       },
       {
         "when": "Then",
         "title": "Handover",
-        "body": "The full source code and a walkthrough of how it works. It's yours.",
+        "body": "The full source code, a walkthrough and 90 days of fixes.",
         "icon": "power"
       }
     ]
   },
   "included": {
-    "num": "03",
+    "num": "06",
     "eyebrow": "What you pay for",
-    "headline": "Everything in the price, line by line.",
+    "headline": "What is in the price, and what is not.",
     "inLabel": "In the price",
     "in": [
+      "A build made for your platforms, accounts and rules",
+      "Unlimited orders and products",
       "The full source code, yours to keep",
-      "Unlimited orders and products, with no fee per order or per product",
-      "Every platform and account connected and matched to your data",
-      "Automations for stock, orders and listings, set to your rules",
-      "Set-up in 1 day",
-      "Handover and a walkthrough"
+      "Handover and a walkthrough",
+      "90 days of fixes, also when a platform changes its API"
     ],
     "neverLabel": "Never charged",
     "never": [
       {
-        "label": "Monthly software fee",
+        "label": "Monthly fee to us",
         "value": "$0"
       },
       {
-        "label": "Fee per order",
+        "label": "Fee per order or per product",
         "value": "$0"
       },
       {
-        "label": "Fee per product",
-        "value": "$0"
-      },
-      {
-        "label": "Separate set-up fee",
+        "label": "Separate setup fee",
         "value": "$0"
       },
       {
@@ -203,145 +268,103 @@
         "value": "$0"
       }
     ],
-    "ownLabel": "Stays as today",
-    "own": "Your platforms' own plans and fees (your marketplace accounts, web store and warehouse system) stay with those platforms. We add nothing to them."
+    "runLabel": "What you pay others",
+    "run": [
+      "It runs in your own cloud account. The host bills you directly, usually $5–20 a month. We charge nothing monthly.",
+      "Your platforms' own plans and fees stay with those platforms. We add nothing to them."
+    ]
   },
-  "how": {
-    "num": "04",
-    "eyebrow": "Counting connections",
-    "headline": "What counts as a connection.",
+  "after": {
+    "num": "07",
+    "eyebrow": "After handover",
+    "headline": "90 days of fixes, included.",
     "items": [
       {
-        "icon": "link",
-        "title": "One platform or account",
-        "body": "A marketplace account, a web store, your warehouse system: each one we connect is one connection, $500 one-time."
+        "icon": "shield",
+        "title": "First 90 days",
+        "body": "If something breaks, we fix it. Also when a platform changes its API. No charge."
       },
       {
-        "icon": "copy",
-        "title": "Every account counts once",
-        "body": "Two accounts on the same marketplace are two connections. Each region's account counts on its own."
+        "icon": "receipt",
+        "title": "After that",
+        "body": "A fixed price per fix, agreed before we start."
       },
       {
-        "icon": "plus",
-        "title": "Add one any time",
-        "body": "Adding a connection later is $500, one-time, agreed before we start."
+        "icon": "wrench",
+        "title": "Or any developer",
+        "body": "You have the source code, so any developer can work on it."
       }
-    ],
-    "example": {
-      "title": "Counting connections",
-      "caption": "An example setup",
-      "rows": [
-        {
-          "icon": "store",
-          "label": "Marketplace account"
-        },
-        {
-          "icon": "bag",
-          "label": "Web store"
-        },
-        {
-          "icon": "warehouse",
-          "label": "Warehouse system"
-        }
-      ],
-      "freeLabel": "3 for the price of 2",
-      "totalLabel": "Total, one-time",
-      "note": "Every account counts once: two accounts on the same marketplace are two connections."
-    }
+    ]
   },
-  "engine": {
-    "num": "05",
-    "eyebrow": "Why one-time",
-    "headline": "The engine exists. You pay for your version.",
-    "body": "We built an automation engine that is flexible by design. Because the groundwork is done, your build starts from a working engine, not a blank page. That is what keeps the price down, and why there is nothing to pay each month.",
-    "proof": {
-      "eyebrow": "Running today",
-      "title": "Already running for a Dutch reseller.",
-      "body": "Several marketplace accounts connected to its warehouse system, built and run by us on the same engine.",
-      "setupLabel": "Their setup",
-      "setup": [
-        {
-          "icon": "globe",
-          "name": "Marketplace accounts",
-          "role": "every sale comes in"
-        },
-        {
-          "icon": "refresh",
-          "name": "Our engine",
-          "role": "keeps them in step"
-        },
-        {
-          "icon": "warehouse",
-          "name": "Warehouse system",
-          "role": "holds the stock"
-        }
-      ],
-      "stats": [
-        {
-          "value": "31,000+",
-          "label": "products checked"
-        },
-        {
-          "value": "Every 10 min",
-          "label": "sold-out items switched off on every account"
-        },
-        {
-          "value": "Within minutes",
-          "label": "each sale taken off the stock"
-        }
-      ]
-    }
+  "proof": {
+    "eyebrow": "Proof",
+    "line": "Running today for a reseller in the Netherlands with EU and US accounts on two resale marketplaces, connected to its warehouse system.",
+    "points": [
+      "Each sale comes off the warehouse stock within minutes",
+      "Sold-out items are switched off on every account within 10 minutes",
+      "30,000+ products checked on every run",
+      "Marketplace orders confirmed and missing product photos added",
+      "Team alerts and stock reports"
+    ]
   },
   "faq": {
-    "num": "06",
+    "num": "08",
     "eyebrow": "Questions",
     "headline": "About the price.",
     "items": [
-      {
-        "q": "What counts as a connection?",
-        "a": "One platform or account we connect: a marketplace account, a web store, your warehouse system. Each account counts once, so two accounts on the same marketplace are two connections."
-      },
       {
         "q": "How does 3 for the price of 2 work?",
         "a": "Take 3 connections or more and one of them is free. 2 connections are $1,000, 3 are $1,000, 4 are $1,500 and 5 are $2,000, one-time."
       },
       {
-        "q": "How does the free trial work?",
-        "a": "We connect 1 platform or account and set it up in 1 day. It then runs for 7 days on your real data. No card and no commitment."
+        "q": "What does the free trial run?",
+        "a": "Your first link: two of your platforms, for example your store and one marketplace. It goes live in about a day once we have access. Then it runs 7 days on your real orders and stock. No card."
       },
       {
         "q": "What happens after the 7 days?",
-        "a": "Keep it and it becomes a normal connection: $500 one-time, and it counts toward 3 for the price of 2. Or tell us to stop: we switch it off and you pay nothing."
+        "a": "Keep it and those connections are billed as normal: $500 each, one-time, and they count toward 3 for the price of 2. Or tell us to stop: we switch it off and you pay nothing."
       },
       {
-        "q": "When do we pay?",
-        "a": "Once, after it runs and before handover. The price is agreed in writing on the call, before we start."
+        "q": "When do we pay, and how?",
+        "a": "Once, after it runs and before handover. You get one invoice in US dollars, for the price we agreed in writing before we started. If it doesn't work, you don't pay."
       },
       {
-        "q": "How long does set-up take?",
-        "a": "1 day, once we have access to your platforms and accounts. We connect them, set the automations to your rules and hand it over."
+        "q": "What happens after handover?",
+        "a": "90 days of fixes are included. After that, each fix has a fixed price, agreed before we start. Or any developer can work on it: you have the source code."
+      },
+      {
+        "q": "What if a platform changes its API?",
+        "a": "In the first 90 days, we update your build at no charge. After that, it is a fixed price per fix, agreed first."
+      },
+      {
+        "q": "Where does it run, and what does hosting cost?",
+        "a": "In your own cloud account. We set it up for you. The host bills you directly, usually $5–20 a month. We charge nothing monthly."
+      },
+      {
+        "q": "What access do you need to our accounts?",
+        "a": "API keys that you create in your own accounts, limited to what the build needs. You can revoke them any time. We don't ask for passwords."
       },
       {
         "q": "Do we own the code?",
-        "a": "Yes. You get the full codebase with the build. It is yours to keep, run and change, with no licence to renew."
+        "a": "Yes. You get the full source code with the build. It is yours to keep, run and change. No license to renew."
       },
       {
-        "q": "Are there limits on orders or products?",
-        "a": "No. There is no fee per order or per product. The price is set by the connections, not by how much you sell or how big your catalogue is."
+        "q": "Why one payment and not a monthly fee?",
+        "a": "We start from parts we have built and run before, so a build takes about a day, not weeks. It runs in your own cloud account, so there is nothing for us to bill each month."
       },
       {
-        "q": "Can we add a connection later?",
-        "a": "Yes. Each extra connection is $500, one-time, agreed before we start."
+        "q": "Are we too small for this?",
+        "a": "Maybe. Under about 100 orders a month on two channels, a free app may be enough. We will tell you honestly on the call."
       },
       {
-        "q": "Where does it run?",
-        "a": "You can run it on your own server. We can also set it up for you."
+        "q": "Who builds it?",
+        "a": "A small team of engineers in Dhaka, Bangladesh: Tausif, Hasib, Jimam, Siam, Maha and Shohan. You talk to the people who build it."
       }
     ]
   },
   "contact": {
-    "num": "07",
+    "num": "09",
     "headline": "Try it free, or get a quote.",
-    "body": "Tell us which platforms and accounts should work together. We reply within one business day, count them with you on a 30-minute call and confirm the price in writing."
+    "body": "Tell us your platforms and accounts. We reply within one business day. On a 30-minute call we list everything, and you get the exact price in writing."
   }
 }

@@ -8,18 +8,20 @@
 // quote"): every demo_cta is a phone notification.
 import { useState } from "react";
 import { ArrowRight, Check, Minus, Plus } from "lucide-react";
-import { OFFER, OFFER_LINES, TRIAL, breakdown, usd, withPlan } from "@/lib/offer";
+import { OFFER, OFFER_LINES, TRIAL, TRIAL_KEPT, breakdown, usd, withPlan, word } from "@/lib/offer";
 import type { DemoTracker } from "@/lib/demo/track";
 
 const per = usd(OFFER.perConnection);
 const PRICING = "/pricing";
 
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 const STEPS = [
   { when: "Day 0", title: "30-minute call", body: "We go through your platforms, accounts and the way you work. You get the scope and the exact price in writing before anything starts." },
-  { when: "Day 1", title: "Your build", body: "We build it for your platforms and accounts, with the automations set to your rules." },
-  { when: `Days 2–${TRIAL.days + 1}`, title: "Free trial", body: `${TRIAL.connections} connection free for ${TRIAL.days} days on your real data. No card.`, optional: true },
+  { when: "About a day", title: "Your build", body: `We build it for your platforms and accounts, with the automations set to your rules. ${OFFER_LINES.setup}.` },
+  { when: `${TRIAL.days} days`, title: "Free trial", body: `${cap(TRIAL.label)}: ${word(TRIAL.connections)} of your platforms, free for ${TRIAL.days} days on your real data. No card.`, optional: true },
   { when: "Once it runs", title: "Pay once", body: "One payment, the price agreed on the call. Never before it works." },
-  { when: "Then", title: "Handover", body: "The full source code and a walkthrough. It's yours." },
+  { when: "Then", title: "Handover", body: `The full source code, a walkthrough and ${OFFER.fixDays} days of fixes. It's yours.` },
 ];
 
 const IN_PRICE = [
@@ -27,10 +29,11 @@ const IN_PRICE = [
   "Unlimited orders and products",
   "Every platform and account connected and matched to your data",
   "Automations set to your rules",
-  "Set-up in 1 day, then handover",
+  `${OFFER_LINES.setup}, then handover`,
+  `${OFFER.fixDays} days of fixes after handover`,
 ];
 
-const NEVER = ["Monthly software fee", "Fee per order", "Fee per product", "Separate set-up fee", `The ${TRIAL.days}-day trial`];
+const NEVER = ["Monthly software fee", "Fee per order", "Fee per product", "Separate setup fee", `The ${TRIAL.days}-day trial`];
 
 function Box({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <section className={`rounded-xl border border-[#e3e6eb] bg-white p-5 md:p-6 ${className}`}>{children}</section>;
@@ -86,7 +89,7 @@ function Quote({ contact, t }: { contact: string; t: DemoTracker | null }) {
             </dd>
           </div>
         )}
-        {[["Set-up, 1 day", "Included"], ["Orders and products, unlimited", "$0"], ["Monthly fee", "$0"], ["Source code", "Yours"]].map(([k, v]) => (
+        {[["Build, live in about a day", "Included"], ["Orders and products, unlimited", "$0"], ["Monthly fee", "$0"], ["Source code", "Yours"]].map(([k, v]) => (
           <div key={k} className={row}>
             <dt className="text-[#475569]">{k}</dt>
             <dd className="tabular-nums text-[#475569]">{v}</dd>
@@ -117,14 +120,14 @@ export function PricingView({ contact, t }: { contact: string; t: DemoTracker | 
         <Box className="flex flex-col gap-5 border-[#86efac] bg-[#f0fdf4]">
           <div>
             <Label tone="green">Free trial</Label>
-            <h2 className="mt-1 text-[24px] font-bold tracking-[-0.02em] md:text-[28px]">Try it free for {TRIAL.days} days</h2>
+            <h2 className="mt-1 text-[24px] font-bold tracking-[-0.02em] md:text-[28px]">{OFFER_LINES.trial}</h2>
             <p className="mt-2 max-w-[560px] text-[15px] leading-[1.6] text-[#334155]">
-              We connect {TRIAL.connections} platform or account of your store and set it up in 1 day. It then runs for {TRIAL.days} days on your real data, like the
-              build in this demo. No card, no commitment.
+              Your first link is {word(TRIAL.connections)} of your platforms, for example your store and one marketplace, or a marketplace and your warehouse. It is
+              live in about a day once we have access, then runs for {TRIAL.days} days on your real data, like the build in this demo. No card, no commitment.
             </p>
           </div>
           <ul className="grid gap-2.5 sm:grid-cols-2">
-            {[`${TRIAL.connections} platform or account connected`, "Set up in 1 day", `Runs ${TRIAL.days} days on your real data`, "No card, no commitment"].map((x) => (
+            {[`${cap(word(TRIAL.connections))} of your platforms connected`, OFFER_LINES.setup, `Runs ${TRIAL.days} days on your real data`, "No card, no commitment"].map((x) => (
               <li key={x} className="flex items-start gap-2 text-[14px] text-[#14532d]">
                 <Check size={16} strokeWidth={2.6} className="mt-[2px] shrink-0 text-[#16a34a]" />
                 {x}
@@ -132,8 +135,8 @@ export function PricingView({ contact, t }: { contact: string; t: DemoTracker | 
             ))}
           </ul>
           <div className="rounded-lg bg-white/70 p-4 text-[13.5px] leading-[1.55] text-[#334155] ring-1 ring-[#bbf7d0]">
-            <b className="font-semibold">After {TRIAL.days} days:</b> keep it for {per} one-time (it counts toward {OFFER_LINES.free.toLowerCase()}), or we switch it
-            off and you pay nothing.
+            <b className="font-semibold">After {TRIAL.days} days:</b> keep it and those {word(TRIAL.connections)} connections are billed as normal, {per} each, one-time
+            ({usd(TRIAL_KEPT)}); they count toward {OFFER_LINES.free.toLowerCase()}. Or we switch it off and you pay nothing.
           </div>
           <div className="mt-auto flex flex-col gap-2 sm:flex-row">
             <a href={withPlan(contact, "trial")} onClick={() => t?.cta("trial", "Start free trial (pricing)")} className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-[#16a34a] px-4 text-[14px] font-semibold text-white hover:bg-[#15803d]">
