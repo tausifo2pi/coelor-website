@@ -13,6 +13,7 @@ import After from "@/components/pricing/After";
 import Proof from "@/components/pricing/Proof";
 import PricingFaq from "@/components/pricing/Faq";
 import { pricing } from "@/components/pricing/content";
+import { jsonLd, serviceJsonLd } from "@/lib/seo";
 
 // Pricing (rebuilt 2026-10-11, lead-outreach docs/website/REBUILD_BRIEF_2026-10-11.md): $500 per connection, one-time,
 // 3 for 2, live in about a day once we have access, free trial "your first link" (lib/offer.ts; copy in
@@ -42,6 +43,7 @@ export default function PricingPage() {
   const { contact } = pricing;
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(serviceJsonLd()) }} />
       <a href="#main" className="skip-link" data-track="off">Skip to content</a>
       <PricingHeader />
       <main id="main">
