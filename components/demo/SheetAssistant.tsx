@@ -190,20 +190,20 @@ export function SheetAssistant({ ctx, profile = SNEAKER }: { ctx: AssistantCtx; 
       </section>
 
       <section className="flex min-w-0 flex-col gap-4">
-        <Heading title="Use it from Claude or ChatGPT" sub="Connect your build to the AI app your team already uses, and ask it there. The same read-only routines, posting only to your team." />
+        <Heading title="Also in Claude and ChatGPT" sub="Part of this build: the team asks the same read-only data from the AI app they already use. It posts only to the team's tools." />
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {AI_APPS.map((x) => (
             <Card key={x.slug} className="flex items-center gap-3 !p-4">
               <BrandMark slug={x.slug} name={x.name} size={42} />
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-2 text-[14.5px] font-semibold">{x.name}<Badge tone="amber">Beta</Badge></p>
+                <p className="text-[14.5px] font-semibold">{x.name}</p>
                 <p className="mt-0.5 text-[12.5px] leading-[1.5] text-[#64748b]">Ask from the {x.name} app: {x.ask}</p>
               </div>
               <Button small primary onClick={() => {
-                const body = `View only in this demo. For your store we connect your build to ${x.name}, so your team can ask it right in the ${x.name} app, like ${x.ask} It reads the same data as this assistant and posts only to your team's tools: it never changes listings, prices or stock.`;
+                const body = `View only in this demo. In your own build, your team can ask ${x.name} right in its app, like ${x.ask} It reads the same data as this assistant and posts only to your team's tools: it never changes listings, prices or stock.`;
                 if (ctx.connect) ctx.connect(x.slug, x.name, body);
                 else ctx.locked(`connect:${x.slug}`, `Connecting ${x.name}`);
-              }}>Connect</Button>
+              }}>How it works</Button>
             </Card>
           ))}
         </div>

@@ -1,8 +1,8 @@
 "use client";
 
-// The sections of the live demo, read from the running sync (app/api/demo). Names, logos and accounts of the channels
-// come from CHANNELS / STORES only, and every channel looks the same (a channel's `sample` flag is never shown).
-// Anything that would change the store (connect, sync now, link, pull a listing, reports) opens the "view only" dialog.
+// The sections of the sneaker demo (Northvale Kicks), read from the generated data (lib/demo/gen.ts). Names, logos and
+// accounts of the channels come from CHANNELS / STORES only, and every channel looks the same. Anything that would change
+// something (check now, link, pull a listing, reports) opens the "view only" dialog.
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { demoGet } from "@/lib/demo/gen";
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
@@ -11,6 +11,7 @@ import { CHANNELS, PICQER, type Channel as ChannelInfo } from "@/lib/demo/channe
 import { NORTHVALE } from "@/lib/demo/clients";
 import { STORES, type Connection, type Job, type Linked, type Listing, type Overview, type Page, type Sale, type SellPlatform, type Step, type StoreId } from "@/lib/demo/shape";
 import { Running, SneakerTiles } from "@/components/demo/workspace/Tiles";
+import { LatestBuild } from "@/components/demo/workspace/LatestBuild";
 import type { DemoTracker } from "@/lib/demo/track";
 import {
   Badge, Button, Card, CardHead, Empty, Logo, Pager, SearchInput, Skeleton, Tabs, Td, Th,
@@ -259,9 +260,10 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
           </div>
         </Card>
         <div className="flex flex-col gap-5">
+          <LatestBuild client={NORTHVALE} ctx={ctx} />
           <Card pad={false}>
             <div className="px-5 pt-5">
-              <CardHead title="Automations" sub="Last run of each job" right={<Button small onClick={() => ctx.go("automations")}>All <ArrowRight size={14} /></Button>} />
+              <CardHead title="Custom rules" sub="Last run of each job behind them" right={<Button small onClick={() => ctx.go("automations")}>All <ArrowRight size={14} /></Button>} />
             </div>
             <ul className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
               {ov.data.jobs.slice(0, 6).map((j) => (

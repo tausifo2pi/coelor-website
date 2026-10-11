@@ -10,7 +10,7 @@ import type { DemoClient, SystemSpec } from "@/lib/demo/clients";
 import { monthDate, rulesUsing, shortName } from "@/lib/demo/rules";
 import { BrandMark, Card, ago, hasMark } from "@/components/demo/ui";
 
-/** A system's last sync, from the jobs or rules that run on it; undefined where none maps (a sheet, the team chat). */
+/** A system's last run, from the jobs or rules that run on it; undefined where none maps (a sheet, the team chat). */
 export type SystemHealth = { last: string };
 
 type Chip = { slug: string; name: string };
@@ -111,7 +111,7 @@ function SystemCard({ s, client, health, now }: { s: SystemSpec; client: DemoCli
         {health ? (
           <span className="inline-flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" aria-hidden />
-            Running · last sync {ago(health.last, now)}
+            Running · last run {ago(health.last, now)}
           </span>
         ) : (
           <span />

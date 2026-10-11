@@ -37,8 +37,11 @@ export type CustomRule = {
   by: string;
   /** ISO date it was built */
   built: string;
-  /** the job whose last run the page shows (lib/demo/shape.ts job keys / storedemo engine rule keys); null = on demand */
+  /** the job whose last run the page shows (lib/demo/shape.ts job keys / storedemo engine rule keys); null = no job of
+   * its own (see cadence) */
   job: string | null;
+  /** when a rule without a job runs ("with every order", "on request"); unset = on demand */
+  cadence?: string;
   /** where it lives in the client's code */
   file: string;
 };
@@ -149,9 +152,9 @@ export const NORTHVALE: DemoClient = {
     { code: "R-11", name: "Photo finder", when: "A Picqer product has no photo", then: "The sneaker's product shot is found and added in Picqer",
       why: "Listings without photos don't sell", by: "Marco", built: "2026-06-15", job: "picqer-images", file: "rules/photo-finder.ts" },
     { code: "R-12", name: "Unmatched order", when: "An order matches no product", then: "Flagged in the orders list; the stock is left as it is",
-      why: "A wrong guess costs more than a look", by: "Jules", built: "2026-09-28", job: null, file: "rules/unmatched.ts" },
+      why: "A wrong guess costs more than a look", by: "Jules", built: "2026-09-28", job: null, cadence: "With every order", file: "rules/unmatched.ts" },
     { code: "R-14", name: "Not-listed report", when: "Someone asks in the team chat", then: "A sheet of stock in Picqer not listed on StockX or Alias yet",
-      why: "Find money sitting on the shelves", by: "Dani", built: "2026-08-10", job: null, file: "reports/not-listed.ts" },
+      why: "Find money sitting on the shelves", by: "Dani", built: "2026-08-10", job: null, cadence: "On request", file: "reports/not-listed.ts" },
   ],
   systems: [
     { slug: "picqer", name: "Picqer", kind: "Warehouse: the one stock count", how: "API, every bin", custom: "Bin picker, size reader, photo finder", since: "2026-01-05" },
@@ -230,6 +233,7 @@ export const FERNHOLLOW: DemoClient = {
     { slug: "walmart", name: "Walmart", kind: "Marketplace (US)", how: "Webhook, real time", custom: "Held back during LIVE shows", since: "2026-03-02" },
     { slug: "poshmark", name: "Poshmark", kind: "Fashion marketplace", how: "Read every 10 min (no seller API)", custom: "Prepaid label, pre-loved returns", since: "2026-03-02" },
     { slug: "shipstation", name: "ShipStation", kind: "Labels: USPS, UPS, FedEx", how: "API", custom: "Carrier by weight and promised speed, 14:00 cutoff", since: "2026-04-06" },
+    { slug: "aftership", name: "AfterShip", kind: "Tracking page and emails", how: "Webhook on every carrier scan", custom: "Order marked shipped on its own channel", since: "2026-04-06" },
     { slug: "loop", name: "Loop Returns", kind: "Returns and exchanges", how: "Webhook", custom: "Grading step before restock", since: "2026-05-18" },
     { slug: "faire", name: "Faire", kind: "Wholesale restocks", how: "API", custom: "Same-day restock on every channel", since: "2026-06-22" },
     { slug: "slack", name: "Slack", kind: "Team alerts", how: "Bot", custom: "Sold-out best sellers, LIVE results, returns", since: "2026-03-16" },

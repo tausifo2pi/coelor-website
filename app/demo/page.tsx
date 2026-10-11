@@ -10,7 +10,7 @@ import { OFFER, OFFER_LINES, usd, withPlan } from "@/lib/offer";
 // The live demo is a demo shop's custom build with generated numbers (lib/demo/clients.ts, step 5b): the words say so.
 
 export const metadata: Metadata = {
-  title: "Live demo · Coelor",
+  title: "Demo: a custom build · Coelor",
   description: "The kind of custom build we make for one sneaker reseller: orders, stock, listings and automations in a demo workspace with generated numbers. Read-only. Yours is built for your own setup.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/demo" },
@@ -38,7 +38,7 @@ export default function DemoIntro() {
         <div className="flex flex-col gap-5">
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
             <span className="pulse h-2 w-2 rounded-full bg-accent" aria-hidden />
-            Live demo
+            Demo workspace
           </span>
           <h1 className="display text-balance text-[34px] leading-[1.1] text-ink sm:text-[44px]">A custom build, running right now.</h1>
           <p className="max-w-[560px] text-[16px] leading-[1.6] text-ink-muted md:text-[18px]">

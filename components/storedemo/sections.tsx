@@ -1,7 +1,7 @@
 "use client";
 
-// The sections of a store demo (/demo/<slug>), drawn from lib/storedemo/engine.ts over the store's live catalogue. The
-// same look as the sneaker demo (components/demo): white cards on grey, platform logos, green "Connected" badges.
+// The sections of a store demo (/demo/<slug>), drawn from lib/storedemo/engine.ts over the shop's generated catalogue
+// (lib/storedemo/catalog.ts). The same look as the sneaker demo (components/demo), in the client's own colour.
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowLeftRight, ArrowRight, Check, Package, RotateCcw, Truck, X, Zap } from "lucide-react";
 import { Badge, BrandMark, Button, Card, CardHead, Empty, Pager, SearchInput, Skeleton, Tabs, ago, clock, fmt, type Tone } from "@/components/demo/ui";
@@ -10,6 +10,8 @@ import { Rules, type RuleRun } from "@/components/demo/workspace/Rules";
 import { Systems, type SystemHealth } from "@/components/demo/workspace/Systems";
 import { FERNHOLLOW } from "@/lib/demo/clients";
 import { Running, StoreTiles } from "@/components/demo/workspace/Tiles";
+import { LatestBuild } from "@/components/demo/workspace/LatestBuild";
+import { storeClient } from "@/components/demo/workspace/format";
 import type { DemoTracker } from "@/lib/demo/track";
 import { storeAssistant } from "@/lib/storedemo/assistant";
 import type { ProductRow, StoreWorld } from "@/lib/storedemo/engine";
@@ -230,9 +232,10 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
           </div>
         </Card>
         <div className="flex flex-col gap-5">
+          <LatestBuild client={storeClient(ctx.cfg.slug)} ctx={ctx} />
           <Card pad={false}>
             <div className="px-5 pt-5">
-              <CardHead title="Automations" sub="Last run of each rule" right={<Button small onClick={() => ctx.go("automations")}>All <ArrowRight size={14} /></Button>} />
+              <CardHead title="Custom rules" sub="Last run of each rule" right={<Button small onClick={() => ctx.go("automations")}>All <ArrowRight size={14} /></Button>} />
             </div>
             <ul className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
               {rules.slice(0, 6).map((r) => (

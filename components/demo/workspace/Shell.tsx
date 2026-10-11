@@ -100,9 +100,9 @@ export function PageTitle({ client, title, sub }: { client: DemoClient; title: s
 export function TopBarText({ client }: { client: DemoClient }) {
   return (
     <>
-      <span className="sm:hidden">Demo workspace. Read-only.</span>
+      <span className="sm:hidden">{possessive(client.name)} build. Read-only.</span>
       <span className="hidden sm:inline">
-        Demo workspace: {possessive(client.name)} custom build. Yours is built around your own platforms and rules. Read-only.
+        {possessive(client.name)} custom build. Yours is built around your own platforms and rules. Read-only.
       </span>
     </>
   );

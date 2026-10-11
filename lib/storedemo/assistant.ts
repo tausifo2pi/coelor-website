@@ -156,7 +156,7 @@ export function storeAssistant(cfg: DemoConfig): Profile {
   return {
     kinds,
     kindOf,
-    greeting: `Hi! I'm in beta: I build routines that get data from your sync and post it to your team, in Google Sheets, Excel, ${chat.name} or ${chat.name === "Slack" ? "Discord" : "Slack"}. Tell me what you need and when. I write the routine's script, test it without changing anything, and put it on a schedule. For example: a low-stock reorder list every morning${live ? `, tonight's ${live.name} LIVE lineup sheet` : ""}, or a daily sales summary to ${chat.name}.`,
+    greeting: `Hi! I'm in beta: I build routines that get data from your build and post it to your team, in Google Sheets, Excel, ${chat.name} or ${chat.name === "Slack" ? "Discord" : "Slack"}. Tell me what you need and when. I write the routine's script, test it without changing anything, and put it on a schedule. For example: a low-stock reorder list every morning${live ? `, tonight's ${live.name} LIVE lineup sheet` : ""}, or a daily sales summary to ${chat.name}.`,
     startChips,
     whatChips: [
       { id: "what-reorder", text: "Low-stock reorder list" },

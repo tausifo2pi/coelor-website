@@ -1,8 +1,8 @@
 "use client";
 
-// Small building blocks of the live demo: a light integration-app look (white cards on grey, platform logos, green
-// "Connected" badges), apart from the dark site and from our own admin panel on purpose, so a seller sees the kind of
-// app they know from their other tools.
+// Small building blocks of the demo workspaces: a light back-office look (white cards on grey, platform logos, quiet
+// status dots), apart from the dark site and from our own admin panel on purpose, so a seller sees the kind of tool they
+// know from their own business. Each demo client tints it with its own colour (components/demo/workspace).
 import type { CSSProperties, ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Puzzle, Search, Warehouse, X } from "lucide-react";
 import { SiAftership, SiAirtable, SiClaude, SiDhl, SiDiscord, SiFedex, SiGmail, SiGoogledrive, SiGooglegemini, SiHubspot, SiInstagram, SiMailchimp, SiNotion, SiQuickbooks, SiUps, SiUsps, SiWhatsapp, SiXero, SiZendesk } from "@icons-pack/react-simple-icons";

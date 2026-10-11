@@ -72,7 +72,7 @@ function FileChip({ file }: { file: string }) {
 }
 
 function Status({ r, run }: { r: CustomRule; run?: RuleRun }) {
-  if (!r.job) return <Badge tone="gray">On demand</Badge>;
+  if (!r.job) return <Badge tone="gray">{r.cadence ?? "On demand"}</Badge>;
   if (run?.running) return <Badge tone="blue" dot>Running now</Badge>;
   return <Badge tone="green" dot>On schedule</Badge>;
 }
@@ -157,7 +157,7 @@ function RuleDetail({ id, r, client, run, loading }: { id: string; r: CustomRule
       <div className="min-w-0 md:col-span-2 xl:col-span-1">
         <Label>Recent runs</Label>
         {!r.job ? (
-          <p className="text-[12.5px] text-[#64748b]">Runs on demand, with no schedule of its own.</p>
+          <p className="text-[12.5px] text-[#64748b]">{r.cadence ? `${r.cadence}, with no schedule of its own.` : "Runs on demand, with no schedule of its own."}</p>
         ) : run ? (
           <ul className="divide-y divide-[#eef0f3] rounded-lg border border-[#eef0f3] bg-white">
             {recentRuns(r.code, run.lastRun, run.every).map((x) => (

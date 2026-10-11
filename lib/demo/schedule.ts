@@ -324,7 +324,7 @@ const WHEN_CHIPS: Chip[] = [
 ];
 
 export const GREETING =
-  "Hi! I'm in beta: I build routines that get data from your sync and post it to your team, in Google Sheets, Excel, Discord or Slack. Tell me what you need and when. I write the routine's script, test it without changing anything, and put it on a schedule. For example: a pickup sheet every weekday at 8:00, a sold-out sizes check on Shopify, or a daily sales summary to Discord.";
+  "Hi! I'm in beta: I build routines that get data from your build and post it to your team, in Google Sheets, Excel, Discord or Slack. Tell me what you need and when. I write the routine's script, test it without changing anything, and put it on a schedule. For example: a pickup sheet every weekday at 8:00, a sold-out sizes check on Shopify, or a daily sales summary to Discord.";
 
 /** What the last question left open, carried into the next message. */
 export type Pending = { kind: string | null; name: string | null; freq: Freq | null; share: string | null } | null;
@@ -350,7 +350,7 @@ export function writes(raw: string, pr: Profile = SNEAKER): boolean {
 export function answer(raw: string, pending: Pending, now: number, pr: Profile = SNEAKER): Answer {
   if (writes(raw, pr)) {
     const posts = pr.posts.map((x) => x.name);
-    const text = `In this beta I only build routines that get data and post it to your team: ${posts.slice(0, -1).join(", ")} or ${posts[posts.length - 1]}. Changing listings, prices or stock from a routine comes later, to keep your store's data safe; the sync's own automations already do that part. Want a report instead?`;
+    const text = `In this beta I only build routines that get data and post it to your team: ${posts.slice(0, -1).join(", ")} or ${posts[posts.length - 1]}. Changing listings, prices or stock from a routine comes later, to keep your store's data safe; the build's own rules already do that part. Want a report instead?`;
     return { ok: false, kind: null, text, pending: null, chips: pr.insteadChips, refused: true };
   }
   const p = parse(raw, pr);

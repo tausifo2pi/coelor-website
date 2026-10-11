@@ -1,11 +1,12 @@
 "use client";
 
-// The live demo (/demo/multi-platform-sync): the custom build we run for a Dutch sneaker reseller (StockX EU + US, Alias
-// and Alias USA, one Picqer warehouse) and the other channels of lib/demo/channels.ts. Shown as that one client's build
-// (CustomNotice: theirs is made for their own setup), not as a product to pick (step 5a, user 2026-10-11). Read-only; every channel looks the same. Sections switch without a page load (?section= in the address);
-// lib/demo/track.ts records what the visitor looks at.
+// The sneaker demo (/demo/multi-platform-sync): the workspace of Northvale Kicks, a demo sneaker reseller (lib/demo/
+// clients.ts), with every number generated in the browser (lib/demo/gen.ts): StockX EU + US, Alias and Alias USA, a
+// Shopify store, Whatnot shows and one Picqer warehouse. Shown as that one client's custom build (CustomNotice: theirs is
+// made for their own setup), not as a product to pick (PLAN_followups_custom_demo.md steps 5a-5b). Read-only. Sections
+// switch without a page load (?section= in the address); lib/demo/track.ts records what the visitor looks at.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, History, Lock, LayoutDashboard, Plug, Receipt, RefreshCw, Sparkles, Tag, X, Zap, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, FileCode2, History, Lock, LayoutDashboard, Network, Receipt, RefreshCw, Sparkles, Tag, X, type LucideIcon } from "lucide-react";
 import { PICQER } from "@/lib/demo/channels";
 import type { Overview, Product } from "@/lib/demo/shape";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
@@ -31,11 +32,11 @@ const CLIENT = NORTHVALE;
 const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string; sub: string; beta?: boolean }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, title: "Dashboard", sub: "This build right now: channels, orders and automations" },
   { id: "assistant", label: "Assistant", icon: Sparkles, title: "Assistant", sub: "Routines that get data and post it to your team, written from a chat (beta)", beta: true },
-  { id: "connections", label: "Connections", icon: Plug, title: "Connections", sub: "Sales channels, the warehouse and the tools, on one stock count" },
+  { id: "connections", label: "Systems", icon: Network, title: "Systems in this build", sub: "The platforms Northvale Kicks runs on, and how each is wired into their build" },
   { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the sync did with the stock" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Picqer products linked to the same size on every account" },
   { id: "listings", label: "Listings", icon: Tag, title: "Listings", sub: "Channel listings the sync watches" },
-  { id: "automations", label: "Automations", icon: Zap, title: "Automations", sub: "What runs on its own, and when it last ran" },
+  { id: "automations", label: "Custom rules", icon: FileCode2, title: "Custom rules", sub: "Northvale Kicks' own rules: asked for by the team, built into their code" },
   { id: "build", label: "Build log", icon: History, title: "Build log", sub: "Every change to this build: what the team asked for, and when it went live" },
   { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try 1 connection free for 7 days." },
 ];
@@ -148,7 +149,7 @@ export default function DemoApp() {
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 md:px-6 xl:py-2.5">
           <span className="order-1 inline-flex shrink-0 items-center gap-2 text-[13px] font-semibold">
             <span className="h-2 w-2 animate-pulse rounded-full bg-[#4ade80]" />
-            Live demo
+            Demo workspace
           </span>
           <p className="order-3 w-full text-[12.5px] leading-[1.5] text-[#cbd5e1] xl:order-2 xl:w-auto xl:min-w-0 xl:flex-1 xl:text-[13px]">
             <TopBarText client={CLIENT} />
