@@ -2,6 +2,7 @@ import content from "@/data/site-content.json";
 import HeroScene from "@/components/HeroScene";
 import HeroPanels from "@/components/HeroPanels";
 import { Icon } from "@/components/icons";
+import { PREFILL } from "@/lib/offer";
 
 // A server component: only the gradient (HeroScene) and the activity card (HeroPanels) run in the browser, and the card
 // gets its rows as props, so the content file is not shipped to the client.
@@ -24,7 +25,8 @@ export default function Hero() {
             {hero.sub}
           </p>
           <div className="rise-in mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4" style={d(340)}>
-            <a href={hero.primaryCta.href} className="btn-primary">
+            {/* the trial: data-prefill fills in the contact form's message (ContactForm listens for it) */}
+            <a href={hero.primaryCta.href} data-prefill={PREFILL.trial} className="btn-primary">
               {hero.primaryCta.label}
               <Icon name="arrow-right" size={15} strokeWidth={2.4} />
             </a>
@@ -32,6 +34,14 @@ export default function Hero() {
               {hero.secondaryCta.label}
             </a>
           </div>
+          <ul className="rise-in mt-6 flex flex-wrap items-center gap-x-5 gap-y-2" style={d(400)} aria-label="The terms">
+            {hero.terms.map((t) => (
+              <li key={t} className="inline-flex items-center gap-2 text-[14px] text-ink-muted">
+                <Icon name="check" size={14} strokeWidth={2.4} className="text-ok" />
+                {t}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="rise-in lg:pt-1" style={d(460)}>

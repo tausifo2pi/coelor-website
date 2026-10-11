@@ -110,3 +110,21 @@ export function BrandMark({ slug, size = 22 }: { slug: string; size?: number }) 
     </span>
   );
 }
+
+/** True when there is a Simple Icons mark for the platform. */
+export const hasBrandMark = (slug: string) => slug in BRANDS;
+
+/**
+ * A platform mark in its own brand colour on the white tile PlatformTile uses (components/PlatformLogo.tsx), for a
+ * platform with a Simple Icons mark but no icon file in data/platforms.json (QuickBooks on the homepage's "Platforms we
+ * build for"). Decorative: the name is written next to it. Renders nothing for an unknown slug.
+ */
+export function BrandTile({ slug, size = 32 }: { slug: string; size?: number }) {
+  const C = BRANDS[slug];
+  if (!C) return null;
+  return (
+    <span className="platform-tile" style={{ width: size, height: size, borderRadius: Math.max(5, Math.round(size * 0.24)) }} aria-hidden>
+      <C size={Math.round(size * 0.68)} color="default" title="" />
+    </span>
+  );
+}

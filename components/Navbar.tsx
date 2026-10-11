@@ -4,8 +4,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { Icon } from "@/components/icons";
 import Logo from "@/components/Logo";
+import { PREFILL } from "@/lib/offer";
 
-type NavLink = { label: string; href: string };
+// `prefill: "trial"` on the CTA: a click fills in the contact form's message with the trial (ContactForm listens for
+// [data-prefill]), like the trial buttons on the page.
+type NavLink = { label: string; href: string; prefill?: string };
+const prefillFor = (p?: string) => (p === "trial" ? PREFILL.trial : undefined);
 
 const Arrow = () => <Icon name="arrow-right" size={14} strokeWidth={2.4} />;
 
@@ -94,6 +98,7 @@ export default function Navbar({ brand, links, cta }: { brand: string; links: Na
           href={cta.href}
           onClick={go(cta.href)}
           aria-label={`${cta.label} (nav)`}
+          data-prefill={prefillFor(cta.prefill)}
           className="hidden h-10 items-center gap-2 rounded-full border border-rule-strong bg-white/10 px-[18px] text-[15px] font-medium text-ink transition-colors hover:bg-white/15 lg:inline-flex"
         >
           {cta.label}
@@ -145,7 +150,7 @@ export default function Navbar({ brand, links, cta }: { brand: string; links: Na
           ))}
         </nav>
         <div className="shrink-0 border-t border-rule px-8 py-8">
-          <a href={cta.href} onClick={go(cta.href)} aria-label={`${cta.label} (menu)`} className="btn-primary w-full">
+          <a href={cta.href} onClick={go(cta.href)} aria-label={`${cta.label} (menu)`} data-prefill={prefillFor(cta.prefill)} className="btn-primary w-full">
             {cta.label}
             <Arrow />
           </a>
