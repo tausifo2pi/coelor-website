@@ -6,6 +6,8 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { getJson } from "@/lib/demo/get";
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
+import { Running, SneakerTiles } from "@/components/demo/workspace/Tiles";
+import { NORTHVALE } from "@/lib/demo/clients";
 import { ArrowLeftRight, ArrowRight, Check, Lock, Plus, Settings2, TriangleAlert, Zap } from "lucide-react";
 import { CHANNELS, PICQER, fromApi, type Channel as ChannelInfo } from "@/lib/demo/channels";
 import { STORES, type Connection, type Job, type Linked, type Listing, type Overview, type Page, type Platform, type Sale, type SellPlatform, type Step, type StoreId } from "@/lib/demo/shape";
@@ -115,7 +117,7 @@ function HubChannel({ c, conn, cadence = false }: { c: ChannelInfo; conn?: Conne
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-[15px] font-semibold">{c.name}</span>
-            <Badge tone={healthy ? "green" : "amber"} dot>{healthy ? "Connected" : "Catching up"}</Badge>
+            <Running ok={healthy} />
           </div>
           <p className="mt-0.5 truncate text-[12.5px] text-[#64748b]">{accountsText(c)}</p>
         </div>
@@ -155,7 +157,7 @@ function PicqerHub({ ov, wide }: { ov: Overview; wide: boolean }) {
       <div className="min-w-0">
         <div className={`flex flex-wrap items-center gap-2 ${wide ? "justify-center" : ""}`}>
           <span className="text-[16px] font-semibold">{PICQER.name}</span>
-          <Badge tone={healthy ? "green" : "amber"} dot>{healthy ? "Connected" : "Catching up"}</Badge>
+          <Running ok={healthy} />
         </div>
         <p className="mt-0.5 text-[13px] text-[#64748b]">Warehouse · counts the stock</p>
         <p className="text-[13px] text-[#64748b]">{fmt(ov.kpis.products.total)} products · 1 warehouse</p>
@@ -198,17 +200,6 @@ function Hub({ ov }: { ov: Overview }) {
   );
 }
 
-function Kpi({ label, value, sub, children }: { label: string; value: ReactNode; sub?: ReactNode; children?: ReactNode }) {
-  return (
-    <Card className="flex flex-col gap-1">
-      <span className="text-[13px] font-medium text-[#64748b]">{label}</span>
-      <span className="text-[28px] font-bold leading-tight tracking-[-0.02em] tabular-nums">{value}</span>
-      {sub && <span className="text-[13px] leading-[1.5] text-[#64748b]">{sub}</span>}
-      {children}
-    </Card>
-  );
-}
-
 function SaleRow({ s, ctx }: { s: Sale; ctx: Ctx }) {
   const b = brandOf(s.platform);
   const body = (
@@ -243,37 +234,26 @@ const JOB_TEXT: Record<Job["status"], string> = { ok: "On schedule", running: "R
 
 const n0 = (r: Partial<Record<SellPlatform, number>>, id: SellPlatform) => r[id] ?? 0;
 
+// "5 Jan 2026": the day the client's build went live
+const liveSince = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
 export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) {
   if (!ov) return <Card pad={false}><Skeleton rows={8} /></Card>;
   const k = ov.data.kpis;
-  const day = CHANNELS.reduce((n, c) => n + n0(k.sales24h, c.id), 0);
-  const linkedPct = k.products.total ? Math.round((k.products.linked / k.products.total) * 100) : 0;
+  // the owner's tiles first (what needs doing today), then the channels the build runs
   return (
     <div className="flex flex-col gap-5">
+      <SneakerTiles ov={ov.data} now={ctx.now} />
+
       <Card>
-        <CardHead title="Your connected channels" sub="One stock count in Picqer, kept in step with every channel." />
+        <CardHead title="Channels in this build" sub="Picqer holds the one stock count; every channel follows it." />
         <Hub ov={ov.data} />
       </Card>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi
-          label="Orders synced, last 24 h"
-          value={`${fmt(day)}${k.sales24h.more ? "+" : ""}`}
-          sub={CHANNELS.map((c) => `${fmt(n0(k.sales24h, c.id))} ${c.name}`).join(" · ")}
-        />
-        <Kpi label="Last order synced" value={ago(k.lastSale?.soldAt ?? null, ctx.now)} sub={k.lastSale ? `${k.lastSale.storeLabel} · ${k.lastSale.product}` : undefined} />
-        <Kpi label="Products linked" value={fmt(k.products.linked)} sub={`of ${fmt(k.products.total)} in Picqer`}>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#eef0f3]">
-            <div className="h-full rounded-full bg-[#2563eb]" style={{ width: `${linkedPct}%` }} />
-          </div>
-        </Kpi>
-        <Kpi label="Automations" value={`${k.jobs.ok}/${k.jobs.total}`} sub="running on schedule" />
-      </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Card pad={false}>
           <div className="px-5 pt-5">
-            <CardHead title="Latest orders" sub="Sold on a channel, then what the sync did" right={<Button small onClick={() => ctx.go("orders")}>All orders <ArrowRight size={14} /></Button>} />
+            <CardHead title="Latest orders" sub="Sold on a channel, then what the build did" right={<Button small onClick={() => ctx.go("orders")}>All orders <ArrowRight size={14} /></Button>} />
           </div>
           <div className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
             {ov.data.feed.slice(0, 8).map((s) => (
@@ -284,7 +264,7 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
         <div className="flex flex-col gap-5">
           <Card pad={false}>
             <div className="px-5 pt-5">
-              <CardHead title="Automations" sub="Last run of each sync" right={<Button small onClick={() => ctx.go("automations")}>All <ArrowRight size={14} /></Button>} />
+              <CardHead title="Automations" sub="Last run of each job" right={<Button small onClick={() => ctx.go("automations")}>All <ArrowRight size={14} /></Button>} />
             </div>
             <ul className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
               {ov.data.jobs.slice(0, 6).map((j) => (
@@ -302,7 +282,7 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
           <RoutinesCard ctx={ctx} onAll={() => ctx.go("assistant")} />
           <Card pad={false}>
             <div className="px-5 pt-5">
-              <CardHead title="Since the sync started" />
+              <CardHead title="Since the build went live" sub={`${liveSince(NORTHVALE.since)}, version 1.0`} />
             </div>
             <table className="w-full border-collapse">
               <thead>
@@ -323,7 +303,7 @@ export function Dashboard({ ov, ctx }: { ov: Live<Overview> | null; ctx: Ctx }) 
                 ))}
               </tbody>
             </table>
-            <p className="px-5 py-3 text-[12.5px] text-[#64748b]">Orders synced into Picqer, and listings the sync watches.</p>
+            <p className="px-5 py-3 text-[12.5px] text-[#64748b]">Orders into Picqer, and the listings it watches.</p>
           </Card>
         </div>
       </div>
@@ -623,13 +603,13 @@ export function Orders({ ctx }: { ctx: Ctx }) {
         <Tabs value={f.platform} options={PLATFORM_TABS} onChange={f.setPlatform} />
         <SearchInput value={f.q} onChange={f.setQ} placeholder="Search product or style code" />
       </div>
-      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Every order, as it came in, and what the sync did with the stock. Click one for the product.</p>
+      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Every order as it came in, and what the build did with the stock. Click one for the product.</p>
       {loading && !data ? <Skeleton /> : failed && !data ? <Failed /> : !rows.length ? <Empty>No orders match this search.</Empty> : (
         <>
           <div className="hidden overflow-x-auto md:block">
             <table className="w-full border-collapse">
               <thead>
-                <tr><Th>Order</Th><Th>Product</Th><Th>Channel</Th><Th>Status</Th><Th>Sync result</Th><Th className="text-right">In Picqer</Th></tr>
+                <tr><Th>Order</Th><Th>Product</Th><Th>Channel</Th><Th>Status</Th><Th>What happened</Th><Th className="text-right">In Picqer</Th></tr>
               </thead>
               <tbody className={loading ? "opacity-60" : ""}>
                 {rows.map((s) => (
@@ -648,7 +628,7 @@ export function Orders({ ctx }: { ctx: Ctx }) {
           <div className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5] md:hidden">
             {rows.map((s) => <SaleRow key={s.id} s={s} ctx={ctx} />)}
           </div>
-          <Pager page={f.page} pages={data?.data.pages ?? 1} total={data?.data.total ?? 0} onPage={f.setPage} noun="orders synced" />
+          <Pager page={f.page} pages={data?.data.pages ?? 1} total={data?.data.total ?? 0} onPage={f.setPage} noun="orders in" />
         </>
       )}
     </Card>
@@ -711,7 +691,7 @@ export function Products({ ctx }: { ctx: Ctx }) {
         </div>
       </div>
       <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">
-        Each Picqer product is one size of one sneaker. The sync links it to the same size on every account, so one sale counts everywhere.
+        Each Picqer product is one size of one sneaker. The build links it to the same size on every account, so one sale counts everywhere.
         <span className="mt-1.5 flex items-center gap-2"><GptTag /><span>GPT read the size and colour from the product name.</span></span>
       </p>
       {loading && !data ? <Skeleton /> : failed && !data ? <Failed /> : !rows.length ? <Empty>No linked products match this search.</Empty> : (
@@ -790,11 +770,11 @@ export function Listings({ ctx }: { ctx: Ctx }) {
         <Tabs value={f.platform} options={PLATFORM_TABS} onChange={f.setPlatform} />
         <div className="flex w-full flex-wrap gap-2 sm:w-auto">
           <SearchInput value={f.q} onChange={f.setQ} placeholder="Search product or style code" />
-          <Button onClick={() => ctx.locked("sync_listings", "Syncing listings now")}>Sync now</Button>
+          <Button onClick={() => ctx.locked("sync_listings", "Checking every listing by hand")}>Check now</Button>
           <Button onClick={() => ctx.locked("not_listed_report", "The not-listed report (a spreadsheet of stock in Picqer that is not listed yet, sent to your team chat)")}>Not-listed report</Button>
         </div>
       </div>
-      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Listings on the channel accounts the sync watches. When a size sells out in Picqer, its listings come down.</p>
+      <p className="px-5 pb-4 pt-3 text-[13px] text-[#64748b]">Listings on the channel accounts the build watches. When a size sells out in Picqer, its listings come down.</p>
       {loading && !data ? <Skeleton /> : failed && !data ? <Failed /> : !rows.length ? <Empty>No listings match this search.</Empty> : (
         <>
           <div className="hidden overflow-x-auto md:block">

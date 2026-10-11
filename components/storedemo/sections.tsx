@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowLeftRight, ArrowRight, Check, Lock, Package, Plus, RotateCcw, Truck, X, Zap } from "lucide-react";
 import { Badge, BrandMark, Button, Card, CardHead, Empty, Pager, SearchInput, Skeleton, Tabs, ago, clock, fmt, type Tone } from "@/components/demo/ui";
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
+import { Running, StoreTiles } from "@/components/demo/workspace/Tiles";
 import type { DemoTracker } from "@/lib/demo/track";
 import { storeAssistant } from "@/lib/storedemo/assistant";
 import type { ProductRow, StoreWorld } from "@/lib/storedemo/engine";
@@ -63,21 +64,11 @@ function Thumb({ src, size = 44 }: { src: string | null; size?: number }) {
   );
 }
 
-function Kpi({ label, value, sub }: { label: string; value: ReactNode; sub?: ReactNode }) {
-  return (
-    <Card className="flex flex-col gap-1">
-      <span className="text-[13px] font-medium text-[#64748b]">{label}</span>
-      <span className="text-[28px] font-bold leading-tight tracking-[-0.02em] tabular-nums">{value}</span>
-      {sub && <span className="text-[13px] leading-[1.5] text-[#64748b]">{sub}</span>}
-    </Card>
-  );
-}
-
 function Loading() {
   return <Card pad={false}><Skeleton rows={8} /></Card>;
 }
 
-/** one order as a row: channel, what, where to, what the sync did */
+/** one order as a row: channel, what, where to, what the build did */
 function OrderRow({ o, ctx, compact = false }: { o: Order; ctx: SCtx; compact?: boolean }) {
   const ch = chOf(ctx.cfg, o.channel);
   const l = o.lines[0];
@@ -139,7 +130,7 @@ function HubCard({ c, n, live }: { c: ChannelCfg; n: number; live: boolean }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-[15px] font-semibold">{c.name}</span>
-            {live ? <Badge tone="red" dot>LIVE now</Badge> : <Badge tone="green" dot>Connected</Badge>}
+            {live ? <Badge tone="red" dot>LIVE now</Badge> : <Running />}
           </div>
           <p className="mt-0.5 truncate text-[12.5px] text-[#64748b]">{c.account} · {fmt(n)} listed</p>
         </div>
@@ -175,14 +166,17 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
   const { cfg } = ctx;
   const k = ov.kpis;
   const live = w.liveNow(ctx.now);
-  const day = cfg.channels.reduce((n, c) => n + (k.orders24h[c.id] ?? 0), 0);
-  const last = k.lastOrder;
   // channels around the stock count: the first half on the left, the rest (and the tools) on the right
   const half = Math.ceil(cfg.channels.length / 2);
+  const [y, m, d] = cfg.since;
+  const since = new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+  // the owner's tiles first (what needs doing today), then the channels the build runs
   return (
     <div className="flex flex-col gap-5">
+      <StoreTiles ctx={ctx} />
+
       <Card>
-        <CardHead title="Your connected channels" sub="One stock count for every size, kept in step with every channel, the stockroom and the parcels." />
+        <CardHead title="Channels in this build" sub="One stock count for every size: every channel, the stockroom and the parcels follow it." />
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.8fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-3">
             {cfg.channels.slice(0, half).map((c) => <HubCard key={c.id} c={c} n={k.live[c.id] ?? 0} live={live === c.id} />)}
@@ -191,7 +185,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
             <BrandMark slug={cfg.stock.logo} name={cfg.stock.name} size={56} />
             <div className="flex flex-wrap items-center justify-center gap-2">
               <span className="text-[16px] font-semibold">{cfg.stock.name}</span>
-              <Badge tone="green" dot>Connected</Badge>
+              <Running />
             </div>
             <p className="text-[13px] text-[#64748b]">{cfg.stock.role} · {cfg.stock.detail}</p>
             <p className="text-[13px] text-[#64748b]">{fmt(w.products)} products · {fmt(k.live[cfg.channels[0].id] ?? 0)} in stock</p>
@@ -223,17 +217,10 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi label="Orders, last 24 h" value={fmt(day)} sub={cfg.channels.map((c) => `${fmt(k.orders24h[c.id] ?? 0)} ${c.name}`).join(" · ")} />
-        <Kpi label="Last order" value={ago(last?.placedAt ?? null, ctx.now)} sub={last ? `${chOf(cfg, last.channel).name} · ${last.lines[0].title}` : undefined} />
-        <Kpi label={`${cfg.items.charAt(0).toUpperCase()}${cfg.items.slice(1)} shipped today`} value={fmt(k.unitsShippedToday)} sub={`Labels in ${cfg.shipping.tool.name}, tracking by ${cfg.tracking.name}`} />
-        <Kpi label="Sold-out sizes pulled" value={fmt(k.pulled7d)} sub={`Last 7 days · ${fmt(k.returnsBack7d)} returns back in stock`} />
-      </div>
-
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Card pad={false}>
           <div className="px-5 pt-5">
-            <CardHead title="Latest activity" sub="Orders from every channel, and what the sync did with them" right={<Button small onClick={() => ctx.go("orders")}>All orders <ArrowRight size={14} /></Button>} />
+            <CardHead title="Latest activity" sub="Orders from every channel, and what the build did with them" right={<Button small onClick={() => ctx.go("orders")}>All orders <ArrowRight size={14} /></Button>} />
           </div>
           <div className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
             {ov.feed.slice(0, 9).map((f) => (f.type === "order" ? <OrderRow key={f.order.id} o={f.order} ctx={ctx} compact /> : <HappeningRow key={f.happening.id} h={f.happening} ctx={ctx} />))}
@@ -260,7 +247,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
           <RoutinesCard ctx={ctx} profile={assistant} onAll={() => ctx.go("assistant")} />
           <Card pad={false}>
             <div className="px-5 pt-5">
-              <CardHead title="Since the sync started" />
+              <CardHead title="Since the build went live" sub={since} />
             </div>
             <ul className="divide-y divide-[#f1f3f5] border-t border-[#f1f3f5]">
               {cfg.channels.map((c) => (
@@ -316,7 +303,7 @@ export function Orders({ ctx }: { ctx: SCtx }) {
         <Tabs value={channel} options={tabs} onChange={(v) => { setChannel(v); setPage(1); ctx.t?.action("orders_filter", v); }} />
         <SearchInput value={q} onChange={setQ} placeholder="Search a product, size, colour or state" />
       </div>
-      <p className="px-5 pt-3 text-[12.5px] text-[#64748b]">Every order of the last 45 days, where it came in and what the sync did. Click one for the product.</p>
+      <p className="px-5 pt-3 text-[12.5px] text-[#64748b]">Every order of the last 45 days, where it came in and what the build did. Click one for the product.</p>
       {data.rows.length ? (
         <div className="divide-y divide-[#f1f3f5]">
           {data.rows.map((o) => (
@@ -433,7 +420,7 @@ export function Shipping({ ctx }: { ctx: SCtx }) {
         <div className="flex flex-col gap-3 border-b border-[#f1f3f5] p-4 sm:flex-row sm:items-center sm:justify-between">
           <Tabs value={tab} options={[{ id: "parcels", label: "Parcels", logo: cfg.shipping.tool.logo }, { id: "returns", label: "Returns", logo: cfg.returns.logo }]} onChange={(v) => { setTab(v); ctx.t?.action("shipping_tab", v); }} />
           <span className="text-[12.5px] text-[#64748b]">
-            {tab === "parcels" ? `Labels bought in ${cfg.shipping.tool.name}, tracking sent by ${cfg.tracking.name}` : `Returns started in ${cfg.returns.name}; checked ones go back on every channel`}
+            {tab === "parcels" ? `Labels bought in ${cfg.shipping.tool.name} before the ${String(cfg.shipping.cutoffHour).padStart(2, "0")}:00 cutoff, tracking sent by ${cfg.tracking.name}` : `Returns started in ${cfg.returns.name}; each is graded in the stockroom before it goes back on sale`}
           </span>
         </div>
         {rows.length ? (

@@ -10,6 +10,7 @@ import { PICQER } from "@/lib/demo/channels";
 import type { Overview, Product } from "@/lib/demo/shape";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { getJson } from "@/lib/demo/get";
+import { NorthvaleFields } from "@/components/demo/workspace/Fields";
 import { Automations, Connections, Dashboard, Listings, Orders, Products, type Ctx, type Live, type SectionId } from "@/components/demo/views";
 import { Extra } from "@/components/demo/Extra";
 import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
@@ -336,7 +337,7 @@ function ProductDrawer({ id, ctx, onClose }: { id: string; ctx: Ctx; onClose: ()
                 <h2 className="text-[16px] font-bold leading-snug">{d.name}</h2>
                 <p className="mt-1 text-[13px] text-[#64748b]">{d.code}{d.color && ` · ${d.color}`}</p>
                 <p className="text-[13px] text-[#64748b]">US {d.us || "–"} · EU {d.eu || "–"}</p>
-                {d.photoAt && <p className="mt-1 text-[12px] font-medium text-[#15803d]">Photo added by the sync {ago(d.photoAt, ctx.now)}</p>}
+                {d.photoAt && <p className="mt-1 text-[12px] font-medium text-[#15803d]">Photo added by the build {ago(d.photoAt, ctx.now)}</p>}
               </div>
             </div>
 
@@ -358,6 +359,8 @@ function ProductDrawer({ id, ctx, onClose }: { id: string; ctx: Ctx; onClose: ()
                 <p className="col-span-3 text-[13px] text-[#64748b]">Live stock could not be read just now.</p>
               )}
             </div>
+
+            <NorthvaleFields code={d.code || id} name={d.name} />
 
             <section>
               <h3 className="mb-2 text-[12.5px] font-semibold uppercase tracking-[0.05em] text-[#64748b]">Linked to</h3>
