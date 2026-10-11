@@ -108,6 +108,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # route types (RouteContext, …) come from Next's own generator; a build makes them, so the check must too
+      - name: Generate route types
+        run: npx next typegen
+
       - name: Type check
         run: npx tsc --noEmit -p .
 
