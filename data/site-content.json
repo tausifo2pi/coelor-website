@@ -14,12 +14,16 @@
   },
   "nav": [
     {
-      "label": "How it works",
-      "href": "#process"
+      "label": "What we build",
+      "href": "#build"
     },
     {
-      "label": "Client work",
-      "href": "#proof"
+      "label": "Why custom",
+      "href": "#why"
+    },
+    {
+      "label": "How it works",
+      "href": "#process"
     },
     {
       "label": "Pricing",
@@ -31,81 +35,184 @@
     }
   ],
   "navCta": {
-    "label": "Book a call",
-    "href": "#contact"
+    "label": "Free trial",
+    "href": "#contact",
+    "prefill": "trial"
   },
   "hero": {
-    "headline": "Your sales channels, stock and tools, connected.",
-    "sub": "One automation that runs by itself. Built on our reusable engine to your requirements, for a one-time price. You own the code.",
+    "headline": "Built for how you sell.",
+    "sub": "We build the integration your shop runs on: your marketplaces, web store, warehouse and suppliers, working to your rules. $500 per connection, paid once. You own the code.",
     "primaryCta": {
-      "label": "Book a call",
+      "label": "Start free 7-day trial",
       "href": "#contact"
     },
     "secondaryCta": {
-      "label": "See pricing",
+      "label": "See prices",
       "href": "/pricing"
     },
+    "terms": [
+      "No card",
+      "Pay once, after it runs",
+      "You own the code"
+    ],
     "feed": {
-      "title": "Activity",
+      "title": "Your build",
       "badge": "Running",
-      "footer": "All connections healthy · checks every 10 min",
+      "footer": "12 rules made for this shop · every 10 min",
       "clock": "14:20",
       "events": [
         {
           "id": "e1",
-          "icon": "refresh",
-          "title": "Stock updated",
-          "detail": "Shopify · Amazon · Zalando"
+          "icon": "package-x",
+          "title": "Last pair: pulled",
+          "detail": "StockX EU + US"
         },
         {
           "id": "e2",
-          "icon": "route",
-          "title": "Order #10482 imported",
-          "detail": "Shopify → warehouse"
+          "icon": "warehouse",
+          "title": "Sale off warehouse stock",
+          "detail": "Alias → warehouse"
         },
         {
           "id": "e3",
-          "icon": "pause",
-          "title": "3 sold-out listings paused",
-          "detail": "eBay · Etsy"
+          "icon": "file-spreadsheet",
+          "title": "Supplier file read",
+          "detail": "412 sizes updated"
         },
         {
           "id": "e4",
-          "icon": "receipt",
-          "title": "Invoice INV-2291 booked",
-          "detail": "Exact Online"
+          "icon": "pause",
+          "title": "Held: under price floor",
+          "detail": "Your price rule"
         },
         {
           "id": "e5",
           "icon": "alert",
-          "title": "Order #10479 held",
-          "detail": "Amazon · needs review",
+          "title": "Order held for a check",
+          "detail": "Address problem",
           "state": "review"
         },
         {
           "id": "e6",
-          "icon": "link",
-          "title": "24 new products matched",
-          "detail": "WooCommerce · warehouse"
-        },
-        {
-          "id": "e7",
           "icon": "calendar-clock",
-          "title": "Daily stock report sent",
+          "title": "Daily stock sheet sent",
           "detail": "Google Sheets"
         },
         {
-          "id": "e8",
-          "icon": "tag",
-          "title": "Prices updated",
-          "detail": "Bol · Kaufland"
+          "id": "e7",
+          "icon": "bell",
+          "title": "Alert: back in stock",
+          "detail": "Slack · your team"
         }
       ]
     }
   },
-  "connect": {
-    "label": "We connect web stores, marketplaces, warehouse systems and the tools around them",
+  "pains": {
+    "num": "01",
+    "eyebrow": "Sounds familiar?",
+    "headline": "Six jobs sellers still do by hand",
+    "body": "They start when you add a second marketplace or region. Or when your stock moves to a warehouse or 3PL.",
     "items": [
+      {
+        "icon": "copy",
+        "title": "The last size sells twice",
+        "body": "It sells on two marketplaces before the stock updates. You cancel one order, pay a fee, and your seller score drops.",
+        "every": "On busy days"
+      },
+      {
+        "icon": "keyboard",
+        "title": "Sales typed into the warehouse",
+        "body": "Each marketplace sale is typed into the warehouse system by hand. One typo, and the stock count is wrong.",
+        "every": "Every sale"
+      },
+      {
+        "icon": "bell-off",
+        "title": "Delisting after every sale",
+        "body": "After each sale, someone logs in to every other marketplace and ends the listing. Miss one, and it sells again.",
+        "every": "Every sale"
+      },
+      {
+        "icon": "file-spreadsheet",
+        "title": "The supplier stock file",
+        "body": "Your supplier sends stock as a file. Someone updates the sizes by hand, line by line.",
+        "every": "Every new file"
+      },
+      {
+        "icon": "image",
+        "title": "Missing product photos",
+        "body": "New items go live without photos. Someone finds and adds them, one product at a time.",
+        "every": "Every new product"
+      },
+      {
+        "icon": "calendar-clock",
+        "title": "The daily stock sheet",
+        "body": "Each morning, someone exports a CSV and pastes it into Google Sheets for the warehouse or 3PL.",
+        "every": "Every morning"
+      }
+    ],
+    "footer": "We build software that does these jobs for you, made for your platforms and your rules."
+  },
+  "build": {
+    "num": "02",
+    "eyebrow": "What we build",
+    "headline": "Custom ecommerce integrations built for your shop",
+    "body": "We build software for the jobs your team does by hand. It works with the platforms you already use, to your rules.",
+    "groups": [
+      {
+        "icon": "refresh",
+        "title": "Stock",
+        "body": "One stock count for every place you sell. A sale on one channel updates the others and your warehouse.",
+        "on": "StockX, Alias, eBay, Shopify, your warehouse system"
+      },
+      {
+        "icon": "route",
+        "title": "Orders",
+        "body": "Marketplace orders go to your warehouse or 3PL, and tracking goes back. Orders with a problem are held for a check.",
+        "on": "Amazon, Walmart, TikTok Shop, ShipStation, your 3PL"
+      },
+      {
+        "icon": "tag",
+        "title": "Listings",
+        "body": "Your products are listed on each marketplace you choose. Each listing gets the photos, condition notes and price that marketplace needs.",
+        "on": "eBay, Etsy, Whatnot, Amazon, Shopify"
+      },
+      {
+        "icon": "file-spreadsheet",
+        "title": "Supplier files",
+        "body": "Your supplier's stock file is read when it arrives. Sizes and prices are updated without anyone typing.",
+        "on": "CSV and Excel files, email, FTP, supplier APIs"
+      },
+      {
+        "icon": "image",
+        "title": "Photos and product data",
+        "body": "Products without photos get them from your files or the marketplace catalog. Model numbers are matched to the right product.",
+        "on": "Shopify, eBay, StockX, your catalog"
+      },
+      {
+        "icon": "bell",
+        "title": "Reports and alerts",
+        "body": "A stock sheet every morning and sales totals for your books. An alert when an order needs a person.",
+        "on": "Google Sheets, Slack, email, QuickBooks"
+      }
+    ],
+    "note": "These are examples. We build only what your shop needs."
+  },
+  "connect": {
+    "headline": "Platforms we build for",
+    "body": "The marketplaces and stores you sell on, and the systems behind them.",
+    "items": [
+      {
+        "slug": "stockx",
+        "name": "StockX"
+      },
+      {
+        "slug": "alias-goat",
+        "name": "Alias"
+      },
+      {
+        "slug": "ebay",
+        "name": "eBay"
+      },
       {
         "slug": "shopify",
         "name": "Shopify"
@@ -115,174 +222,346 @@
         "name": "Amazon"
       },
       {
-        "slug": "woocommerce",
-        "name": "WooCommerce"
+        "slug": "tiktok-shop",
+        "name": "TikTok Shop"
       },
       {
-        "slug": "ebay",
-        "name": "eBay"
+        "slug": "walmart",
+        "name": "Walmart"
       },
       {
-        "slug": "odoo",
-        "name": "Odoo"
+        "slug": "whatnot",
+        "name": "Whatnot"
       },
       {
         "slug": "etsy",
         "name": "Etsy"
       },
       {
-        "slug": "zalando",
-        "name": "Zalando"
+        "slug": "woocommerce",
+        "name": "WooCommerce"
+      },
+      {
+        "slug": "warehouse",
+        "name": "Your warehouse or 3PL"
+      },
+      {
+        "slug": "shipbob",
+        "name": "ShipBob"
+      },
+      {
+        "slug": "shipstation",
+        "name": "ShipStation"
       },
       {
         "slug": "google-sheets",
         "name": "Google Sheets"
       },
       {
-        "slug": "kaufland",
-        "name": "Kaufland"
-      },
-      {
-        "slug": "bigcommerce",
-        "name": "BigCommerce"
-      },
-      {
-        "slug": "otto",
-        "name": "Otto"
-      },
-      {
-        "slug": "xero",
-        "name": "Xero"
-      },
-      {
-        "slug": "tiktok-shop",
-        "name": "TikTok Shop"
-      },
-      {
-        "slug": "shopware",
-        "name": "Shopware"
-      },
-      {
-        "slug": "prestashop",
-        "name": "PrestaShop"
+        "slug": "slack",
+        "name": "Slack"
       },
       {
         "slug": "quickbooks",
         "name": "QuickBooks"
+      }
+    ],
+    "more": "Not listed? If it has an API or an export, we can build for it."
+  },
+  "why": {
+    "num": "03",
+    "eyebrow": "Why custom",
+    "headline": "How a custom build compares",
+    "body": "A simple link between one store and one marketplace is often free today. We build for what the apps skip: resale marketplaces, several regions, your warehouse and your own rules.",
+    "rows": [
+      "Fit",
+      "What you pay",
+      "Upkeep",
+      "Time to go live",
+      "Who owns it"
+    ],
+    "columns": [
+      {
+        "name": "Monthly apps",
+        "highlight": false,
+        "cells": [
+          "Fixed features. Resale marketplaces and your warehouse are often missing.",
+          "{apps}",
+          "They decide what changes. A price rise can cut your API access.",
+          "Fast, if your platforms are covered.",
+          "You rent it. Stop paying and it stops."
+        ]
       },
       {
-        "slug": "warehouse",
-        "name": "Your warehouse system"
+        "name": "DIY automation tools",
+        "highlight": false,
+        "cells": [
+          "You build every step yourself.",
+          "Per task, so the bill grows with your orders.",
+          "Steps break quietly. You become the developer.",
+          "As fast as you can build it.",
+          "Your steps live on their platform."
+        ]
+      },
+      {
+        "name": "Freelancers and agencies",
+        "highlight": false,
+        "cells": [
+          "Built for you, from a blank page.",
+          "{freelancer} from a freelancer. {agency} from an agency.",
+          "Usually billed extra.",
+          "Often weeks.",
+          "Depends on the contract."
+        ]
+      },
+      {
+        "name": "Coelor",
+        "highlight": true,
+        "cells": [
+          "Built for your platforms and your rules.",
+          "$500 per connection, once. 3 connections for the price of 2.",
+          "90 days of fixes included, also when a platform changes its API.",
+          "About a day once we have access. Free 7-day trial first.",
+          "You own the source code. It runs in your own cloud account."
+        ]
+      }
+    ]
+  },
+  "proof": {
+    "num": "04",
+    "eyebrow": "Client work",
+    "headline": "Running today for a reseller in the Netherlands",
+    "body": "With EU and US accounts on two resale marketplaces, connected to its warehouse system.",
+    "doesTitle": "What the build does",
+    "badge": "Running",
+    "does": [
+      "Each sale comes off the warehouse stock within minutes.",
+      "Marketplace orders are confirmed.",
+      "Missing product photos are added.",
+      "The team gets alerts and stock reports."
+    ],
+    "stats": [
+      {
+        "value": "10 min",
+        "label": "or less to switch a sold-out item off on every account"
+      },
+      {
+        "value": "30,000+",
+        "label": "products checked on every run"
+      },
+      {
+        "value": "EU + US",
+        "label": "accounts on two resale marketplaces"
       }
     ]
   },
   "process": {
-    "num": "01",
+    "num": "05",
     "eyebrow": "How it works",
-    "headline": "Three steps. Then it runs by itself.",
+    "headline": "Live in about a day. Pay after it runs.",
     "steps": [
       {
         "icon": "phone",
         "when": "30 minutes",
         "title": "Call",
-        "body": "We map your sales channels, stock and tools, and agree what should run by itself. We count your connections: $500 each, one-time, 3 for the price of 2."
+        "body": "Tell us where you sell and what you do by hand. We count the connections, so you know the price on the call."
       },
       {
         "icon": "wrench",
-        "when": "1-day setup",
+        "when": "About a day",
         "title": "Build",
-        "body": "We shape our engine to your requirements: what you need, nothing extra. It runs in test mode next to your team before it goes live."
+        "body": "We start from parts we have built and run before, so a build takes about a day, not weeks. It starts once we have access to your accounts."
       },
       {
-        "icon": "power",
-        "when": "Yours",
-        "title": "Run",
-        "body": "Stock, orders and listings stay in step without anyone typing them over. You get the full codebase."
-      }
-    ]
-  },
-  "proof": {
-    "num": "02",
-    "eyebrow": "Client work",
-    "headline": "Running today for a Dutch reseller.",
-    "body": "Two international marketplaces, with EU and US accounts, connected to the reseller's warehouse system on our engine.",
-    "from": [
-      {
-        "icon": "store",
-        "name": "Marketplace 1",
-        "note": "EU and US accounts"
+        "icon": "activity",
+        "when": "7 days free",
+        "title": "Trial",
+        "body": "Try your first link free for 7 days: two of your platforms, connected. No card."
       },
       {
-        "icon": "store",
-        "name": "Marketplace 2",
-        "note": ""
-      }
-    ],
-    "to": [
-      {
-        "icon": "warehouse",
-        "name": "Warehouse system",
-        "note": ""
-      }
-    ],
-    "stats": [
-      {
-        "value": "Minutes",
-        "label": "for a sale to come off the stock"
+        "icon": "receipt",
+        "when": "Once",
+        "title": "Pay once",
+        "body": "Keep it and pay once: $500 per connection, 3 for the price of 2. Don't keep it and you pay nothing."
       },
       {
-        "value": "Every 10 min",
-        "label": "sold-out items switched off on every account"
-      },
-      {
-        "value": "31,000+",
-        "label": "products checked"
+        "icon": "code",
+        "when": "90 days of fixes",
+        "title": "Handover",
+        "body": "You get the source code, running in your own cloud account. 90 days of fixes are included."
       }
     ]
   },
   "pricing": {
-    "num": "03",
+    "num": "06",
     "eyebrow": "Pricing",
     "headline": "Pay once. Own the code.",
-    "body": "Our engine is already built and reusable. We shape it to your requirements, so the price stays low and you never pay for extras you don't need.",
+    "body": "$500 per connection, one-time. 3 connections for the price of 2. A connection is one platform or account we build for: your web store, a marketplace account, your warehouse system.",
     "points": [
-      "$500 per connection, one-time, no monthly software fee",
-      "3 connections for the price of 2",
-      "Set up in 1 day",
-      "Try 1 connection free for 7 days, no card",
-      "Unlimited orders and products",
-      "The full codebase, yours to keep"
+      "Live in about a day once we have access to your accounts",
+      "Try your first link free for 7 days, no card",
+      "No monthly fee and no fee per order",
+      "The source code is yours to keep"
     ],
-    "note": "A connection is one platform or account: a web store, a marketplace account, your warehouse system.",
+    "examplesTitle": "Example setups",
+    "examples": [
+      {
+        "title": "Store and marketplace",
+        "rows": [
+          {
+            "icon": "globe",
+            "label": "Web store"
+          },
+          {
+            "icon": "store",
+            "label": "Marketplace account"
+          }
+        ]
+      },
+      {
+        "title": "Store, marketplace and warehouse",
+        "rows": [
+          {
+            "icon": "globe",
+            "label": "Web store"
+          },
+          {
+            "icon": "store",
+            "label": "Marketplace account"
+          },
+          {
+            "icon": "warehouse",
+            "label": "Warehouse system"
+          }
+        ]
+      },
+      {
+        "title": "Reseller",
+        "rows": [
+          {
+            "icon": "store",
+            "label": "Resale marketplace, EU"
+          },
+          {
+            "icon": "store",
+            "label": "Resale marketplace, US"
+          },
+          {
+            "icon": "globe",
+            "label": "Web store"
+          },
+          {
+            "icon": "warehouse",
+            "label": "Warehouse system"
+          }
+        ]
+      }
+    ],
+    "connections": "{n} connections",
+    "free": "3 for 2: one free",
+    "total": "One-time total",
+    "typical": "A typical setup: $1,000–1,500",
+    "perMonth": "{total} once is about {monthly} a month over two years — and then it's paid off.",
+    "note": "It runs in your own cloud account. The host bills you directly, usually {hosting}. We charge nothing monthly.",
+    "trialCta": {
+      "label": "Start free 7-day trial",
+      "href": "#contact"
+    },
     "cta": {
-      "label": "See pricing",
+      "label": "See prices",
       "href": "/pricing"
     }
   },
+  "team": {
+    "num": "07",
+    "eyebrow": "Who builds it",
+    "headline": "A small team of engineers in Dhaka, Bangladesh",
+    "body": "You talk to the people who build it.",
+    "namesLabel": "The team",
+    "names": [
+      "Tausif",
+      "Hasib",
+      "Jimam",
+      "Siam",
+      "Maha",
+      "Shohan"
+    ],
+    "accessTitle": "How access works",
+    "access": [
+      {
+        "icon": "key",
+        "title": "You create the API keys",
+        "body": "You make the keys in your own accounts, limited to what the build needs."
+      },
+      {
+        "icon": "shield",
+        "title": "You can revoke them any time",
+        "body": "Switch a key off whenever you want. We never ask for your passwords."
+      },
+      {
+        "icon": "cloud",
+        "title": "It runs in your cloud account",
+        "body": "We set it up in your own cloud account. The build and its data stay with you."
+      },
+      {
+        "icon": "code",
+        "title": "The source code is yours",
+        "body": "You get all of the source code. Any developer can work on it later."
+      }
+    ]
+  },
   "faq": {
-    "num": "04",
+    "num": "08",
     "eyebrow": "Questions",
-    "headline": "Short answers.",
+    "headline": "Questions before you start",
     "items": [
       {
+        "q": "What is a connection?",
+        "a": "One platform or account we build for: your web store, a marketplace account, your warehouse system. Each one is $500, one-time. Take 3 or more and one of them is free."
+      },
+      {
+        "q": "What does the free trial run?",
+        "a": "Your first link, free for 7 days: two of your platforms connected. For example your store and one marketplace, or a marketplace and your warehouse. No card. Keep it and those connections are billed as normal: $500 each, 3 for the price of 2. Don't keep it and we switch it off. You pay nothing."
+      },
+      {
+        "q": "What if it doesn't work?",
+        "a": "Then you don't pay. You pay once, after it runs. If it doesn't do what we agreed, we switch it off and you owe nothing."
+      },
+      {
+        "q": "Why one payment and not a monthly fee?",
+        "a": "You pay for the build. After that, the code is yours and runs in your own cloud account. There is nothing for us to bill each month, and no fee per order."
+      },
+      {
+        "q": "How long does setup take?",
+        "a": "Live in about a day once we have access to your accounts. Some marketplaces must approve API access first, and that can take longer."
+      },
+      {
+        "q": "What happens after handover?",
+        "a": "90 days of fixes are included, also when a platform changes its API. After that, each fix has a fixed price that we agree before we start. Or any developer can work on it, because you have the code."
+      },
+      {
+        "q": "What if a platform changes its API?",
+        "a": "In the first 90 days after handover, we fix it at no cost. After that, it is a fixed price per fix, agreed before we start."
+      },
+      {
+        "q": "Where does it run, and what does hosting cost?",
+        "a": "In your own cloud account. We set it up. The host bills you directly, usually {hosting}. We charge nothing monthly."
+      },
+      {
+        "q": "How do you get access to our accounts?",
+        "a": "You create API keys in your own accounts, limited to what the build needs. You can revoke them at any time. We don't ask for passwords."
+      },
+      {
+        "q": "Am I too small for this?",
+        "a": "Maybe. With under about 100 orders a month on two channels, a free app may be enough. A custom build makes sense with more channels, a warehouse or 3PL, or rules the apps don't cover."
+      },
+      {
         "q": "Do we have to change the systems we use?",
-        "a": "No. We connect to what you already use through its API. If a system has no API, we work from its exports."
-      },
-      {
-        "q": "Why is the price low?",
-        "a": "The engine is already built and reusable. We shape it to your requirements, so you pay for your setup, not for the basics or for extras you don't need."
-      },
-      {
-        "q": "Is there a monthly fee?",
-        "a": "No monthly software fee. You pay once, get the full codebase, and there is no limit on orders or products. You can run it on your own server, or we set it up for you."
-      },
-      {
-        "q": "How long does set-up take?",
-        "a": "Set-up takes 1 day, once we have access to your platforms and accounts."
+        "a": "No. We build for what you already use, through its API. If a system has no API, we work from its exports."
       },
       {
         "q": "What if one of our platforms is down?",
-        "a": "It retries and picks up where it stopped. Nothing is applied twice, every action is logged, and you get an alert if a run keeps failing."
+        "a": "The build tries again and continues where it stopped. Nothing is applied twice. Every action is logged, and you get an alert if a run keeps failing."
       }
     ]
   },

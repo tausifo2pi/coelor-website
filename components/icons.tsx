@@ -29,6 +29,11 @@ import {
   Tag,
   ShoppingBag,
   Globe,
+  Bell,
+  ImagePlus,
+  KeyRound,
+  Cloud,
+  Code,
   type LucideProps,
 } from "lucide-react";
 
@@ -63,6 +68,11 @@ const LUCIDE: Record<string, ComponentType<LucideProps>> = {
   tag: Tag,
   bag: ShoppingBag,
   globe: Globe,
+  bell: Bell,
+  image: ImagePlus,
+  key: KeyRound,
+  cloud: Cloud,
+  code: Code,
 };
 
 /** UI icon by name (Lucide). Unknown names render nothing. */
