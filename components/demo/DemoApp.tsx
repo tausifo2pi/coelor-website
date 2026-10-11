@@ -38,7 +38,7 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
   { id: "listings", label: "Listings", icon: Tag, title: "Listings", sub: "Channel listings the build watches" },
   { id: "automations", label: "Custom rules", icon: FileCode2, title: "Custom rules", sub: "Northvale Kicks' own rules: asked for by the team, built into their code" },
   { id: "build", label: "Build log", icon: History, title: "Build log", sub: "Every change to this build: what the team asked for, and when it went live" },
-  { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try 1 connection free for 7 days." },
+  { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try your first link free for 7 days." },
 ];
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;

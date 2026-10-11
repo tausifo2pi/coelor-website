@@ -34,7 +34,7 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
   { id: "automations", label: "Custom rules", icon: FileCode2, title: "Custom rules", sub: "Fernhollow's own rules: asked for by the team, built into their code" },
   { id: "connections", label: "Systems", icon: Network, title: "Systems in this build", sub: "The platforms Fernhollow runs on, and how each is wired into their build" },
   { id: "build", label: "Build log", icon: History, title: "Build log", sub: "Every change to this build: what the team asked for, and when it went live" },
-  { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try 1 connection free for 7 days." },
+  { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try your first link free for 7 days." },
 ];
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;

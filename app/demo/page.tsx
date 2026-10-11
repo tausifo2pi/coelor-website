@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Logo from "@/components/Logo";
 import { Icon } from "@/components/icons";
-import { OFFER, OFFER_LINES, usd, withPlan } from "@/lib/offer";
+import { OFFER, OFFER_LINES, TRIAL_WHAT, usd, withPlan } from "@/lib/offer";
 
 // The short page an email can link to (coelor.com/r/<token>?to=/demo): what the live demo shows and the link to it.
 // Static and small (no data, no client code of its own); the site Tracker logs the visit, the sections seen and the
@@ -79,7 +79,7 @@ export default function DemoIntro() {
           <div className="flex flex-col gap-3 border-t border-dashed border-ok/30 bg-ok/[0.05] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <p className="inline-flex items-center gap-2 text-[14px] text-ink">
               <span className="pulse h-2 w-2 shrink-0 rounded-full bg-ok" aria-hidden />
-              {OFFER_LINES.trial}, no card.
+              {OFFER_LINES.trial}: {TRIAL_WHAT}.
             </p>
             <a href={withPlan("/pricing", "trial") + "#contact"} className="inline-flex w-fit shrink-0 items-center gap-1.5 text-[14px] font-semibold text-[#8fe7c2] hover:underline">
               Start free trial

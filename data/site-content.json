@@ -248,8 +248,8 @@
     "points": [
       "$500 per connection, one-time, no monthly software fee",
       "3 connections for the price of 2",
-      "Set up in 1 day",
-      "Try 1 connection free for 7 days, no card",
+      "Live in about a day once we have access",
+      "Try your first link free for 7 days, no card",
       "Unlimited orders and products",
       "The full codebase, yours to keep"
     ],
@@ -304,7 +304,7 @@
       "items": [
         "We reply within one business day",
         "A 30-minute call about your channels, stock and tools",
-        "$500 per connection, one-time, set up in 1 day"
+        "$500 per connection, one-time, live in about a day"
       ]
     },
     "placeholders": {
@@ -319,7 +319,7 @@
       "next": [
         "We reply within one business day",
         "A 30-minute call about your channels, stock and tools",
-        "$500 per connection, one-time, set up in 1 day"
+        "$500 per connection, one-time, live in about a day"
       ],
       "again": "Send another message"
     }
