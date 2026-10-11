@@ -131,7 +131,7 @@ export function SheetAssistant({ ctx, profile = SNEAKER }: { ctx: AssistantCtx; 
                 <span className="rounded-md bg-[#0f172a] px-1.5 py-[1px] text-[11px] font-bold tracking-[0.04em] text-white">GPT</span>
                 <Badge tone="amber">Beta</Badge>
               </p>
-              <p className="truncate text-[12.5px] text-[#64748b]">Builds routines that get data from your sync and post it to your team</p>
+              <p className="truncate text-[12.5px] text-[#64748b]">Builds routines that read this build's data and post it to your team</p>
             </div>
           </div>
           {/* the beta's promise: routines read, and post only to the team's sheets and chat */}
@@ -190,7 +190,7 @@ export function SheetAssistant({ ctx, profile = SNEAKER }: { ctx: AssistantCtx; 
       </section>
 
       <section className="flex min-w-0 flex-col gap-4">
-        <Heading title="Use it from Claude or ChatGPT" sub="Connect your sync to the AI app your team already uses, and ask it there. The same read-only routines, posting only to your team." />
+        <Heading title="Use it from Claude or ChatGPT" sub="Connect your build to the AI app your team already uses, and ask it there. The same read-only routines, posting only to your team." />
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {AI_APPS.map((x) => (
             <Card key={x.slug} className="flex items-center gap-3 !p-4">
@@ -200,7 +200,7 @@ export function SheetAssistant({ ctx, profile = SNEAKER }: { ctx: AssistantCtx; 
                 <p className="mt-0.5 text-[12.5px] leading-[1.5] text-[#64748b]">Ask from the {x.name} app: {x.ask}</p>
               </div>
               <Button small primary onClick={() => {
-                const body = `View only in this demo. For your store we connect your sync to ${x.name}, so your team can ask it right in the ${x.name} app, like ${x.ask} It reads the same data as this assistant and posts only to your team's tools: it never changes listings, prices or stock.`;
+                const body = `View only in this demo. For your store we connect your build to ${x.name}, so your team can ask it right in the ${x.name} app, like ${x.ask} It reads the same data as this assistant and posts only to your team's tools: it never changes listings, prices or stock.`;
                 if (ctx.connect) ctx.connect(x.slug, x.name, body);
                 else ctx.locked(`connect:${x.slug}`, `Connecting ${x.name}`);
               }}>Connect</Button>
@@ -293,7 +293,7 @@ function Bubble({ m }: { m: Msg }) {
   );
 }
 
-// the AI apps a team can ask the sync from (connected for a store, view only here)
+// the AI apps a team can ask the build from (connected for a store, view only here)
 const AI_APPS = [
   { slug: "claude", name: "Claude", ask: "“Which sizes sold out today, and where?”" },
   { slug: "chatgpt", name: "ChatGPT", ask: "“Make me tomorrow's pick list for 8:00.”" },
