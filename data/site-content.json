@@ -75,7 +75,7 @@
         {
           "id": "e2",
           "icon": "warehouse",
-          "title": "Sale off warehouse stock",
+          "title": "Sale off warehouse",
           "detail": "Amazon → warehouse"
         },
         {
@@ -255,16 +255,8 @@
         "name": "ShipBob"
       },
       {
-        "slug": "shipstation",
-        "name": "ShipStation"
-      },
-      {
         "slug": "google-sheets",
         "name": "Google Sheets"
-      },
-      {
-        "slug": "slack",
-        "name": "Slack"
       },
       {
         "slug": "quickbooks",
