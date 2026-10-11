@@ -1,5 +1,6 @@
-// The demo page's reads of /api/demo/*: a failed or slow answer is asked again twice (after 1.5 s and 4 s) before the
-// page says the data did not load. "Not found" and "slow down" are final answers, not retried.
+// A page's read of a JSON file it ships with (the store demos' catalogue, components/storedemo): a failed or slow answer
+// is asked again twice (after 1.5 s and 4 s) before the page says the data did not load. "Not found" and "slow down"
+// are final answers, not retried. (The sneaker demo's data needs no read: lib/demo/gen.ts demoGet.)
 const FINAL = new Set([400, 404, 429]);
 
 export async function getJson<T>(url: string, waits: number[] = [1500, 4000]): Promise<T> {

@@ -4,7 +4,7 @@
 // one is counted from those rows, or, where the overview only has totals, follows from them by a fixed rule, so the
 // same moment always gives the same tiles. Pure (no I/O, no "@/" imports): `node --test lib/demo/tiles.test.mts`.
 
-import { API_CHANNELS, CHANNELS, type SellPlatform } from "./channels.ts";
+import { CORE_CHANNELS, CHANNELS, type SellPlatform } from "./channels.ts";
 import type { Overview, Sale } from "./shape.ts";
 import type { Happening, Order } from "../storedemo/types.ts";
 import { WEEKDAYS, businessDaysAfter, dayStart, fromWall, wallOf, weekStart } from "./fields.ts";
@@ -35,7 +35,7 @@ export function sneakerTiles(ov: Overview, now: number, o: { since: string; tz: 
   // a pair at authentication has left the shelf; a cancelled one never ships
   const gone = (s: Sale) => s.state === "Shipped" || s.state === "Being checked" || s.state === "Cancelled";
 
-  const toShip = API_CHANNELS.map((id) => ({
+  const toShip = CORE_CHANNELS.map((id) => ({
     id,
     n: Math.max(0, n0(k.sales24h, id) - ov.feed.filter((s) => s.platform === id && recent(s) && gone(s)).length),
   }));

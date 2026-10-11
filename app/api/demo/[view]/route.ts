@@ -1,9 +1,8 @@
-// The live demo's data (/demo/multi-platform-sync): read-only views of the client's running sync, shaped for a public
-// page by lib/demo/ak.ts. The page itself is static; its browser asks here. Answers come from copies kept fresh behind
-// them (never a wait for the client's API when a copy exists). GET only; a small per-network limit keeps one visitor
-// from hammering it.
+// The live demo's data (/demo/multi-platform-sync) for pages an older script still has open: the same generated
+// answers the page now builds itself (lib/demo/gen.ts), so nothing here reads another system. GET only; a small
+// per-network limit keeps one visitor from keeping the server busy.
 import { NextResponse, type NextRequest } from "next/server";
-import { answer, demoRequest } from "@/lib/demo/ak";
+import { demoAnswer } from "@/lib/demo/gen";
 
 export const dynamic = "force-dynamic";
 
@@ -31,13 +30,11 @@ const json = (body: unknown, status = 200) =>
 export async function GET(req: NextRequest, ctx: { params: Promise<{ view: string }> }) {
   if (limited(req)) return json({ error: "slow_down" }, 429);
   const { view } = await ctx.params;
-  const r = demoRequest(view, req.nextUrl.searchParams);
-  if (!r) return json({ error: "not_found" }, 404);
   try {
-    const a = await answer(r.key, r.run);
+    const a = demoAnswer(view, req.nextUrl.searchParams);
     return a ? json(a) : json({ error: "not_found" }, 404);
   } catch (err) {
-    console.error("demo: live data unavailable", view, err instanceof Error ? err.message : err);
+    console.error("demo: answer failed", view, err instanceof Error ? err.message : err);
     return json({ error: "unavailable" }, 503);
   }
 }

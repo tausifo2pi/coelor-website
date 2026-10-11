@@ -4,7 +4,7 @@
 // come from CHANNELS / STORES only, and every channel looks the same (a channel's `sample` flag is never shown).
 // Anything that would change the store (connect, sync now, link, pull a listing, reports) opens the "view only" dialog.
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { getJson } from "@/lib/demo/get";
+import { demoGet } from "@/lib/demo/gen";
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
 import { ArrowLeftRight, ArrowRight, Check, Plus, TriangleAlert, Zap } from "lucide-react";
 import { CHANNELS, PICQER, type Channel as ChannelInfo } from "@/lib/demo/channels";
@@ -41,7 +41,7 @@ function useLive<T>(url: string, ctx: Ctx, what: string) {
   useEffect(() => {
     let alive = true;
     setState((s) => ({ ...s, loading: true }));
-    getJson<Live<T>>(url)
+    demoGet<Live<T>>(url)
       .then((data) => alive && setState({ data, loading: false, failed: false }))
       .catch(() => {
         if (!alive) return;
