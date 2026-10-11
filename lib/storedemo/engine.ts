@@ -1,4 +1,4 @@
-// The store around a live catalogue (lib/storedemo/shopify.ts): orders on every channel, the stock count, labels,
+// The store around its catalogue (lib/storedemo/catalog.ts): orders on every channel, the stock count, labels,
 // deliveries, returns, sold-out sizes pulled, new products listed, wholesale restocks and the automations, for any
 // moment. Deterministic and time-based: everything follows from (config, catalogue, moment) through a hash, so every
 // visitor sees the same at the same moment, orders appear as time passes and totals only grow. Only what the store can

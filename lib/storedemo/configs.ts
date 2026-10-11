@@ -14,7 +14,7 @@ export const WOMENS_BOUTIQUE: DemoConfig = {
   setup: "their Shopify store, TikTok Shop, Amazon, Walmart and Poshmark, their stockroom, their carriers and their own rules",
   item: "piece",
   items: "pieces",
-  store: { domain: "lane201.com", newest: 120, bestCollection: "bestsellers" },
+  catalog: { seed: "womens-boutique-1", newest: 148, best: 40, dropDays: [2, 4], perDrop: [6, 9] },
   tz: "America/Chicago",
   since: [2026, 3, 2],
   stock: { name: "Stockroom", logo: "stockroom", role: "Counts the stock", detail: "1 location · every size on one count" },

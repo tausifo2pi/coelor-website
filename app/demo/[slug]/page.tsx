@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import StoreDemoApp from "@/components/storedemo/StoreDemoApp";
 import { STORE_DEMOS, demoBySlug } from "@/lib/storedemo/configs";
 
-// The store demos (lib/storedemo/configs.ts), one static page each, built once: the browser reads the store's live
-// catalogue itself (components/storedemo/StoreDemoApp.tsx). Email-only, not indexed (robots.ts disallows /demo).
+// The store demos (lib/storedemo/configs.ts), one static page each, built once: the browser builds the shop's
+// generated catalogue itself (components/storedemo/StoreDemoApp.tsx). Email-only, not indexed (robots.ts disallows
+// /demo).
 // /demo/multi-platform-sync is its own page (the sneaker demo) and wins over this route.
 export const dynamicParams = false;
 

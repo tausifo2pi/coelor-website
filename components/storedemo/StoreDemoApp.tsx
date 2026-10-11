@@ -1,23 +1,22 @@
 "use client";
 
-// A store demo (/demo/<slug>): a static page. The visitor's browser reads the store's live catalogue from its Shopify
-// Storefront API (lib/storedemo/shopify.ts; the copy saved with the page when the store does not answer) and
-// lib/storedemo/engine.ts tells the sync around it. Read-only, every click that would change something opens the
-// "view only" dialog. lib/demo/track.ts records what the visitor looks at, like the sneaker demo.
+// A store demo (/demo/<slug>): a static page. The visitor's browser builds the shop's generated catalogue
+// (lib/storedemo/catalog.ts) and lib/storedemo/engine.ts tells the sync around it. Read-only, every click that would
+// change something opens the "view only" dialog. lib/demo/track.ts records what the visitor looks at, like the
+// sneaker demo.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, LayoutDashboard, Lock, Plug, Receipt, RefreshCw, Sparkles, Truck, X, Zap, type LucideIcon } from "lucide-react";
 import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, ago, fmt, hasMark } from "@/components/demo/ui";
 import { OfferCard, OfferLines, OfferNote } from "@/components/demo/Offer";
 import { PricingView } from "@/components/demo/Pricing";
 import { CustomNotice } from "@/components/demo/CustomNotice";
-import { getJson } from "@/lib/demo/get";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { SheetAssistant } from "@/components/demo/SheetAssistant";
 import { storeAssistant } from "@/lib/storedemo/assistant";
 import { demoBySlug } from "@/lib/storedemo/configs";
 import { storeWorld } from "@/lib/storedemo/engine";
-import { fetchCatalog } from "@/lib/storedemo/shopify";
-import type { Catalog, DemoConfig } from "@/lib/storedemo/types";
+import { catalogAt, catalogStamp } from "@/lib/storedemo/catalog";
+import type { Catalog } from "@/lib/storedemo/types";
 import { Automations, Connections, Dashboard, Orders, Products, Shipping, type SCtx, type SectionId } from "@/components/storedemo/sections";
 
 
@@ -33,34 +32,10 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
 ];
 
 type Dialog = { title: string; body: string; slug?: string; name?: string } | null;
-const CACHE_MS = 15 * 60_000;
 
 function sectionFromUrl(): SectionId {
   const want = new URLSearchParams(location.search).get("section");
   return SECTIONS.some((s) => s.id === want) ? (want as SectionId) : "dashboard";
-}
-
-/** The catalogue: from this tab's last read (15 min), else the store, else the copy saved with the page. */
-async function loadCatalog(cfg: DemoConfig): Promise<Catalog> {
-  const key = `storedemo:${cfg.slug}`;
-  try {
-    const hit = JSON.parse(sessionStorage.getItem(key) ?? "null") as { t: number; cat: Catalog } | null;
-    if (hit && Date.now() - hit.t < CACHE_MS && hit.cat?.products?.length) return hit.cat;
-  } catch {
-    // no storage (private window): read again
-  }
-  let cat: Catalog;
-  try {
-    cat = await fetchCatalog(cfg);
-  } catch {
-    cat = await getJson<Catalog>(`/storedemo/${cfg.slug}.json`);
-  }
-  try {
-    sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), cat }));
-  } catch {
-    // full or blocked: fine
-  }
-  return cat;
 }
 
 export default function StoreDemoApp({ slug }: { slug: string }) {
@@ -76,25 +51,37 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
   const tRef = useRef<DemoTracker | null>(null);
 
   useEffect(() => {
-    let alive = true;
-    loadCatalog(cfg)
-      .then((c) => alive && setCat(c))
-      .catch(() => {
-        if (!alive) return;
-        setFailed(true);
-        tRef.current?.error("catalog");
-      });
     const first = sectionFromUrl();
     setSection(first);
     const tr = startDemoTracker(first);
     tRef.current = tr;
     setT(tr);
+    // The catalogue is built here in the browser, not in the static page: it belongs to the shop's day
+    // (lib/storedemo/catalog.ts), the same for every visitor that day. Built again only when the shop's day turns.
+    let day = "";
+    let broken = false;
+    const build = (at: number) => {
+      if (broken) return;
+      try {
+        const stamp = catalogStamp(cfg, at);
+        if (stamp === day) return;
+        day = stamp;
+        setCat(catalogAt(cfg, at));
+      } catch {
+        broken = true;
+        setFailed(true);
+        tr.error("catalog");
+      }
+    };
+    build(Date.now());
     setNow(Date.now());
     const tick = window.setInterval(() => {
-      if (document.visibilityState === "visible") setNow(Date.now());
+      if (document.visibilityState !== "visible") return;
+      const at = Date.now();
+      build(at);
+      setNow(at);
     }, 15_000);
     return () => {
-      alive = false;
       window.clearInterval(tick);
       tr.stop();
     };

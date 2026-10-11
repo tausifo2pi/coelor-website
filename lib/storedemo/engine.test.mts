@@ -1,12 +1,12 @@
 // node --test lib/storedemo/engine.test.mts
-// The store around a live catalogue (lib/storedemo/engine.ts): the same answer for the same moment, totals that only
+// The store around its catalogue (lib/storedemo/engine.ts): the same answer for the same moment, totals that only
 // grow, only sizes in stock sold, never before a product came out, only where it is listed, a sold-out size's last sale
 // and pull shown, show-evening bursts on the live channel, steps in time order and never in the future.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { WOMENS_BOUTIQUE as CFG } from "./configs.ts";
 import { storeWorld } from "./engine.ts";
-import { brandOf, catalogOf, categoryOf } from "./shopify.ts";
+import { garmentArt, type Kind } from "./art.ts";
 import type { Catalog, Product } from "./types.ts";
 
 const NOW = Date.parse("2026-10-04T01:30:00Z"); // Saturday 20:30 in Chicago
@@ -23,7 +23,7 @@ function catalog(): Catalog {
       brand: ["Klesis", "Bailey Rose", "Fore Collection"][i % 3],
       category: ["Tops", "Dresses", "Pants"][i % 3],
       price: 38 + (i % 7) * 9,
-      image: `https://cdn.shopify.com/x/${i}.jpg`,
+      image: garmentArt(["top", "dress", "pants"][i % 3] as Kind, "Sage"),
       publishedAt: new Date(NOW - (i < 40 ? i * 0.4 * DAY : 90 * DAY + i * DAY)).toISOString(),
       best: i >= 40 ? i - 40 : null,
       variants: colors.flatMap((c) => sizes.map((s) => ({ id: `p${i}${c}${s}`, color: c, size: s, available: !(i % 5 === 0 && s === "S") && i !== 7 }))),
@@ -131,34 +131,6 @@ test("labels follow working hours: before the cut-off the same day, never on a S
     assert.notEqual(local.getUTCDay(), 0, `${o.id} label on a Sunday`);
     assert.ok(local.getUTCHours() >= 9, `${o.id} label at ${local.getUTCHours()}h`);
   }
-});
-
-test("the store's answer: product types read as a shopper reads them, codes are not brands, gift cards left out", () => {
-  assert.equal(categoryOf("141 - Tops over $50", "x"), "Tops");
-  assert.equal(categoryOf("174 - All Other Shorts", "x"), "Shorts");
-  assert.equal(categoryOf("152 - Over $60 Pullover Sweaters", "x"), "Sweaters");
-  assert.equal(categoryOf("Dresses Between $50 - $70", "x"), "Dresses");
-  assert.equal(categoryOf("172 - Short Skirts", "x"), "Skirts");
-  assert.equal(categoryOf("Romper", "x"), "Rompers & Jumpsuits");
-  assert.equal(categoryOf("", "Satin Maxi Dress"), "Dresses");
-  assert.equal(brandOf("SKYLAR ROSE"), "Skylar Rose");
-  assert.equal(brandOf("SM/T10681A"), "");
-  const raw = {
-    data: {
-      newest: { nodes: [
-        { id: "gid://shopify/Product/1", title: "Coffee Stripe Top", vendor: "Klesis", productType: "142 - Tops under $50", publishedAt: "2026-09-29T10:00:00Z",
-          priceRange: { minVariantPrice: { amount: "44.0" } }, featuredImage: { url: "https://cdn.shopify.com/a.jpg" },
-          variants: { nodes: [{ availableForSale: true, selectedOptions: [{ name: "Color", value: "BROWN" }, { name: "Size", value: "M" }] }] } },
-        { id: "gid://shopify/Product/2", title: "Gift Card", vendor: "Store", productType: "", publishedAt: "2026-01-01T00:00:00Z",
-          priceRange: { minVariantPrice: { amount: "10.0" } }, featuredImage: { url: "https://cdn.shopify.com/b.jpg" },
-          variants: { nodes: [{ availableForSale: true, selectedOptions: [{ name: "Title", value: "Default Title" }] }] } },
-      ] },
-      best: { products: { nodes: [] } },
-    },
-  };
-  const c = catalogOf(raw, "2026-10-04T00:00:00Z");
-  assert.equal(c.products.length, 1);
-  assert.deepEqual([c.products[0].category, c.products[0].variants[0].color, c.products[0].variants[0].size], ["Tops", "Brown", "M"]);
 });
 
 test("a channel that buys its own label (Poshmark) ships on that label and carrier; the others use the shipping tool", () => {

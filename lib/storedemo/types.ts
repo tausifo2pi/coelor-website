@@ -1,6 +1,6 @@
-// The store demos (/demo/<slug>): a static page whose browser reads a live Shopify store's catalogue and shows the sync
-// around it (sales channels, warehouse, shipping, returns), told by lib/storedemo/engine.ts. One config per demo
-// (lib/storedemo/configs.ts), so the next demo is a config, not code. No "@/" imports here: node --test loads it.
+// The store demos (/demo/<slug>): a static page whose browser builds the shop's generated catalogue
+// (lib/storedemo/catalog.ts) and shows the sync around it (sales channels, warehouse, shipping, returns), told by
+// lib/storedemo/engine.ts. One config per demo (lib/storedemo/configs.ts). No "@/" imports here: node --test loads it.
 
 /** One size/colour of a product, as the store shows it today (available = the store can sell it now). */
 export type Variant = { id: string; color: string; size: string; available: boolean };
@@ -11,6 +11,8 @@ export type Product = {
   brand: string;
   category: string;
   price: number;
+  /** the price before a markdown, when the piece is marked down */
+  compareAt?: number;
   image: string | null;
   publishedAt: string;
   /** place on the store's best-seller list (0 = first), null when not on it */
@@ -61,7 +63,9 @@ export type DemoConfig = {
   /** the noun for one unit and many ("piece", "pieces") */
   item: string;
   items: string;
-  store: { domain: string; newest: number; bestCollection?: string };
+  /** the generated catalogue (lib/storedemo/catalog.ts): its seed, how many of the newest pieces it holds, how many best
+   * sellers, the weekdays new pieces come out (0 = Sunday) and how many come out each time */
+  catalog: { seed: string; newest: number; best: number; dropDays: number[]; perDrop: [number, number] };
   /** the time zone the shop works in (orders follow its day) */
   tz: string;
   /** local date the sync started (Y, M 1-12, D) */
