@@ -2,11 +2,12 @@ import content from "@/data/site-content.json";
 import SectionHead from "@/components/SectionHead";
 import ContactForm, { type ContactCopy } from "@/components/ContactForm";
 
-/** Optional overrides let a landing page reuse the form with its own heading. */
+/** Optional overrides let a landing page (/pricing, the email-only case studies) reuse the form with its own heading;
+ * the form's own copy (choice, fields, errors, next steps) is the same everywhere: data/site-content.json contact.*. */
 export default function Contact({ num, headline, body }: { num?: string; headline?: string; body?: string } = {}) {
   const contact = { ...content.contact, ...(num && { num }), ...(headline && { headline }), ...(body && { body }) };
-  const { fields, placeholders, buttonIdle, buttonSending, buttonError, success } = contact;
-  const copy: ContactCopy = { fields, placeholders, buttonIdle, buttonSending, buttonError, success, email: content.brand.email };
+  const { choice, fields, placeholders, buttonIdle, buttonSending, buttonError, orEmail, errors, next, success } = contact;
+  const copy: ContactCopy = { choice, fields, placeholders, buttonIdle, buttonSending, buttonError, orEmail, errors, next, success, email: content.brand.email };
   return (
     <section id="contact" aria-labelledby="contact-title" className="scroll-mt-16 bg-canvas2">
       <div className="mx-auto grid max-w-site grid-cols-1 gap-10 px-5 py-16 md:px-10 lg:grid-cols-[1fr_380px] lg:gap-24 lg:px-20 lg:py-[104px]">

@@ -1,3 +1,4 @@
+import content from "@/data/site-content.json";
 import { LOGO_HEIGHT, LOGO_WIDTH } from "./logo";
 
 // The logo image is a self-contained dark tile (see logo.ts); shown at its natural 1x size.
@@ -20,6 +21,8 @@ const LOGO_H = LOGO_HEIGHT;
 
 export const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
+
+const { brand } = content;
 
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
 const MONO = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace";
@@ -53,14 +56,14 @@ export function layout({ preheader, title, body }: { preheader: string; title: s
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
           <tr>
             <td style="font-size:12px;line-height:1.6;color:#7d8695">
-              <strong style="color:#3a3f4b">Coelor</strong> · Automation for the work between your systems<br/>
-              <a href="https://coelor.com" style="color:#7d8695;text-decoration:none">coelor.com</a> · <a href="mailto:contact@coelor.com" style="color:#7d8695;text-decoration:none">contact@coelor.com</a>
+              <strong style="color:#3a3f4b">${esc(brand.name)}</strong> · ${esc(brand.tagline)}<br/>
+              <a href="https://coelor.com" style="color:#7d8695;text-decoration:none">coelor.com</a> · <a href="mailto:${esc(brand.email)}" style="color:#7d8695;text-decoration:none">${esc(brand.email)}</a>
             </td>
           </tr>
         </table>
       </td></tr>
     </table>
-    <p style="margin:18px 0 0;font-size:11px;line-height:1.5;color:#9aa1ad;max-width:600px">You are receiving this because a message was sent to Coelor with this email address. If that wasn't you, you can ignore this email.</p>
+    <p style="margin:18px 0 0;font-size:11px;line-height:1.5;color:#9aa1ad;max-width:600px">You are receiving this because someone used the contact form on coelor.com with this email address. If that wasn't you, you can ignore this email.</p>
   </td></tr>
 </table>
 </body>
@@ -104,6 +107,7 @@ export function quote(label: string, text: string) {
   </table>`;
 }
 
+/** `href` goes into the attribute as given: escape it (esc) when it holds anything the visitor typed. */
 export function button(label: string, href: string) {
   return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:4px 0 24px">
     <tr><td bgcolor="#9fb0ff" style="border-radius:999px;background:#9fb0ff">

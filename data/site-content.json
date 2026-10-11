@@ -2,15 +2,20 @@
   "brand": {
     "name": "Coelor",
     "wordmark": "coelor",
-    "tagline": "Your sales channels, stock and tools, connected",
+    "tagline": "Built for how you sell. Paid once. Yours to keep.",
     "email": "contact@coelor.com",
-    "address": "Road 5, Block A, Bashundhara, Dhaka, Bangladesh"
+    "address": "Road 5, Block A, Bashundhara, Dhaka, Bangladesh",
+    "postal": {
+      "street": "Road 5, Block A, Bashundhara",
+      "city": "Dhaka",
+      "country": "BD"
+    }
   },
   "seo": {
-    "title": "Coelor — Connect your sales channels, stock and tools",
-    "description": "Coelor connects your web store, marketplaces, warehouse system and tools in one automation that runs by itself. Built on our reusable engine to your requirements. One-time price, and you own the code.",
-    "openGraphTitle": "Coelor — Your sales channels, stock and tools, connected",
-    "openGraphDescription": "One automation that runs by itself, built on our reusable engine to your requirements. Pay once, own the code."
+    "title": "Coelor: custom ecommerce integrations, built for your shop",
+    "description": "Custom integrations for your marketplaces, web store, warehouse and suppliers, built to your rules. $500 per connection, paid once. You own the code.",
+    "openGraphTitle": "Coelor: built for how you sell. Paid once. Yours to keep.",
+    "openGraphDescription": "Custom integrations for your marketplaces, web store, warehouse and suppliers. Live in about a day, free 7-day trial, and you own the code."
   },
   "nav": [
     {
@@ -289,43 +294,76 @@
   "contact": {
     "num": "05",
     "eyebrow": "Contact",
-    "headline": "Tell us what runs by hand today.",
+    "headline": "Try it free, or get your price.",
     "body": "Three fields. We reply within one business day.",
+    "choice": {
+      "legend": "What would you like?",
+      "trial": "Free 7-day trial",
+      "price": "Price for my setup",
+      "pricePrefill": "I'd like a price for my setup. Our platforms: "
+    },
     "fields": {
       "name": "Name",
       "email": "Email",
-      "message": "What should run on its own?"
+      "message": "Which platforms do you use, and what do you still do by hand?"
     },
-    "buttonIdle": "Send message",
+    "buttonIdle": "Send",
     "buttonSending": "Sending…",
     "buttonError": "Could not send. Email us instead.",
+    "orEmail": "or email",
+    "errors": {
+      "required": "Required",
+      "email": "Enter a valid email",
+      "short": "Please write a sentence or two",
+      "summary": "Please check the fields marked below.",
+      "server": "Something went wrong on our side. Please email us directly and we will pick it up.",
+      "rateLimited": "Too many messages from your network. Please wait 10 minutes, or email us directly."
+    },
     "aside": {
       "title": "What happens next",
       "items": [
         "We reply within one business day",
-        "A 30-minute call about your channels, stock and tools",
-        "$500 per connection, one-time, set up in 1 day"
+        "A short call, or straight to your trial",
+        "Your first link free for 7 days, or a fixed price in writing"
       ]
     },
     "placeholders": {
       "name": "Your name",
       "email": "you@company.com",
-      "message": "e.g. orders from our web store are typed into the warehouse system by hand"
+      "message": "For example: our web store, two marketplaces and a warehouse system. We type each sale into the warehouse by hand."
+    },
+    "next": {
+      "trial": [
+        "We reply within one business day",
+        "We set up your first link free for 7 days, no card",
+        "Keep it and pay once, after it runs. Or we switch it off and you pay nothing"
+      ],
+      "price": [
+        "We reply within one business day",
+        "A short call, then the exact price in writing",
+        "Want to try it first? Your first link runs free for 7 days"
+      ]
     },
     "success": {
       "title": "Message received.",
       "body": "Thanks, {name}. A confirmation is on its way to {email}. We read every message ourselves and reply within one business day.",
+      "bodyNoReceipt": "Thanks, {name}. We have your message. We read every message ourselves and reply within one business day.",
       "refLabel": "Reference",
-      "next": [
-        "We reply within one business day",
-        "A 30-minute call about your channels, stock and tools",
-        "$500 per connection, one-time, set up in 1 day"
-      ],
       "again": "Send another message"
+    },
+    "receipt": {
+      "subject": "We received your message · {ref}",
+      "preheader": "Thanks for getting in touch. We reply within one business day.",
+      "title": "Thanks, {name}. We have your message.",
+      "titleNoName": "Thanks. We have your message.",
+      "intro": "We read every message ourselves and reply within one business day. Keep the reference below if you want to follow up.",
+      "requestLabel": "Request",
+      "nextTitle": "What happens next",
+      "outro": "Want to add something? Reply to this email and it comes straight to us."
     }
   },
   "footer": {
-    "tagline": "Your sales channels, stock and tools, connected.",
+    "tagline": "Built for how you sell. Paid once. Yours to keep.",
     "links": [
       {
         "label": "How it works",
@@ -344,6 +382,17 @@
         "href": "#contact"
       }
     ],
+    "legal": [
+      {
+        "label": "Privacy",
+        "href": "/privacy"
+      },
+      {
+        "label": "Terms",
+        "href": "/terms"
+      }
+    ],
+    "note": "Platform names and logos belong to their owners. No endorsement implied.",
     "copyright": "© 2026 Coelor"
   }
 }

@@ -1,445 +1,104 @@
-# CLAUDE.md — Coelor Website
+# CLAUDE.md: coelor.com (website)
 
-## Project Overview
+Coelor builds **custom ecommerce integrations** for online sellers: software made for their own platforms
+(marketplaces, web store, warehouse/3PL, supplier files, team tools) and rules. $500 per connection, paid once, live in
+about a day once we have access, free 7-day trial first, and the client owns the code. Umbrella line:
+**"Built for how you sell. Paid once. Yours to keep."** A small team of engineers in Dhaka, Bangladesh.
 
-Coelor is a software services company. The name is derived from Coelophysis, a small, fast, agile prehistoric predator. The website is a single-page Next.js application that serves as the company's primary web presence. The site must be a benchmark in modern web design — not a typical dark tech template.
+Copy and positioning rules for every change: `lead-outreach/docs/website/REBUILD_BRIEF_2026-10-11.md` (user decisions,
+plain US English, proof claims, what never goes on the site). The audit behind it: `AUDIT_2026-10-11.md` next to it.
 
-**Tagline:** "Agile by Nature."
-**Subtitle:** "Software that evolves with your ambition."
-**Site type:** Single-page app with smooth scroll navigation between sections
-**Framework:** Next.js (App Router)
+## Stack
 
----
+- Next.js 16 (App Router, `output: "standalone"`), React 19, TypeScript, Tailwind CSS 3.4. Fonts via `next/font`
+  (Manrope, JetBrains Mono; self-hosted at build, nothing fetched at runtime). Icons: lucide-react, simple-icons.
+- Mail: nodemailer over Spacemail SMTP (`EMAIL`, `EMAIL_PASSWORD`; `SMTP_HOST`/`SMTP_PORT` optional).
+- No database. Tracking events are JSON lines in `$TRACK_DIR/events.jsonl` (`/data/track` in Docker).
+- Node 24 locally (`~/.nvm/versions/node/v24.18.0`): it runs the `.mts` tests' TypeScript directly.
 
-## Brand Narrative — "Digital Fossil"
+## Pages
 
-The entire site follows an excavation and discovery narrative. The user scrolls and uncovers layers — like digging through geological strata to reveal advanced technology buried within ancient rock. Each section is a "layer" with its own color zone, and transitions between them are smooth and continuous, never hard section breaks.
+| Route | What | Indexed | Linked from public pages |
+|---|---|---|---|
+| `/` | homepage (`app/page.tsx`, sections in `components/` + `components/home/`) | yes | yes |
+| `/pricing` | pricing (`app/pricing/page.tsx`, `components/pricing/*`, copy `data/pricing.json`) | yes | yes |
+| `/privacy`, `/terms` | plain-language legal pages (`components/LegalPage.tsx`) | yes | footer |
+| `/demo`, `/demo/multi-platform-sync`, `/demo/[slug]` | live demos (email-only) | no | **never** |
+| `/case-studies/*` | case studies (email-only, `components/CaseStudy.tsx`) | no | **never** |
+| `/r/<token>`, `/o/<token>.gif`, `/u/<token>`, `/p/<token>` | email click, open pixel, unsubscribe, preview | no | no |
+| `/api/contact`, `/api/t`, `/api/t/export`, `/api/u/*`, `/api/demo/*` | form, beacon, export for lead-outreach, unsubscribe, demo data | no | no |
 
-This narrative is expressed subtly through:
-- Color zone shifts as the user scrolls (like descending through rock)
-- Faint topographic/geological textures in backgrounds
-- Horizontal stratum lines in the services section
-- The particle Coelophysis as the "discovered specimen" — technology emerging from nature
+## Where things live
 
----
+- **Copy:** `data/site-content.json` (homepage, nav, contact form, footer, brand, seo), `data/pricing.json` (/pricing).
+  Components read copy from these files, server-side; client components get it as props.
+- **The offer:** `lib/offer.ts` is the single source of the numbers ($500 per connection, 3 for 2, the trial, the
+  contact-form prefills). `lib/offer.test.mts` checks that the JSON copy agrees; change both in one commit.
+- **SEO:** `lib/seo.ts` (social card `public/og.png`, `openGraph()` for a page, homepage metadata, JSON-LD:
+  Organization + WebSite in `app/layout.tsx`, `serviceJsonLd()` for /pricing), `app/sitemap.ts` (public pages only),
+  `app/robots.ts`. A page that sets `openGraph` replaces the layout's whole block: use `openGraph(title, desc, path)`.
+  `public/og.png` (1200×630) was rendered once with `next/og` `ImageResponse` (bundled Geist font, the wordmark SVG,
+  "Built for how you sell."); re-render it the same way if the line changes.
+- **Contact form:** `components/Contact.tsx` (server) + `components/ContactForm.tsx` (client) + `app/api/contact/`
+  (`route.ts`, email `template.ts`, `logo.ts`). Shared by the homepage, /pricing and the case studies: pages override
+  only `num`/`headline`/`body` by props. Choice "Free 7-day trial" / "Price for my setup"; `?plan=trial|<n>` in the
+  address and `[data-prefill]` on a link fill in the message and pick the choice. The endpoint has a spam-trap field,
+  5 submits per 10 min per /24, 3 receipts per address a day, and the receipt never repeats the message.
+- **Hero animation: `components/HeroScene.tsx` and `components/HeroPanels.tsx` are untouchable.** Only the `hero.feed`
+  text in site-content.json may change (≤ 24 characters per title/detail, ≥ 5 events, unique ids, icons from
+  `components/icons.tsx`).
+- **Demos (email-only):** `lib/demo/*` + `components/demo/*` (sneaker reseller "Northvale Kicks",
+  `/demo/multi-platform-sync`), `lib/storedemo/*` + `components/storedemo/*` (women's boutique "Fernhollow",
+  `/demo/womens-boutique`). Invented demo shops, every number generated in the browser; no client data, no third-party
+  store's catalog, no "sample" badges. `instrumentation.ts` keeps the demo and case study warm on the small server.
+- **Case studies (email-only):** `components/CaseStudy.tsx`, `lib/case-*.ts`, `data/case-*.json`.
 
-## Color System
+## Hard rules
 
-The page is NOT one flat dark color. It shifts subtly per zone.
+1. **Email-only pages stay email-only:** never link `/demo` or `/case-studies` from the homepage, /pricing, the nav,
+   the footer or the legal pages. They are `noindex`; robots.txt disallows `/demo`. `lib/site-guard.test.mts` fails
+   the build if a public file links them.
+2. **No competitor or connector-tool names** anywhere on the site (ChannelEngine, Sellbrite, Linnworks, BaseLinker,
+   Zapier, Make, …; full list in the brief and the guard test). Compare by category: "monthly apps", "DIY automation
+   tools", "freelancers and agencies".
+3. **The only client is anonymous:** "a reseller in the Netherlands with EU and US accounts on two resale marketplaces,
+   connected to its warehouse system". Never put StockX/Alias/Picqer next to "Dutch"/"Netherlands". Claim only what that
+   build really does (see the brief). No invented testimonials, logos or "clients" plural.
+4. Platform logos mean "platforms we build for", not partnerships; the footer says "Platform names and logos belong to
+   their owners. No endorsement implied."
+5. Case pages: only the reader's own kind of platforms, no sneaker words for other goods, no store-versus-site pitch.
 
-```
-Zone 1 — Hero:       Background #07070d (near-black)         Accent #00ffb4 (cyber green)
-Zone 2 — Services:   Background #0a1118 (deep teal-black)    Accent #ffb347 (warm amber)
-Zone 3 — About:      Background #0d0f14 (dark slate)         Accent #ffffff (ice white)
-Zone 4 — Stats:      Background #07070d (back to obsidian)   Accent #00ffb4 (green returns)
-Zone 5 — Contact:    Background #07070d                      Accent #00ffb4
-Zone 6 — Footer:     Background #050508                      Accent #00ffb4
-```
+## Tracking (first-party, for the lead-outreach panel)
 
-### Utility Colors
-```
-Text primary:      #e8e8e8 (off-white)
-Text secondary:    #7a7a8a (muted gray)
-Text faded:        rgba(255,255,255,0.06) — used for oversized background numbers
-Card/surface:      rgba(255,255,255,0.02) with 1px border rgba(255,255,255,0.06)
-Green glow:        rgba(0,255,180,0.4) — for drop-shadows and glows
-Amber glow:        rgba(255,179,71,0.4) — for service number glows
-```
+- `components/Tracker.tsx` (in the root layout) sends pageview, `section_view`, scroll depth, active time and every
+  link/button click (`cta_click`) to `/api/t`. **Every `cta_click` is a push on the owner's phone.**
+- Sections: each homepage/pricing section is a server-rendered `<section id>` inside `<main>`; ids unique across both
+  pages (the panel merges equal ids).
+- Put `data-track="off"` on controls that are not CTAs (menu toggle, logo-to-top, skip link, steppers, spam trap).
+  The push label is the element's `aria-label`, else its text: keep labels short and human; where the same text appears
+  twice, add where it sits (`"Free trial (nav)"`, `"Pricing (footer)"`) without changing the visible text.
+- Trial and quote CTAs carry `data-prefill` (from `PREFILL` in lib/offer.ts) and point at `#contact`.
+- Cookies: `cv` (random visitor id, 365 days) and `ct` (email token, 180 days), set only by `/r/<token>` (an email
+  click). Normal visitors get no cookie. Only an IP prefix (/24 or /48) is stored. `/privacy` describes all of this:
+  update it when tracking changes.
+- Internal visits are filtered in lead-outreach, not here.
 
-### Gradients
-- Primary gradient: `linear-gradient(135deg, #00ffb4, #00c8ff)` — used on logo, CTA button, footer line
-- Stat bar gradient: `linear-gradient(90deg, #00ffb4, #00c8ff)`
-- Zone transitions: Use CSS scroll-driven animations or IntersectionObserver to smoothly interpolate background-color between zones. No hard cuts.
+## Tests and checks
 
----
-
-## Typography
-
-Three fonts, three roles. No exceptions.
-
-### 1. Clash Display (Display / Headlines)
-- **Source:** https://fonts.cdnfonts.com/css/clash-display or Fontshare
-- **Usage:** Hero tagline, section headlines, stat numbers, about statement
-- **Weight:** 700 (Bold)
-- **Sizes:**
-  - Hero tagline: 80px desktop / 40px mobile
-  - Section headlines: 48–56px desktop / 28–32px mobile
-  - Stat numbers: 120px desktop / 64px mobile
-  - About statement: 48px desktop / 28px mobile
-- **Style notes:** Tight letter-spacing (-0.02em). Angular, aggressive, geometric. This font has teeth.
-
-### 2. Switzer (Body / Reading)
-- **Source:** Fontshare
-- **Usage:** Descriptions, about paragraph, form labels readable text
-- **Weight:** 400 (Regular), 500 (Medium for emphasis)
-- **Size:** 16–18px body, 14px small text
-- **Line-height:** 1.6 for body text
-- **Style notes:** Humanist, warm, excellent dark-background readability.
-
-### 3. JetBrains Mono (Monospaced / Interface)
-- **Source:** Google Fonts
-- **Usage:** Navigation links, stat labels, section spine labels, form field labels, footer text, micro UI elements
-- **Weight:** 400
-- **Size:** 12–14px, always ALL CAPS
-- **Letter-spacing:** 0.1em
-- **Style notes:** Technical, precise. Gives "system interface" feel to small UI elements.
-
----
-
-## Sections — Detailed Specification
-
-### Section 1: HERO — "The Emergence"
-
-**Layout:** Full viewport (100vh), no traditional split layout. The dinosaur dominates.
-
-**Background:**
-- Base color: #07070d
-- Slow-moving grid pattern (60px cells, rgba(0,255,180,0.03) lines, animating diagonally at ~20s loop)
-- Two large soft radial gradient orbs floating gently (green and blue, heavily blurred, ~5-6% opacity)
-
-**Coelophysis Particle Animation (centerpiece):**
-- 300+ small particles (2–3px circles) with green glow (#00ffb4, opacity 0.6–1.0 varying)
-- Connected by thin translucent lines (rgba(0,200,255,0.15), 0.5px width) when particles are within proximity threshold
-- The particles form the silhouette of a running Coelophysis — side profile, mid-stride, tail extended back, head forward
-- **Load animation:** Particles start scattered randomly across the full viewport like stars. Over 3 seconds, they converge and assemble into the dinosaur shape using eased interpolation (cubic-bezier(0.22, 1, 0.36, 1))
-- **Idle animation:** Once assembled, particles have subtle drift (±2px random movement, 3–5s loop per particle) so the shape breathes and feels alive. Lines reconnect dynamically based on proximity.
-- **Implementation:** Use HTML Canvas or Three.js for performance. Each particle is an object with: startX, startY (random), targetX, targetY (dinosaur shape coordinate), currentX, currentY.
-- The dinosaur shape coordinates should be predefined as a point cloud dataset representing the Coelophysis silhouette. Approximately 300 points distributed along the outline and key internal features (spine, legs, tail, jaw).
-- Canvas should be full viewport, positioned absolute behind the text content.
-
-**Text content (overlaid on top of the particle animation):**
-- "Agile by Nature." — Clash Display, 80px, weight 700, color #e8e8e8
-- The text should be **partially masked behind the dinosaur**. The dinosaur runs "in front of" the text, creating depth. Implementation: render text on a layer, render dinosaur particles on a layer above, so particles visually overlap portions of the text. Alternatively, use CSS mix-blend-mode or canvas compositing.
-- Subtitle below tagline: "Software that evolves with your ambition." — Switzer, 18px, color #7a7a8a, fades in 0.5s after tagline
-- CTA: Not a traditional button. Text link style: "Explore what we build →" — JetBrains Mono, 14px, uppercase, color #00ffb4. The arrow (→) slides 8px right on hover with 0.3s ease transition. On click, smooth scrolls to Services section.
-
-**Text entrance animation:**
-- Tagline: Slides up 30px + fades in, 0.6s duration, 0.5s delay after page load (after particles begin converging)
-- Subtitle: Same animation, 0.3s delay after tagline
-- CTA: Same animation, 0.3s delay after subtitle
-- Easing: cubic-bezier(0.22, 1, 0.36, 1) for all
-
-**Navbar:**
-- NOT visible in the hero. The hero is an immersive full-screen moment with zero chrome.
-- Navbar fades in (opacity 0→1, translateY -10px→0, 0.3s ease) only after the user scrolls past the hero section (use IntersectionObserver on the hero element).
-- Once visible, navbar is fixed to top, height 64px, background rgba(7,7,13,0.8) with backdrop-filter: blur(16px).
-- Left: Logo mark (geometric Coelophysis icon as SVG, ~28px) + "COELOR" in JetBrains Mono, 14px, uppercase, letter-spacing 0.15em, color #e8e8e8.
-- Right: Nav links — HOME, SERVICES, ABOUT, STATS, CONTACT — JetBrains Mono, 12px, uppercase, letter-spacing 0.1em, color #7a7a8a. On hover: color transitions to #00ffb4, 0.2s ease. Active section link is #00ffb4.
-- Bottom border: 1px solid rgba(255,255,255,0.06)
-- On mobile: Hamburger menu icon (three horizontal lines, green). Opens a full-screen overlay with nav links centered vertically.
-
-**Scroll indicator:**
-- Positioned bottom center of hero, 32px from bottom
-- A thin vertical line (1px, 24px tall, #7a7a8a) with a small dot that animates downward repeatedly (1.5s loop, ease-in-out). Fades out when user begins scrolling.
-
----
-
-### Section 2: SERVICES — "Excavation Layer"
-
-**Layout:** No card grid. Each service is a full-width horizontal strip, stacked vertically. Total 4 strips.
-
-**Background:** Smooth transition from #07070d to #0a1118 (deep teal-black) as this section enters view.
-
-**Per-service strip structure:**
-```
-|  01  |  Service Title                    |  Description text here,         |
-|      |                                    |  two lines max.                 |
+```bash
+export PATH=~/.nvm/versions/node/v24.18.0/bin:$PATH
+npx tsc --noEmit -p .   # types
+npm test                # node --test lib/**/*.test.mts lib/*.test.mts (offer, demos, site guard)
 ```
 
-- **Number:** Clash Display, 120px, color rgba(255,179,71,0.12) (faded amber). Positioned left side. The number has a subtle amber glow on scroll-reveal: text-shadow 0 0 40px rgba(255,179,71,0.15).
-- **Title:** Clash Display, 48px, weight 700, color #e8e8e8. Positioned center-left.
-- **Description:** Switzer, 16px, weight 400, color #7a7a8a. Positioned right side, max-width 400px.
-- **Stratum line:** Below each strip, a thin horizontal line (1px, color rgba(255,255,255,0.06)) that **draws itself** from left to right (width 0% → 100%) over 0.8s when the strip enters viewport. Use CSS animation with IntersectionObserver trigger.
-
-**The 4 services:**
-```
-01 — AI-Powered Automation
-    Building intelligent systems that automate repetitive business workflows, from customer support bots to order processing pipelines.
-
-02 — Custom Software Solutions
-    End-to-end software built around your specific business needs, not off-the-shelf compromises.
-
-03 — System Integration
-    Connecting your existing tools, platforms, and data sources into one seamless ecosystem that actually talks to each other.
-
-04 — Cloud Infrastructure & Scaling
-    Architecting systems that handle growth effortlessly — from startup traffic to enterprise-level demand.
-```
-
-**Entrance animation per strip:**
-- Horizontal wipe reveal: content slides in from left, 0.6s, staggered 0.15s between strips
-- NOT typical fade-up. Use clip-path or transform translateX(-40px) → 0 with opacity.
-- Triggered by IntersectionObserver (threshold 0.3)
-
-**Section label:**
-- "SERVICES" written vertically along the left edge, rotated -90deg, JetBrains Mono, 11px, uppercase, letter-spacing 0.15em, color rgba(255,255,255,0.08). Position: sticky within the section so it stays visible while scrolling through services.
-
----
-
-### Section 3: ABOUT — "The Core"
-
-**Layout:** Full-width, generous vertical padding (120px top/bottom desktop).
-
-**Background:** Transitions to #0d0f14 (dark slate). A very faint topographic map / contour line pattern in the background at 3% opacity. The pattern should be SVG-based — concentric irregular curved lines suggesting geological terrain maps.
-
-**Content:**
-- **Hero statement:** One powerful sentence in Clash Display, 48px, weight 700, color #e8e8e8, spanning full width (max-width 900px, centered):
-  *"We don't build software. We engineer unfair advantages."*
-- **Body paragraph:** Below, in Switzer, 18px, weight 400, color #7a7a8a, max-width 640px, centered, line-height 1.7:
-  *"Coelor was born from a simple belief: technology should be a predator, not prey. We build lean, fast systems designed to outlast and outperform — because in the digital era, agility isn't a luxury. It's survival."*
-
-**Section spine label:**
-- "ABOUT" written vertically on the left edge, rotated -90deg, JetBrains Mono, 11px, uppercase, letter-spacing 0.15em, color rgba(255,255,255,0.08).
-
-**Entrance animation:**
-- Hero statement: Each word fades in sequentially, 0.08s per word, creating a typewriter-like reveal but with opacity (not cursor). Total ~1s for the full sentence.
-- Body paragraph: Fades up (translateY 20px → 0, opacity 0 → 1), 0.6s, 0.3s delay after statement completes.
-
----
-
-### Section 4: STATS — "Proof Layer"
-
-**Layout:** Three stats stacked vertically, each taking ~200px vertical space. Centered. NOT a horizontal row.
-
-**Background:** Transitions back to #07070d. Green accent returns.
-
-**Per-stat structure:**
-```
-100+
-━━━━━━━━━━━━━━━━━━ (progress bar fills to proportional width)
-PROJECTS DELIVERED
-```
-
-- **Number:** Clash Display, 120px desktop / 64px mobile, weight 700, color #e8e8e8.
-  - Animated count-up from 0 to target value when scrolled into view.
-  - Duration: 2s, easing: cubic-bezier(0.22, 1, 0.36, 1) (fast start, smooth end).
-  - Each stat triggers independently when IT enters the viewport, not all at once.
-
-- **Progress bar:** Below the number, a horizontal bar, height 3px, border-radius 2px.
-  - Background track: rgba(255,255,255,0.06)
-  - Fill: linear-gradient(90deg, #00ffb4, #00c8ff)
-  - Fill animates from width 0% to target width over 1.5s, 0.3s delay after counter starts.
-  - Target widths: 100+ → 80% width, 20 → 40% width, 95% → 95% width (proportional visual representation).
-
-- **Label:** JetBrains Mono, 12px, uppercase, letter-spacing 0.12em, color #7a7a8a. Below the bar, 12px gap.
-
-**The 3 stats:**
-```
-100+    PROJECTS DELIVERED
-20      COUNTRIES SERVED
-95%     SATISFACTION RATE
-```
-
-**Section spine label:**
-- "PROOF" written vertically on the left edge, same style as other spines.
-
----
-
-### Section 5: CONTACT — "Signal"
-
-**Layout:** Centered, max-width 560px. Generous padding.
-
-**Background:** Remains #07070d.
-
-**Headline:** "Ready to evolve?" — Clash Display, 48px, weight 700, color #e8e8e8, centered.
-
-**Form fields (3, stacked vertically, 24px gap):**
-- **Name** / **Email** / **Message** (textarea, 4 rows)
-- **Rest state:** No visible borders. Only a bottom line (1px solid rgba(255,255,255,0.1)). Background transparent.
-- **Label:** JetBrains Mono, 11px, uppercase, letter-spacing 0.1em, color #7a7a8a. Positioned above the field.
-- **Input text:** Switzer, 16px, color #e8e8e8.
-- **Focus state:** Bottom line transitions to #00ffb4 (0.3s ease), and a subtle green glow appears: box-shadow 0 2px 12px rgba(0,255,180,0.1). Label color transitions to #00ffb4.
-- **Placeholder text:** color #3a3a4a
-
-**Submit button:**
-- Text: "Send Message" — JetBrains Mono, 14px, uppercase, letter-spacing 0.08em
-- Rest: background #00ffb4, color #07070d (dark text on green), padding 16px 40px, border-radius 6px, no border.
-- Hover: background transparent, color #00ffb4, border 1px solid #00ffb4. Transition 0.3s ease.
-- Width: auto, centered.
-
-**Fallback line:**
-- Below button, 24px gap: "Or reach us at hello@coelor.com" — Switzer, 14px, color #7a7a8a. Email is color #00ffb4, underline on hover.
-
-**Entrance animation:**
-- Headline fades up, then form fields stagger in (0.1s delay each), then button fades in last.
-
----
-
-### Section 6: FOOTER — "Bedrock"
-
-**Layout:** Full width, padding 32px vertical.
-
-**Background:** #050508
-
-**Top border:** 1px line with gradient: linear-gradient(90deg, transparent, #00ffb4, transparent) — creates a centered glow fade.
-
-**Content:**
-- Left: "© 2026 Coelor" — JetBrains Mono, 12px, color #7a7a8a
-- Right: 2–3 social icons (GitHub, LinkedIn, Twitter/X) — 18px, color #7a7a8a, hover color #00ffb4, transition 0.2s. Use simple SVG icons, not a library.
-
-**No fat footer. Clean ending.**
-
----
-
-## Background & Atmosphere Details
-
-### Moving Grid (Hero background layer)
-- CSS background-image: two sets of 1px lines forming 60px grid cells
-- Line color: rgba(0,255,180,0.03)
-- Animation: translateX and translateY shifting by one cell (60px) over 20s, linear, infinite loop
-- Creates a subtle "data flowing" feeling
-
-### Floating Gradient Orbs (Hero background layer)
-- Two radial gradient circles, positioned absolute
-- Orb 1: ~500px diameter, rgba(0,255,180,0.05), positioned top-right area, blur 80px, floating animation (translate ±40px over 12s ease-in-out)
-- Orb 2: ~400px diameter, rgba(0,200,255,0.04), positioned bottom-left area, blur 80px, floating animation (translate ±30px over 15s ease-in-out, offset phase)
-- Both behind all content (z-index 0)
-
-### Topographic Pattern (About section)
-- SVG pattern of concentric irregular curved lines
-- Stroke: rgba(255,255,255,0.03), stroke-width 0.5px, no fill
-- Covers the full about section background
-- Parallax: scrolls at 0.5x speed relative to content
-
-### Grain Texture (Global)
-- A subtle film grain overlay across the entire page
-- Implementation: CSS pseudo-element with a tiny noise texture (base64 PNG, ~100x100px) tiled, opacity 0.03
-- mix-blend-mode: overlay
-- Adds analog warmth to the digital dark theme
-
----
-
-## Scroll Behavior
-
-- All navigation uses smooth scrolling with easing (CSS scroll-behavior: smooth or JS with custom easing)
-- Zone background color transitions should use IntersectionObserver on each section, interpolating the body/main background-color smoothly as sections enter/exit
-- Parallax layers: grain texture at 0.5x, content at 1x (use CSS transform: translateZ for GPU acceleration or a lightweight parallax library)
-- No scroll hijacking. No horizontal scroll takeovers. Natural scroll speed, enhanced visually.
-
----
-
-## Responsive Breakpoints
-
-```
-Desktop:  1200px+    — Full experience, all animations
-Tablet:   768–1199px — Reduce particle count to 200, scale down typography, stack service strips differently
-Mobile:   <768px     — Particle count 120, hero tagline 40px, service strips fully stacked (number above title above description), stats numbers 64px, single column everything, hamburger nav
-```
-
-### Mobile-specific adjustments:
-- Particle Coelophysis should be smaller and positioned above the text (vertical stack) instead of overlapping
-- Service strips: number, title, description all stacked vertically per service
-- Stats: keep vertical stack, works naturally
-- Contact form: full width with 16px horizontal padding
-- Reduce all vertical paddings by ~40%
-- Disable parallax on mobile for performance
-
----
-
-## Logo Mark
-
-A geometric SVG icon inspired by the Coelophysis silhouette. Abstract and angular:
-- Formed by 2–3 sharp triangular shapes suggesting a head/jaw and body in motion
-- Uses the primary gradient (green to blue) as fill
-- Works at small sizes (28px in navbar) and as a favicon
-- Should feel like a speed/motion mark — think angular, forward-leaning geometry
-
----
-
-## Performance Requirements
-
-- Target: Lighthouse score 90+ across all categories
-- Canvas/Three.js particle system should run at 60fps. Use requestAnimationFrame. Reduce particle count on low-end devices (check navigator.hardwareConcurrency or use matchMedia for prefers-reduced-motion).
-- Lazy load all sections below the fold
-- Fonts: Preload Clash Display and Switzer (critical path). Load JetBrains Mono async.
-- Images: None required (fully CSS/SVG/Canvas driven). The only image asset is the grain texture (tiny, base64 inlined).
-- Use next/font for font optimization if available in Next.js
-- IntersectionObserver for all scroll-triggered animations (no scroll event listeners)
-
----
-
-## Tech Stack
-
-- **Framework:** Next.js (App Router, React 18+)
-- **Styling:** CSS Modules or Tailwind CSS — developer's choice, but must implement the exact design tokens above
-- **Animation:** CSS animations for simple transitions. Framer Motion for scroll-triggered reveals and staggered entrances. Canvas API or Three.js for the particle Coelophysis.
-- **Fonts:** Self-hosted or via Fontshare CDN (Clash Display, Switzer) + Google Fonts (JetBrains Mono)
-- **No component libraries.** No Material UI, no Chakra, no shadcn. Everything is custom to maintain the unique aesthetic.
-- **Deployment:** Vercel (recommended for Next.js)
-
----
-
-## File Structure (suggested)
-
-```
-coelor/
-├── app/
-│   ├── layout.tsx
-│   ├── page.tsx
-│   ├── globals.css
-│   └── fonts/
-│       ├── ClashDisplay-Bold.woff2
-│       └── Switzer-Regular.woff2
-├── components/
-│   ├── Navbar.tsx
-│   ├── Hero.tsx
-│   ├── ParticleCoelophysis.tsx    ← Canvas-based particle animation
-│   ├── Services.tsx
-│   ├── About.tsx
-│   ├── Stats.tsx
-│   ├── Contact.tsx
-│   ├── Footer.tsx
-│   ├── ScrollIndicator.tsx
-│   └── SectionSpine.tsx           ← Reusable vertical label component
-├── hooks/
-│   ├── useInView.ts               ← IntersectionObserver hook
-│   ├── useCountUp.ts              ← Counter animation hook
-│   └── useScrollProgress.ts       ← Scroll position tracking
-├── data/
-│   └── coelophysis-points.json    ← 300 point cloud coordinates for the dinosaur shape
-├── public/
-│   └── favicon.svg
-├── next.config.js
-├── tailwind.config.js (if using Tailwind)
-├── package.json
-└── CLAUDE.md                       ← This file
-```
-
----
-
-## Key Implementation Notes
-
-1. **Particle Coelophysis is the #1 priority.** If this doesn't look stunning, the whole site fails. Spend the most effort here. The point cloud data must produce a clearly recognizable running dinosaur silhouette.
-
-2. **Color zone transitions are #2 priority.** The smooth background shifts as the user scrolls are what make this feel like one continuous experience rather than a stack of sections.
-
-3. **Typography discipline is critical.** Three fonts only. Never mix up their roles. Clash Display never appears at body size. Switzer never appears in headlines. JetBrains Mono only for small UI/labels.
-
-4. **The amber accent in Services is intentional.** It breaks the green monotony and creates a visual "warm layer" in the middle of the page. Do not replace it with green.
-
-5. **No generic patterns.** No card grids, no icon circles, no gradient border cards, no "floating mockup" images. Every element is custom-designed for this specific site.
-
-6. **The site should feel like one continuous descent** — not 6 separate blocks stacked on top of each other. Smooth transitions, no hard edges between sections.
-
----
-
-## Content Summary
-
-**Company:** Coelor
-**Tagline:** Agile by Nature.
-**Subtitle:** Software that evolves with your ambition.
-**About statement:** "We don't build software. We engineer unfair advantages."
-**About body:** "Coelor was born from a simple belief: technology should be a predator, not prey. We build lean, fast systems designed to outlast and outperform — because in the digital era, agility isn't a luxury. It's survival."
-**Contact headline:** "Ready to evolve?"
-**Contact email:** hello@coelor.com
-
-**Services:**
-1. AI-Powered Automation — Building intelligent systems that automate repetitive business workflows, from customer support bots to order processing pipelines.
-2. Custom Software Solutions — End-to-end software built around your specific business needs, not off-the-shelf compromises.
-3. System Integration — Connecting your existing tools, platforms, and data sources into one seamless ecosystem that actually talks to each other.
-4. Cloud Infrastructure & Scaling — Architecting systems that handle growth effortlessly — from startup traffic to enterprise-level demand.
-
-**Stats:**
-- 100+ Projects Delivered
-- 20 Countries Served
-- 95% Satisfaction Rate
+`tsconfig.tsbuildinfo` is tracked but generated: never commit it. In git worktrees `node_modules` is a symlink to the
+main checkout's: never commit it either. Stage files explicitly (`git add <files>`).
+
+## Deploy
+
+Push to `main` = deploy. GitHub Actions (`.github/workflows/ci.yml`): **test** (npm ci, tsc, npm test) → **build**
+(Docker image to Docker Hub) → **deploy** (writes the runtime env from the `WEBSITE_ENV` secret to the EC2 server,
+`docker-compose pull && up`) → **cleanup**. A red test stops the deploy. The server: one EC2 instance in Frankfurt
+(eu-central-1, `infra/`, Pulumi), nginx in front (`infra/server/nginx.conf`, TLS, `X-Real-IP`), the lead-outreach
+container next to it on the same Docker network. Secrets: `cd infra && npm run push-secrets` (never in the image).
+Only deploy when the user says so.
