@@ -130,7 +130,10 @@ const weekdayOf = (d: number) => (epochDay(d) + 3) % 7;
 const weekOf = (d: number) => Math.floor((epochDay(d) + 3) / 7);
 
 // how sales spread over the (local) day: a web store is quiet at night and busy in the evening; a marketplace is flatter
-const STORE_HOURS = cumsum([0.35, 0.2, 0.1, 0.05, 0.05, 0.08, 0.2, 0.45, 0.7, 0.85, 0.95, 1.05, 1.25, 1.2, 1.05, 1.05, 1.15, 1.3, 1.55, 1.95, 2.35, 2.45, 1.9, 1.0]);
+const STORE_W = [0.35, 0.2, 0.1, 0.05, 0.05, 0.08, 0.2, 0.45, 0.7, 0.85, 0.95, 1.05, 1.25, 1.2, 1.05, 1.05, 1.15, 1.3, 1.55, 1.95, 2.35, 2.45, 1.9, 1.0];
+const STORE_HOURS = cumsum(STORE_W);
+// a show day's buy-now sales come in before the lineup goes up (9:00–16:00), so a show's window holds its own sales only
+const BEFORE_SHOW = cumsum(STORE_W.map((w, hr) => (hr >= 9 && hr < 16 ? w : 0)));
 const MARKET_HOURS = cumsum([0.5, 0.32, 0.22, 0.16, 0.16, 0.22, 0.38, 0.62, 0.82, 0.95, 1.0, 1.05, 1.15, 1.15, 1.1, 1.1, 1.15, 1.25, 1.4, 1.6, 1.75, 1.7, 1.35, 0.9]);
 // orders on a steady day, Monday to Sunday: a web store, and a marketplace's share of its daily average
 const WEEKDAY_ORDERS = [9, 10, 10, 11, 11, 12, 13];
@@ -237,7 +240,9 @@ type O = {
   cx: number; rs: number; sh: number; ck: number; dn: number; n: number;
 };
 type L = { i: number; d: number; ai: number; m: number; si: number; t: number };
-type Day = { o: O[]; l: L[] };
+/** a live channel's show that day: on air from `start` to `end` (its last sale is in), `models` in the lineup */
+type Show = { start: number; end: number; models: number };
+type Day = { o: O[]; l: L[]; show?: Show };
 type Query = { now: number; platform?: string; store?: string; q?: string; offset?: number; limit?: number };
 const EMPTY: Day = { o: [], l: [] };
 
@@ -366,6 +371,7 @@ export function sampleWorld(channels: readonly Channel[] = CHANNELS) {
     const drafts: { ai: number; m: number; si: number; t: number }[] = [];
     const listings: L[] = [];
     const list = (ai: number, m: number, si: number, t: number) => listings.push({ i: listings.length, d, ai, m, si, t });
+    let show: Show | undefined;
 
     if (ch.rhythm === "market") {
       const growth = 0.9 + 0.25 * Math.min(1, d / 280); // busier through the year
@@ -438,17 +444,20 @@ export function sampleWorld(channels: readonly Channel[] = CHANNELS) {
             drafts.push({ ai, m, si, t });
           });
         });
+        // the dashboard announces the show from these same numbers (overview `nextShow`): it ends at its planned
+        // length, or a minute after its last sale if the last lot runs over
+        show = { start, end: Math.max(start + length, Math.max(...drafts.map((x) => x.t)) + MIN), models: lineup.length };
       } else if (h(s, P.buyNow, d) % 2 === 0) {
         // no show: now and then a few pairs listed to buy now
         const m = pickModel(ai, d, u(s, P.batchModel, d), 3);
         const at = t0 + ((11 + (h(s, P.batchHour, d) % 6) - ams + 24) % 24) * HOUR + (h(s, P.batchT, d) % HOUR);
         draw(sizesOf[ai][m]!.s, () => 1, 3 + (h(s, P.batchSize, d) % 3), s, d, 999).forEach((si, x) => list(ai, m, si, at - x * (130 + (h(s, P.batchGap, d, 0, x) % 150))));
       }
-      // and a trickle of buy-now sales every day
+      // and a trickle of buy-now sales every day (on a show day, before the show)
       const trickle = [0, 0, 1, 1, 1, 2, 2, 3][h(s, P.trickle, d) % 8];
       for (let i = 0; i < trickle; i++) {
         const m = pickModel(ai, d, u(s, P.model, d, 500 + i));
-        drafts.push({ ai, m, si: pickSize(ai, m, u(s, P.size, d, 500 + i)), t: localMoment(t0, ams, STORE_HOURS, u(s, P.hour, d, 500 + i), u(s, P.minute, d, 500 + i)) });
+        drafts.push({ ai, m, si: pickSize(ai, m, u(s, P.size, d, 500 + i)), t: localMoment(t0, ams, show ? BEFORE_SHOW : STORE_HOURS, u(s, P.hour, d, 500 + i), u(s, P.minute, d, 500 + i)) });
       }
     }
 
@@ -475,7 +484,7 @@ export function sampleWorld(channels: readonly Channel[] = CHANNELS) {
     });
     orders.reverse();
     listings.sort((x, y) => y.t - x.t);
-    return { o: orders, l: listings };
+    return { o: orders, l: listings, show };
   }
 
   function day(ch: Ch, d: number): Day {
@@ -693,6 +702,17 @@ export function sampleWorld(channels: readonly Channel[] = CHANNELS) {
   const ownSched = own.map(([key, j]) => sched(key, j.min));
   const stockSched = chans.map((ch) => sched(`${ch.c.id}-stock`, 5));
 
+  /** The live channel's show on air at `now`, else its next one (within three weeks): the window its sales fall in. */
+  function nextShow(now: number): NonNullable<Overview["nextShow"]> | null {
+    const ch = chans.find((x) => x.rhythm === "live");
+    if (!ch) return null;
+    for (let d = Math.max(ch.startDay, dayOf(now) - 1); d <= dayOf(now) + 21; d++) {
+      const sh = day(ch, d).show;
+      if (sh && now < sh.end) return { platform: ch.c.id, start: iso(sh.start), end: iso(sh.end), models: sh.models };
+    }
+    return null;
+  }
+
   function jobs(now: number): Job[] {
     const orders: Job[] = chans.filter((ch) => now >= ch.since).map((ch) => {
       const c = ch.c;
@@ -772,6 +792,7 @@ export function sampleWorld(channels: readonly Channel[] = CHANNELS) {
     },
 
     jobs,
+    nextShow,
 
     /** The dashboard, connections and automations: counts, the newest sales, the jobs and the connection cards. */
     overview(now: number): Overview {
@@ -802,6 +823,7 @@ export function sampleWorld(channels: readonly Channel[] = CHANNELS) {
         connections: connectionsOf(js, channels),
         jobs: js,
         feed: top,
+        nextShow: nextShow(now),
       };
     },
   };

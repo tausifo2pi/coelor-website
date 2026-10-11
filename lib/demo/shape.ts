@@ -142,6 +142,8 @@ export type Overview = {
   connections: Connection[];
   jobs: Job[];
   feed: Sale[];
+  /** the live-selling channel's show on air, else its next one (null: none planned; absent: no live channel) */
+  nextShow?: { platform: SellPlatform; start: string; end: string; models: number } | null;
 };
 
 /** A search term as the page sends it: letters, digits, spaces and dashes only, 40 characters. */

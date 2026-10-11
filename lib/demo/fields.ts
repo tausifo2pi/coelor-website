@@ -1,12 +1,13 @@
 // The demo clients' own fields and calendars (lead-outreach PLAN_followups_custom_demo.md step 5b): what a product
-// drawer shows under "Northvale fields" / "Fernhollow fields", when the next Whatnot show or TikTok LIVE is, and which
-// pieces a LIVE holds back. A real build has fields like these because the client asked for them (a bin, a floor price,
-// a fit note); here they are generated, so every value follows from the product id through a hash: the same product
-// always shows the same bin, the same cost and the same fabric, on every visit and in every list it is opened from.
+// drawer shows under "Northvale fields" / "Fernhollow fields", when the next TikTok LIVE is, and which pieces a LIVE
+// holds back. (The next Whatnot show comes with the sneaker demo's overview, from the generator that sells it:
+// lib/demo/sample.ts, lib/demo/tiles.ts showTile.) A real build has fields like these because the client asked for
+// them (a bin, a floor price, a fit note); here they are generated, so every value follows from the product id through
+// a hash: the same product always shows the same bin, the same cost and the same fabric, on every visit and in every
+// list it is opened from.
 // Pure (no I/O, no "@/" imports): `node --test lib/demo/fields.test.mts`.
 
 const MIN = 60_000;
-const HOUR = 3_600_000;
 const DAY = 86_400_000;
 
 /* ---------- hashing: one stable number per (parts), the same function as lib/demo/sample.ts and the store engine ---------- */
@@ -151,63 +152,6 @@ export function sneakerFields(code: string, name = ""): SneakerFields {
   const floor = Math.max(Math.ceil((cost + 15) / 5) * 5, Math.round((market * (box === "Original box" ? 0.95 : 0.9)) / 5) * 5);
   const consignor = source === "Kiln Street consignment" ? `KS-${String(100 + (H("consignor", style, eu) % 900)).padStart(4, "0")}` : null;
   return { bin: `${zone}-${pad2(rack)}-${pad2(shelf)}`, box, source, cost, floor, consignor };
-}
-
-/* ---------- the Whatnot shows: the same calendar as lib/demo/sample.ts draws them ---------- */
-
-// Copied from lib/demo/sample.ts (SAMPLE_START, SHOW_WEEKS, the show's start and length, its lineup): this module is
-// shipped to the browser and sample.ts is not, so the calendar is repeated here. lib/demo/fields.test.mts checks it
-// against sample.ts's own show sales, so a change there fails the test instead of drifting.
-const SHOWS_FROM = Date.UTC(2026, 0, 5); // sample.ts SAMPLE_START, a Monday: day 0 of its calendar
-const SHOW_WEEKS = [[1, 3, 6], [1, 4, 6], [0, 3, 5], [1, 3, 5, 6], [2, 4, 6], [1, 3, 4, 6], [0, 2, 4, 6], [1, 4, 5]];
-const MON_FIRST = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
-function lastSunday(y: number, month: number): number {
-  const last = new Date(Date.UTC(y, month + 1, 0));
-  return Date.UTC(y, month, last.getUTCDate() - last.getUTCDay(), 1);
-}
-/** Amsterdam's offset from UTC in hours (as sample.ts reckons it) */
-function amsterdam(t: number): number {
-  const y = new Date(t).getUTCFullYear();
-  return t >= lastSunday(y, 2) && t < lastSunday(y, 9) ? 2 : 1;
-}
-
-export type WhatnotShow = {
-  start: number;
-  end: number;
-  /** "Thu" and "20:00", in the shop's time (Amsterdam) */
-  day: string;
-  time: string;
-  /** today in the shop's time */
-  today: boolean;
-  /** on air at `now` */
-  live: boolean;
-  /** models in the lineup (each sells at least one size) */
-  models: number;
-};
-
-/** The show on air now, else the next one (live-selling slot `id`; "whatnot" in lib/demo/channels.ts). */
-export function nextWhatnotShow(now: number, id = "whatnot"): WhatnotShow | null {
-  const today = Math.floor((now - SHOWS_FROM) / DAY);
-  for (let d = Math.max(0, today - 1); d <= today + 21; d++) {
-    const pattern = SHOW_WEEKS[H(id, "week", Math.floor(d / 7)) % SHOW_WEEKS.length];
-    if (!pattern.includes(d % 7)) continue;
-    const t0 = SHOWS_FROM + d * DAY;
-    const off = amsterdam(t0 + 12 * HOUR);
-    const local = 19 * 60 + 30 * (H(id, "start", d) % 4);
-    const start = t0 + ((local - off * 60 + 1440) % 1440) * MIN;
-    const end = start + (95 + (H(id, "len", d) % 36)) * MIN;
-    if (now >= end) continue;
-    const total = 20 + (H(id, "T", d) % 41);
-    return {
-      start, end,
-      day: MON_FIRST[d % 7],
-      time: time24({ h: Math.floor(local / 60), mi: local % 60 }),
-      today: d === today,
-      live: now >= start,
-      models: clamp(Math.round(total / 3) + (H(id, "L", d) % 3) - 1, 7, 20),
-    };
-  }
-  return null;
 }
 
 /* ==================== Fernhollow (the boutique demo) ==================== */

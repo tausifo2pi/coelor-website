@@ -7,7 +7,7 @@
 import { CORE_CHANNELS, CHANNELS, type SellPlatform } from "./channels.ts";
 import type { Overview, Sale } from "./shape.ts";
 import type { Happening, Order } from "../storedemo/types.ts";
-import { WEEKDAYS, businessDaysAfter, dayStart, fromWall, wallOf, weekStart } from "./fields.ts";
+import { WEEKDAYS, businessDaysAfter, dayStart, fromWall, time24, wallOf, weekStart } from "./fields.ts";
 
 const DAY = 86_400_000;
 
@@ -59,6 +59,31 @@ export function sneakerTiles(ov: Overview, now: number, o: { since: string; tz: 
     notListed: { n: Math.max(0, k.products.total - k.products.linked), total: k.products.total, linked: Math.min(k.products.linked, k.products.total) },
     sold: { n: CHANNELS.reduce((s, c) => s + n0(k.sales24h, c.id), 0), more: !!k.sales24h.more, by: CHANNELS.map((c) => ({ id: c.id, n: n0(k.sales24h, c.id) })) },
   };
+}
+
+export type ShowTile = {
+  start: number;
+  end: number;
+  /** "Thu" and "20:00", in the shop's time */
+  day: string;
+  time: string;
+  /** today in the shop's time */
+  today: boolean;
+  /** on air */
+  live: boolean;
+  /** models in the lineup (each sells at least one size) */
+  models: number;
+};
+
+/** The live channel's show as the dashboard announces it: the overview's `nextShow`, which lib/demo/sample.ts takes from
+ * the same numbers it draws the show's sales from (so the two can't drift). On air from its start: the overview moves on
+ * to the next show once this one has ended (the page reads it every 30 seconds). */
+export function showTile(ov: Overview, now: number, tz: string): ShowTile | null {
+  const s = ov.nextShow;
+  if (!s) return null;
+  const start = Date.parse(s.start);
+  const w = wallOf(start, tz);
+  return { start, end: Date.parse(s.end), day: WEEKDAYS[w.dow], time: time24(w), today: dayStart(start, tz) === dayStart(now, tz), live: now >= start, models: s.models };
 }
 
 /* ==================== Fernhollow ==================== */

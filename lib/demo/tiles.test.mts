@@ -4,11 +4,10 @@
 // the same moment gives the same tiles.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CHANNELS } from "./channels.ts";
+import { CHANNELS, CORE_CHANNELS } from "./channels.ts";
 import { sampleWorld } from "./sample.ts";
-import { overviewOf, type Overview } from "./shape.ts";
-import { fromWall, weekStart } from "./fields.ts";
-import { labelsDue, nextRestock, returnsToGrade, sneakerTiles, soldToday } from "./tiles.ts";
+import { dayStart, fromWall, time24, wallOf, weekStart } from "./fields.ts";
+import { labelsDue, nextRestock, returnsToGrade, showTile, sneakerTiles, soldToday } from "./tiles.ts";
 import { WOMENS_BOUTIQUE as CFG } from "../storedemo/configs.ts";
 import { storeWorld } from "../storedemo/engine.ts";
 import type { Catalog, Product } from "../storedemo/types.ts";
@@ -19,43 +18,37 @@ const CHI = CFG.tz;
 
 /* ---------- Northvale ---------- */
 
-const page = (rows: unknown[], total: number) => ({ data: { page: { totalIndex: total }, data: rows } });
-const sale = (id: string, store: string, status: string, at: number, log = "stock updated -1", stockxLog = "") => ({
-  _id: id, orderNumber: `04-${id.padStart(10, "A")}`, store, status, createdAt: new Date(at).toISOString(), dateCreated: new Date(at + 90_000).toISOString(),
-  product: { productName: "Jordan 4 Retro Bred Reimagined", styleId: "FV5029-006" }, variant: { variantValue: "10" }, picqerStockLog: log, stockxLog,
-});
-
-function overview(now: number): Overview {
-  const sx = [
-    sale("a1", "stockx_eu", "CREATED", now - 2 * 3_600_000),
-    sale("a2", "stockx_us", "SHIPPED", now - 20 * 3_600_000),
-    sale("a3", "stockx_eu", "CANCELED", now - 30 * 3_600_000), // older than a day: not on today's list anyway
-  ];
-  const al = [sale("b1", "alias_main", "CREATED", now - 3_600_000, "stock updated -1", "stockx_eu: deactivated, stockx_us: deactivated")];
-  const base = overviewOf({ cron: { jobs: [] }, stats: { data: { total: 1840, withMatches: 1712 } }, sx: page(sx, 9200), al: page(al, 4100), sxListings: page([], 2100), alListings: page([], 1500) }, now);
-  return sampleWorld().overview(base, now);
-}
+// the overview the dashboard reads (lib/demo/sample.ts, as lib/demo/gen.ts answers it)
+const W = sampleWorld();
+const overview = (now: number) => W.overview(now);
+const SHIPPING = ["Shipped", "Being checked", "Cancelled"];
 
 test("Northvale's tiles add up with the overview", () => {
   const now = Date.parse("2026-10-14T15:00:00Z"); // a Wednesday afternoon in Amsterdam
   const ov = overview(now);
   const t = sneakerTiles(ov, now, { since: "2026-01-05", tz: AMS });
-  assert.deepEqual(sneakerTiles(ov, now, { since: "2026-01-05", tz: AMS }), t);
+  assert.deepEqual(sneakerTiles(overview(now), now, { since: "2026-01-05", tz: AMS }), t);
   // sold: the per-channel split is the total
   assert.equal(t.sold.n, t.sold.by.reduce((s, x) => s + x.n, 0));
   assert.deepEqual(t.sold.by.map((x) => x.id), CHANNELS.map((c) => c.id));
   for (const x of t.sold.by) assert.equal(x.n, ov.kpis.sales24h[x.id]);
-  // to ship: StockX and Alias sales of the day, less the one already shipped
-  assert.deepEqual(t.toShip.by, [{ id: "stockx", n: 1 }, { id: "alias", n: 1 }]);
-  assert.equal(t.toShip.n, 2);
+  // to ship: the marketplaces' sales of the day, less those in the feed already on their way (or cancelled)
+  assert.deepEqual(t.toShip.by.map((x) => x.id), [...CORE_CHANNELS]);
+  for (const x of t.toShip.by) {
+    const gone = ov.feed.filter((s) => s.platform === x.id && now - Date.parse(s.soldAt!) < DAY && SHIPPING.includes(s.state)).length;
+    assert.equal(x.n, Math.max(0, ov.kpis.sales24h[x.id] - gone));
+    assert.ok(x.n > 0, `${x.id}: nothing to ship`);
+  }
+  assert.equal(t.toShip.n, t.toShip.by.reduce((s, x) => s + x.n, 0));
   assert.equal(t.toShip.firstDue, fromWall(2026, 10, 15, 17, 0, AMS)); // sold since yesterday 17:00, 2 working days
   // not listed: Picqer products without a link
-  assert.deepEqual(t.notListed, { n: 128, total: 1840, linked: 1712 });
+  const { total, linked } = ov.kpis.products;
+  assert.deepEqual(t.notListed, { n: total - linked, total, linked });
   // pulled: at least every pull the feed shows since Monday, and the newest one named
   const monday = weekStart(now, AMS);
   const inFeed = ov.feed.filter((s) => s.soldAt && Date.parse(s.soldAt) >= monday && s.steps.some((x) => x.kind === "pulled")).length;
   assert.ok(t.pulled.n >= inFeed && t.pulled.n > 0);
-  assert.ok(t.pulled.latest && t.pulled.latest.where.length > 0 && !/pulled/i.test(t.pulled.latest.where));
+  if (t.pulled.latest) assert.ok(t.pulled.latest.where.length > 0 && !/pulled/i.test(t.pulled.latest.where));
 });
 
 test("the week's pulls only grow through the week, and start again on Monday", () => {
@@ -69,6 +62,49 @@ test("the week's pulls only grow through the week, and start again on Monday", (
   }
   const next = mon + 7 * DAY + 3_600_000;
   assert.ok(sneakerTiles(overview(next), next, { since: "2026-01-05", tz: AMS }).pulled.n < last);
+});
+
+test("the next Whatnot show: the overview's window holds that show's sales, its lineup the models sold", () => {
+  const MIN = 60_000;
+  const from = Date.parse("2026-08-31T08:00:00Z"); // a Monday, 10:00 in Amsterdam: before any show starts
+  const sales = W.sales({ now: from + 43 * DAY, platform: "whatnot", limit: 1e6 }).rows.map((s) => ({ t: Date.parse(s.soldAt!), product: s.product }));
+  let shows = 0;
+  for (let d = 0; d < 42; d++) {
+    const now = from + d * DAY;
+    const ov = overview(now);
+    assert.equal(ov.nextShow?.platform, "whatnot");
+    const show = showTile(ov, now, AMS)!;
+    assert.ok(show, `a show within 3 weeks of day ${d}`);
+    assert.equal(show.live, false);
+    assert.ok(show.start > now && show.end > show.start);
+    const local = wallOf(show.start, AMS);
+    assert.equal(time24(local), show.time);
+    assert.equal(["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][local.dow], show.day);
+    assert.ok(["19:00", "19:30", "20:00", "20:30"].includes(show.time), show.time);
+    assert.equal(show.today, local.d === wallOf(now, AMS).d);
+    const day = sales.filter((s) => s.t >= dayStart(now, AMS) && s.t < dayStart(now, AMS) + DAY);
+    if (show.today) {
+      shows++;
+      // every sale of the evening falls inside the show; the lineup is the models it sold
+      const on = sales.filter((s) => s.t >= show.start && s.t <= show.end);
+      assert.ok(on.length >= 20, `${show.day} ${show.time}: ${on.length} sales`);
+      assert.deepEqual(day.filter((s) => s.t >= dayStart(now, AMS) + 16 * 3_600_000), on, "no sale around the show outside its window");
+      assert.equal(new Set(on.map((s) => s.product)).size, show.models, `lineup ${show.models}`);
+      assert.ok(show.models >= 7 && show.models <= 20);
+      // on air from its start until it ends, then the next one
+      for (const t of [show.start, show.start + 10 * MIN, show.end - MIN]) {
+        const s = showTile(overview(t), t, AMS)!;
+        assert.equal(s.live, true);
+        assert.equal(s.start, show.start);
+      }
+      const after = showTile(overview(show.end + MIN), show.end + MIN, AMS)!;
+      assert.ok(after.start > show.end && !after.live);
+    } else {
+      // no show today: only the buy-now trickle
+      assert.ok(day.length <= 3, `day ${d}: ${day.length} sales without a show`);
+    }
+  }
+  assert.ok(shows >= 15 && shows <= 26, `${shows} shows in 6 weeks`);
 });
 
 /* ---------- Fernhollow ---------- */

@@ -1,20 +1,18 @@
 // node --test lib/demo/fields.test.mts
 // The demo clients' own fields and calendars (lib/demo/fields.ts): the same values for the same product every time,
-// plausible and consistent (a consignor only on consigned pairs, a floor above the cost), the Whatnot calendar exactly
-// as lib/demo/sample.ts sells it, and the TikTok LIVE exactly as the store engine sells it.
+// plausible and consistent (a consignor only on consigned pairs, a floor above the cost), and the TikTok LIVE exactly as
+// the store engine sells it. (The Whatnot show comes with the overview: lib/demo/tiles.test.mts.)
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  BOX, SOURCES, boutiqueFields, businessDaysAfter, dayStart, fromWall, liveLineup, lotOf, nextLive, nextWhatnotShow, sneakerFields, splitCode,
+  BOX, SOURCES, boutiqueFields, businessDaysAfter, dayStart, fromWall, liveLineup, lotOf, nextLive, sneakerFields, splitCode,
   storeLive, time12, time24, wallOf, weekStart,
 } from "./fields.ts";
-import { sampleWorld } from "./sample.ts";
 import { WOMENS_BOUTIQUE as CFG } from "../storedemo/configs.ts";
 import { storeWorld } from "../storedemo/engine.ts";
 import type { Catalog, Product } from "../storedemo/types.ts";
 
 const MIN = 60_000;
-const HOUR = 3_600_000;
 const DAY = 86_400_000;
 const AMS = "Europe/Amsterdam";
 const CHI = "America/Chicago";
@@ -82,40 +80,6 @@ test("a model's sizes share a zone and a rack; the price follows the model", () 
   const avg = (name: string, style: string) => EU.reduce((s, eu) => s + sneakerFields(`${style}-${eu}`, name).floor, 0) / EU.length;
   assert.ok(avg("Jordan 1 Retro High OG SP Travis Scott Mocha", "CD4487-100") > 3 * avg("Nike Dunk Low Retro White Black Panda", "DD1391-100"));
   assert.ok(avg("adidas Yeezy Slide Onyx", "HQ6448") < avg("Jordan 4 Retro Bred Reimagined", "FV5029-006"));
-});
-
-test("the Whatnot calendar is the one lib/demo/sample.ts sells on", () => {
-  const w = sampleWorld();
-  const from = Date.parse("2026-08-31T08:00:00Z"); // a Monday
-  const sales = w.sales({ now: from + 43 * DAY, platform: "whatnot", limit: 1e6 }).rows.map((s) => ({ t: Date.parse(s.soldAt!), product: s.product }));
-  let shows = 0;
-  for (let d = 0; d < 42; d++) {
-    const now = from + d * DAY; // 10:00 in Amsterdam, before any show starts
-    const show = nextWhatnotShow(now);
-    assert.ok(show, `a show within 3 weeks of day ${d}`);
-    assert.equal(show.live, false);
-    const local = wallOf(show.start, AMS);
-    assert.equal(time24(local), show.time);
-    assert.equal(["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][local.dow], show.day);
-    assert.ok(["19:00", "19:30", "20:00", "20:30"].includes(show.time));
-    const today = wallOf(now, AMS);
-    const day = sales.filter((s) => s.t >= dayStart(now, AMS) && s.t < dayStart(now, AMS) + DAY);
-    if (show.today) {
-      shows++;
-      assert.equal(local.d, today.d);
-      // the show's sales run from its start to (just after) its end, one model after another
-      const on = sales.filter((s) => s.t >= show.start && s.t <= show.end + 5 * MIN);
-      assert.ok(on.length >= 20, `${show.day} ${show.time}: ${on.length} sales`);
-      const models = new Set(on.map((s) => s.product)).size;
-      assert.ok(models >= show.models && models <= show.models + 3, `lineup ${show.models}, sold ${models} models`);
-      assert.equal(nextWhatnotShow(show.start + 10 * MIN)?.live, true);
-      assert.equal(nextWhatnotShow(show.end + MIN)?.start === show.start, false);
-    } else {
-      // no show today: only the buy-now trickle
-      assert.ok(day.length <= 3, `day ${d}: ${day.length} sales without a show`);
-    }
-  }
-  assert.ok(shows >= 15 && shows <= 26, `${shows} shows in 6 weeks`);
 });
 
 /* ---------- Fernhollow ---------- */

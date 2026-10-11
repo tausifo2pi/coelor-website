@@ -11,8 +11,8 @@ import { FERNHOLLOW, NORTHVALE, type DemoClient } from "@/lib/demo/clients";
 import { CHANNELS } from "@/lib/demo/channels";
 import { TZ as NORTHVALE_TZ } from "@/lib/demo/schedule";
 import type { Overview } from "@/lib/demo/shape";
-import { WEEKDAYS, dayStart, nextWhatnotShow, storeLive, time12, wallOf } from "@/lib/demo/fields";
-import { labelsDue, nextRestock, returnsToGrade, sneakerTiles, soldToday } from "@/lib/demo/tiles";
+import { WEEKDAYS, dayStart, storeLive, time12, wallOf } from "@/lib/demo/fields";
+import { labelsDue, nextRestock, returnsToGrade, showTile, sneakerTiles, soldToday } from "@/lib/demo/tiles";
 import type { SCtx } from "@/components/storedemo/sections";
 
 const DAY = 86_400_000;
@@ -95,7 +95,7 @@ const WIDE = "sm:col-span-2 xl:col-span-3";
 export function SneakerTiles({ ov, now }: { ov: Overview; now: number }) {
   const t = useMemo(() => sneakerTiles(ov, now, { since: NORTHVALE.since, tz: NORTHVALE_TZ }), [ov, now]);
   const live = CHANNELS.find((c) => /live/i.test(c.role));
-  const show = useMemo(() => (live ? nextWhatnotShow(now, live.id) : null), [live, now]);
+  const show = useMemo(() => (live && ov.nextShow?.platform === live.id ? showTile(ov, now, NORTHVALE_TZ) : null), [live, ov, now]);
   const host = who(NORTHVALE, /host/i, "The host");
   const due = WEEKDAYS[wallOf(t.toShip.firstDue, NORTHVALE_TZ).dow];
   const name = (id: string) => brandOf(id).name;
