@@ -9,7 +9,7 @@ import { ArrowLeft, ArrowRight, BadgeDollarSign, Boxes, Lock, LayoutDashboard, P
 import { PICQER } from "@/lib/demo/channels";
 import type { Overview, Product } from "@/lib/demo/shape";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
-import { getJson } from "@/lib/demo/get";
+import { demoGet } from "@/lib/demo/gen";
 import { Automations, Connections, Dashboard, Listings, Orders, Products, type Ctx, type Live, type SectionId } from "@/components/demo/views";
 import { Extra } from "@/components/demo/Extra";
 import { Badge, BetaPill, BrandMark, Button, CoelorWordmark, Logo, ago, brandOf, fmt, hasMark } from "@/components/demo/ui";
@@ -58,7 +58,7 @@ export default function DemoApp() {
   // the overview (dashboard, connections, automations): fetched at once, then every 30 s while the tab is visible
   const loadOverview = useCallback(async () => {
     try {
-      setOv(await getJson<Live<Overview>>("/api/demo/overview"));
+      setOv(await demoGet<Live<Overview>>("/api/demo/overview"));
       setOvFailed(false);
     } catch {
       setOvFailed(true);
@@ -300,7 +300,7 @@ function ProductDrawer({ id, ctx, onClose }: { id: string; ctx: Ctx; onClose: ()
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     let alive = true;
-    getJson<Live<Product>>(`/api/demo/product?id=${encodeURIComponent(id)}`)
+    demoGet<Live<Product>>(`/api/demo/product?id=${encodeURIComponent(id)}`)
       .then((d) => alive && setP(d))
       .catch(() => alive && setFailed(true));
     const k = (e: KeyboardEvent) => e.key === "Escape" && onClose();
