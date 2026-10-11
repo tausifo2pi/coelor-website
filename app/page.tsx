@@ -1,3 +1,6 @@
+import { homeMetadata } from "@/lib/seo";
+// Homepage metadata (title, description ≤ 155 chars, canonical "/", social card): lib/seo.ts, copy in site-content seo.*.
+export const metadata = homeMetadata;
 import content from "@/data/site-content.json";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";

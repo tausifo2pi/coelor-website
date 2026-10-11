@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Icon } from "@/components/icons";
 import Logo from "@/components/Logo";
@@ -9,10 +9,16 @@ type NavLink = { label: string; href: string };
 
 const Arrow = () => <Icon name="arrow-right" size={14} strokeWidth={2.4} />;
 
-/** Copy comes in as props from the page (a server component), so the content file never ships to the browser. */
+/** Copy comes in as props from the page (a server component), so the content file never ships to the browser.
+ * Tracking (components/Tracker.tsx sends every link/button click as cta_click, which pushes the owner's phone): the logo
+ * and the menu button are data-track="off"; the CTA and the phone-menu links carry a short aria-label with where they
+ * sit ("(nav)", "(menu)"), so the same visible text can be told apart. */
 export default function Navbar({ brand, links, cta }: { brand: string; links: NavLink[]; cta: NavLink }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const wasOpen = useRef(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -21,16 +27,34 @@ export default function Navbar({ brand, links, cta }: { brand: string; links: Na
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Phone menu: Escape closes it; Tab stays inside it (menu button + menu links) while it is open.
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
+      if (e.key !== "Tab") return;
+      const items = [toggleRef.current, ...Array.from(menuRef.current?.querySelectorAll<HTMLElement>("a[href]") ?? [])].filter(Boolean) as HTMLElement[];
+      const i = items.indexOf(document.activeElement as HTMLElement);
+      const to = e.shiftKey ? (i <= 0 ? items.length - 1 : i - 1) : i === -1 || i === items.length - 1 ? 0 : i + 1;
+      e.preventDefault();
+      items[to]?.focus();
     };
     if (open) window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
+  }, [open]);
+
+  // Opening moves focus to the first menu link; closing gives it back to the menu button.
+  useEffect(() => {
+    if (open) {
+      wasOpen.current = true;
+      menuRef.current?.querySelector<HTMLElement>("a[href]")?.focus({ preventScroll: true });
+    } else if (wasOpen.current) {
+      wasOpen.current = false;
+      toggleRef.current?.focus({ preventScroll: true });
+    }
   }, [open]);
 
   // "#id" scrolls smoothly on this page; any other href ("/pricing") is a normal link.
@@ -53,7 +77,7 @@ export default function Navbar({ brand, links, cta }: { brand: string; links: Na
         }}
       >
       <div className="mx-auto flex h-[68px] max-w-site items-center justify-between px-5 md:h-[76px] md:px-10 lg:px-20">
-        <a href="#hero" onClick={go("#hero")} aria-label={`${brand} home`} className="flex items-center py-2">
+        <a href="#hero" onClick={go("#hero")} aria-label={`${brand} home`} data-track="off" className="flex items-center py-2">
           <Logo height={26} priority className="md:hidden" />
           <Logo height={32} priority className="hidden md:block" />
         </a>
@@ -69,6 +93,7 @@ export default function Navbar({ brand, links, cta }: { brand: string; links: Na
         <a
           href={cta.href}
           onClick={go(cta.href)}
+          aria-label={`${cta.label} (nav)`}
           className="hidden h-10 items-center gap-2 rounded-full border border-rule-strong bg-white/10 px-[18px] text-[15px] font-medium text-ink transition-colors hover:bg-white/15 lg:inline-flex"
         >
           {cta.label}
@@ -76,7 +101,9 @@ export default function Navbar({ brand, links, cta }: { brand: string; links: Na
         </a>
 
         <button
+          ref={toggleRef}
           type="button"
+          data-track="off"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           aria-controls="mobile-menu"
@@ -102,6 +129,7 @@ export default function Navbar({ brand, links, cta }: { brand: string; links: Na
       {/* Mobile overlay */}
       <div
         id="mobile-menu"
+        ref={menuRef}
         inert={!open}
         aria-hidden={!open}
         className={`fixed inset-x-0 top-0 z-50 flex h-[100dvh] flex-col bg-canvas transition-opacity duration-300 lg:hidden ${
@@ -111,13 +139,13 @@ export default function Navbar({ brand, links, cta }: { brand: string; links: Na
         <div className="h-[68px] shrink-0" />
         <nav aria-label="Mobile" className="flex flex-1 flex-col justify-center gap-7 px-8">
           {links.map((n) => (
-            <a key={n.href} href={n.href} onClick={go(n.href)} className="text-[32px] font-semibold tracking-tight text-ink">
+            <a key={n.href} href={n.href} onClick={go(n.href)} aria-label={`${n.label} (menu)`} className="text-[32px] font-semibold tracking-tight text-ink">
               {n.label}
             </a>
           ))}
         </nav>
         <div className="shrink-0 border-t border-rule px-8 py-8">
-          <a href={cta.href} onClick={go(cta.href)} className="btn-primary w-full">
+          <a href={cta.href} onClick={go(cta.href)} aria-label={`${cta.label} (menu)`} className="btn-primary w-full">
             {cta.label}
             <Arrow />
           </a>
