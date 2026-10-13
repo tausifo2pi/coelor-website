@@ -9,7 +9,7 @@ export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: `Demo: ${NORTHVALE.name}, a custom build · Coelor`,
-  description: `${NORTHVALE.name}, a demo sneaker reseller: the kind of custom build we make, with marketplaces, web store and warehouse on one stock count. Generated numbers, read-only. Yours is built for your own setup.`,
+  description: `${NORTHVALE.name}, a demo online retailer: the kind of custom build we make, with marketplaces, web store and warehouse on one stock count. Generated numbers, read-only. Yours is built for your own setup.`,
   robots: { index: false, follow: false },
   alternates: { canonical: "/demo/multi-platform-sync" },
 };

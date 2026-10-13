@@ -327,7 +327,7 @@
   "proof": {
     "num": "04",
     "eyebrow": "Client work",
-    "headline": "Running today for a reseller in the Netherlands",
+    "headline": "Running today for an online retailer",
     "body": "With EU and US accounts on two resale marketplaces, connected to its warehouse system.",
     "doesTitle": "What the build does",
     "badge": "Running",
@@ -474,15 +474,6 @@
     "eyebrow": "Who builds it",
     "headline": "A small team of engineers in Dhaka, Bangladesh",
     "body": "You talk to the people who build it.",
-    "namesLabel": "The team",
-    "names": [
-      "Tausif",
-      "Hasib",
-      "Jimam",
-      "Siam",
-      "Maha",
-      "Shohan"
-    ],
     "accessTitle": "How access works",
     "access": [
       {

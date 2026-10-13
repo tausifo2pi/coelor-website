@@ -2,8 +2,8 @@ import content from "@/data/site-content.json";
 import SectionHead from "@/components/SectionHead";
 import { Icon } from "@/components/icons";
 
-// The one real client, anonymous: a reseller in the Netherlands (never next to the names of its marketplaces or its
-// warehouse system). Only what its build really does today, in the same words and numbers as /pricing: a card like the
+// The one real client, anonymous: "an online retailer" (never its country, never next to the names of its marketplaces
+// or its warehouse system). Only what its build really does today, in the same words and numbers as /pricing: a card like the
 // hero's, with what it does, and the numbers it runs at under it.
 
 export default function Proof() {

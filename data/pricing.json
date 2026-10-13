@@ -1,5 +1,5 @@
 {
-  "_note": "Copy of /pricing (app/pricing/page.tsx, components/pricing/*), rebuilt 2026-10-11 (lead-outreach docs/website/REBUILD_BRIEF_2026-10-11.md). OFFER (USD, one-time; lib/offer.ts): $500 per connection; 3 connections or more and one of them is free (3 for the price of 2); live in about a day once we have access (some marketplaces approve API access first). FREE TRIAL: 'your first link', two of the reader's platforms connected for 7 days, no card; keep it = those connections billed as normal ($500 each, they count toward 3 for 2); don't keep it = switched off, nothing to pay. PAYMENT: once, after it runs and before handover. AFTER HANDOVER: 90 days of fixes included, also platform API changes; then a fixed price per fix, agreed first, or any developer (the client has the code). HOSTING: the client's own cloud account, billed by the host, usually $5-20 a month; we charge nothing monthly. A connection is one platform or account we build for; whether a team tool or supplier file is priced on its own is NOT promised here (we list everything on the call, price in writing first). The example setups' totals are computed from their parts (lib/offer.ts quote()); the sentences here spell the numbers out and lib/offer.test.mts checks that they agree (every dollar amount is a price of the offer or one of the market/hosting figures listed in the test). The real client stays anonymous: no marketplace or warehouse brand names next to 'Netherlands', claim only what its build really does. Compare by category only, never name another vendor or tool. Never link the live demo or the case studies from this page (email readers only). Plain US English, short sentences, no idioms ('nothing hidden', 'pick a size', 'in step', 'counts once').",
+  "_note": "Copy of /pricing (app/pricing/page.tsx, components/pricing/*), rebuilt 2026-10-11 (lead-outreach docs/website/REBUILD_BRIEF_2026-10-11.md). OFFER (USD, one-time; lib/offer.ts): $500 per connection; 3 connections or more and one of them is free (3 for the price of 2); live in about a day once we have access (some marketplaces approve API access first). FREE TRIAL: 'your first link', two of the reader's platforms connected for 7 days, no card; keep it = those connections billed as normal ($500 each, they count toward 3 for 2); don't keep it = switched off, nothing to pay. PAYMENT: once, after it runs and before handover. AFTER HANDOVER: 90 days of fixes included, also platform API changes; then a fixed price per fix, agreed first, or any developer (the client has the code). HOSTING: the client's own cloud account, billed by the host, usually $5-20 a month; we charge nothing monthly. A connection is one platform or account we build for; whether a team tool or supplier file is priced on its own is NOT promised here (we list everything on the call, price in writing first). The example setups' totals are computed from their parts (lib/offer.ts quote()); the sentences here spell the numbers out and lib/offer.test.mts checks that they agree (every dollar amount is a price of the offer or one of the market/hosting figures listed in the test). The real client stays anonymous: 'an online retailer', never its country, sneakers or the team's names, and no marketplace or warehouse brand names next to it; claim only what its build really does. Compare by category only, never name another vendor or tool. Never link the live demo or the case studies from this page (email readers only). Plain US English, short sentences, no idioms ('nothing hidden', 'pick a size', 'in step', 'counts once').",
   "seo": {
     "title": "Pricing: custom ecommerce integrations from $500 · Coelor",
     "description": "Custom integrations for online sellers: $500 per connection, paid once. 3 for the price of 2. Free 7-day trial, no card. You own the code."
@@ -298,7 +298,7 @@
   },
   "proof": {
     "eyebrow": "Proof",
-    "line": "Running today for a reseller in the Netherlands with EU and US accounts on two resale marketplaces, connected to its warehouse system.",
+    "line": "Running today for an online retailer with EU and US accounts on two resale marketplaces, connected to its warehouse system.",
     "points": [
       "Each sale comes off the warehouse stock within minutes",
       "Sold-out items are switched off on every account within 10 minutes",
@@ -358,7 +358,7 @@
       },
       {
         "q": "Who builds it?",
-        "a": "A small team of engineers in Dhaka, Bangladesh: Tausif, Hasib, Jimam, Siam, Maha and Shohan. You talk to the people who build it."
+        "a": "A small team of engineers in Dhaka, Bangladesh. You talk to the people who build it."
       }
     ]
   },

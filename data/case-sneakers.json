@@ -1,8 +1,8 @@
 {
   "_note": "The outreach case study (lead-outreach/PLAN_dynamic_case_study.md). A reader who came through their email link sees it told for their own web store and the tools behind it (orders, shipping, stock after dispatch, returns, new stock, a verified marketplace), per the v6 subtle-offer rule (leads/outreach/drafts/v6/SUBTLE_OFFER_RULES.md): no shop counter, till or location as the gap or as something we connect, and no mechanism claims ('by itself', 'one count'). Everyone else sees the real client's story. Placeholders (lib/case-adapt.ts): {A} {B} {onSells} {where} {places} {count} {system} {andSystem} {item} {items} {Item} {Items} {variant} {variants} {Variants}. The real client's results always stay attributed to the real client. Never the name or use of a competitor. Each platform logo appears once, in the hero's setup card.",
   "seo": {
-    "title": "Case study: sneaker reseller stock in sync across StockX and Alias · Coelor",
-    "description": "How a Dutch sneaker reseller keeps StockX and Alias in sync with its warehouse: sold-out sizes switched off every 10 minutes, marketplace sales off the warehouse stock within minutes, 31,000+ sizes checked."
+    "title": "Case study: one stock count across StockX, Alias and Picqer · Coelor",
+    "description": "How an online retailer keeps StockX and Alias in sync with its warehouse: sold-out sizes switched off every 10 minutes, marketplace sales off the warehouse stock within minutes, 31,000+ sizes checked."
   },
   "real": {
     "platforms": [
@@ -40,8 +40,8 @@
       }
     ],
     "words": {
-      "item": "pair",
-      "items": "pairs",
+      "item": "item",
+      "items": "items",
       "variant": "size",
       "variants": "sizes"
     },
@@ -56,9 +56,9 @@
     "gapItem": "twice"
   },
   "hero": {
-    "eyebrow": "Case study · Sneaker resale",
+    "eyebrow": "Case study · Marketplace stock sync",
     "lead": "One stock count across",
-    "sub": "How a Dutch sneaker reseller stopped pausing sold-out sizes by hand and stopped typing marketplace sales into its warehouse system.",
+    "sub": "How an online retailer stopped pausing sold-out sizes by hand and stopped typing marketplace sales into its warehouse system.",
     "primaryCta": {
       "label": "Book a call",
       "href": "#contact"
@@ -227,9 +227,9 @@
     "lead": "Where it slips most"
   },
   "proof": {
-    "sneaker": "First built for a Dutch sneaker reseller on StockX, Alias and Picqer. These are their numbers.",
-    "neutral": "First built for a Dutch reseller that sells on four marketplace accounts. These are their numbers.",
-    "origin": "Where it was first built: sneakers, on StockX, Alias and Picqer. The same sync works for any goods."
+    "sneaker": "First built for an online retailer on StockX, Alias and Picqer. These are their numbers.",
+    "neutral": "First built for an online retailer that sells on four marketplace accounts. These are their numbers.",
+    "origin": "Built on StockX, Alias and Picqer. The same sync works for any goods."
   },
   "stats": {
     "sneaker": [
@@ -365,7 +365,7 @@
     "seoTitle": "Case study: {A} and the tools behind it · Coelor",
     "seoDescription": "How the tools behind a web store, like stock, shipping and returns, can work together so less gets typed twice.",
     "eyebrow": "Case study · The tools behind your web store",
-    "sub": "The work we first built for a Dutch reseller, told for a shop like yours: {A} connected with the tools behind it, like stock and shipping, so less gets typed twice.",
+    "sub": "The work we first built for an online retailer, told for a shop like yours: {A} connected with the tools behind it, like stock and shipping, so less gets typed twice.",
     "setupTitle": "Your setup",
     "gapTitle": "Often still done by hand",
     "fixTitle": "What we would connect",
