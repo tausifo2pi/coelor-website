@@ -34,6 +34,10 @@ const U = (...p: (string | number)[]) => H(...p) / 4294967296;
 const between = (lo: number, hi: number, u: number) => lo + Math.floor(u * (hi - lo + 1));
 const iso = (t: number) => new Date(t).toISOString();
 const join = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
+/** a size in a sentence: "size 7" for a ring size, '18" length' for a chain length, nothing for one size, else as is */
+const sizeWords = (s: string) => (/^\d+(\.\d)?$/.test(s) ? `size ${s}` : /^\d+"$/.test(s) ? `${s} length` : s === "One size" || s === "O/S" ? "" : s);
+/** what a channel pays for a piece: the retail price, or its wholesale share in whole dollars */
+const paid = (ch: ChannelCfg, price: number) => (ch.priceShare ? Math.round(price * ch.priceShare) : price);
 
 function pickIndex(weights: number[], u: number): number {
   const total = weights.reduce((s, w) => s + w, 0);
@@ -176,11 +180,11 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
     return h * 60 + U("m", ch.id, d, i) * 60;
   }
 
-  function lineOf(p: Product, seed: string): Line | null {
+  function lineOf(p: Product, seed: string, ch: ChannelCfg): Line | null {
     const vs = p.variants.filter((v) => v.available);
     if (!vs.length) return null;
     const v = vs[pickIndex(vs.map(sizeWeight), U("v", seed))];
-    return { productId: p.id, title: p.title, brand: p.brand, color: v.color, size: v.size, price: p.price, image: p.image };
+    return { productId: p.id, title: p.title, brand: p.brand, color: v.color, size: v.size, price: paid(ch, p.price), image: p.image };
   }
 
   function lastWorkingStart(t: number): number {
@@ -244,9 +248,10 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
       const t = pub.get(p.id)! + (1.5 + U("lu", v.id) * 18) * DAY;
       const ch = on[pickIndex(on.map((c) => (c.rhythm === "store" ? 3 : 1)), U("luc", v.id))] ?? cfg.channels[0];
       const id = `l${v.id}`;
-      const raw = makeOrder(ch, id, t, ch.refStart + 900_000 + (H("lur", v.id) % 90_000), [{ productId: p.id, title: p.title, brand: p.brand, color: v.color, size: v.size, price: p.price, image: p.image }]);
+      const raw = makeOrder(ch, id, t, ch.refStart + 900_000 + (H("lur", v.id) % 90_000), [{ productId: p.id, title: p.title, brand: p.brand, color: v.color, size: v.size, price: paid(ch, p.price), image: p.image }]);
       const rest = on.filter((c) => c.id !== ch.id).map((c) => c.name);
-      const what = allGone ? `${p.title} sold out` : `Last ${v.size}${v.color ? ` in ${v.color}` : ""} sold`;
+      const size = sizeWords(v.size);
+      const what = allGone ? `${p.title} sold out` : size ? `Last ${size}${v.color ? ` in ${v.color}` : ""} sold` : `Last one${v.color ? ` in ${v.color}` : ""} sold`;
       raw.steps.push({ kind: "pulled", at: iso(t + (60 + U("lup", v.id) * 180) * 1000), text: rest.length ? `Last one · pulled from ${join(rest)}` : "Last one · marked sold out" });
       raw.steps.sort((a, b) => a.at.localeCompare(b.at));
       lastUnits.push({
@@ -270,12 +275,12 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
       const slots = Array.from({ length: base + show }, (_, i) => ({ i, t: at(d, minuteOf(ch, d, i, i >= base)) })).sort((a, b) => a.t - b.t);
       slots.forEach(({ i, t }, rank) => {
         const id = `${ch.id.slice(0, 2)}${d.toString(36)}${i.toString(36)}`;
-        const n = U("k", id) < 0.7 ? 1 : U("k2", id) < 0.83 ? 2 : 3;
+        const n = ch.lines ? between(ch.lines[0], ch.lines[1], U("k", id)) : U("k", id) < 0.7 ? 1 : U("k2", id) < 0.83 ? 2 : 3;
         const lines: Line[] = [];
         for (let j = 0; j < n; j++) {
           const p = e.list[pickIndex(e.weights, U("p", id, j))];
           if (pub.get(p.id)! > t - HOUR) continue;
-          const l = lineOf(p, `${id}|${j}`);
+          const l = lineOf(p, `${id}|${j}`, ch);
           if (l) lines.push(l);
         }
         if (lines.length) out.push(makeOrder(ch, id, t, ch.refStart + before + rank, lines));

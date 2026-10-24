@@ -59,7 +59,7 @@ export type SystemSpec = {
   since: string;
 };
 export type DemoClient = {
-  id: "sneaker" | "boutique";
+  id: "sneaker" | "boutique" | "jewellery";
   name: string;
   /** two letters for the client's mark */
   monogram: string;

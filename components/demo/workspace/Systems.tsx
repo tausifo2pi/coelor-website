@@ -32,6 +32,13 @@ const SETUP_CHIPS: Record<DemoClient["id"], Chip[]> = {
     { slug: "ebay", name: "eBay" }, { slug: "picqer", name: "Picqer" }, { slug: "shipstation", name: "ShipStation" }, { slug: "shipbob", name: "ShipBob" },
     { slug: "quickbooks", name: "QuickBooks" }, { slug: "google-sheets", name: "Google Sheets" }, { slug: "slack", name: "Slack" },
   ],
+  // the jewelry demo: the web stores and marketplaces jewelry makers sell on (no clothing or sneaker platforms)
+  jewellery: [
+    { slug: "shopify", name: "Shopify" }, { slug: "etsy", name: "Etsy" }, { slug: "amazon", name: "Amazon" }, { slug: "ebay", name: "eBay" },
+    { slug: "faire", name: "Faire" }, { slug: "tiktok-shop", name: "TikTok Shop" }, { slug: "woocommerce", name: "WooCommerce" }, { slug: "squarespace", name: "Squarespace" },
+    { slug: "big-cartel", name: "Big Cartel" }, { slug: "wix", name: "Wix" }, { slug: "shipstation", name: "ShipStation" }, { slug: "quickbooks", name: "QuickBooks" },
+    { slug: "google-sheets", name: "Google Sheets" }, { slug: "slack", name: "Slack" },
+  ],
 };
 
 type Props = {

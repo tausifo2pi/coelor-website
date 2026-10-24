@@ -490,6 +490,7 @@ export function catalogStamp(cfg: DemoConfig, t: number): string {
 /** The catalogue on the shop's day at instant t: the newest pieces (this day's drop included, published later that
  * day) and this week's best sellers, newest first. */
 export function catalogAt(cfg: DemoConfig, t: number): Catalog {
+  if (cfg.catalog.build) return cfg.catalog.build(cfg, t);
   const today = dayOf(cfg.tz, t);
   const best = bestSellers(cfg, today);
   const pieces = new Map<string, Piece>();

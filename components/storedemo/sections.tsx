@@ -8,10 +8,10 @@ import { Badge, BrandMark, Button, Card, CardHead, Empty, Pager, SearchInput, Sk
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
 import { Rules, type RuleRun } from "@/components/demo/workspace/Rules";
 import { Systems, type SystemHealth } from "@/components/demo/workspace/Systems";
-import { FERNHOLLOW } from "@/lib/demo/clients";
 import { Running, StoreTiles } from "@/components/demo/workspace/Tiles";
 import { LatestBuild } from "@/components/demo/workspace/LatestBuild";
 import { storeClient } from "@/components/demo/workspace/format";
+import { LarkmoorTiles } from "@/components/storedemo/Larkmoor";
 import type { DemoTracker } from "@/lib/demo/track";
 import { storeAssistant } from "@/lib/storedemo/assistant";
 import type { ProductRow, StoreWorld } from "@/lib/storedemo/engine";
@@ -178,7 +178,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
   // the owner's tiles first (what needs doing today), then the channels the build runs
   return (
     <div className="flex flex-col gap-5">
-      <StoreTiles ctx={ctx} />
+      {storeClient(cfg.slug).id === "jewellery" ? <LarkmoorTiles ctx={ctx} /> : <StoreTiles ctx={ctx} />}
 
       <Card>
         <CardHead title="Channels in this build" sub="One stock count for every size: every channel, the stockroom and the parcels follow it." />
@@ -333,15 +333,18 @@ export function Orders({ ctx }: { ctx: SCtx }) {
 function SizeChips({ p }: { p: ProductRow }) {
   const sizes = new Map<string, number>();
   for (const v of p.stock) sizes.set(v.size, (sizes.get(v.size) ?? 0) + v.stock);
-  const colors = new Set(p.stock.map((v) => v.color).filter(Boolean)).size;
+  const names = [...new Set(p.stock.map((v) => v.color).filter(Boolean))];
+  const colors = names.length;
+  // what the variants are: metals and birthstones for jewelry, else colours
+  const word = names.every((c) => /\((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\)$/.test(c)) ? "stones" : names.every((c) => /gold|silver|vermeil/i.test(c)) ? "metals" : "colours";
   return (
     <div className="flex flex-wrap items-center gap-1">
       {[...sizes].map(([size, n]) => (
         <span key={size} className={`inline-flex h-6 items-center gap-1 rounded-md border px-1.5 text-[11.5px] font-semibold tabular-nums ${n ? "border-[#e3e6eb] bg-white text-[#334155]" : "border-[#f1f3f5] bg-[#f8fafc] text-[#94a3b8] line-through"}`}>
-          {size}<span className={n ? "text-[#15803d]" : ""}>{n}</span>
+          {size}<span className="h-3 w-px bg-[#e3e6eb]" aria-hidden /><span className={n ? "text-[#15803d]" : ""}>{n}</span>
         </span>
       ))}
-      {colors > 1 && <span className="text-[11.5px] text-[#64748b]">{colors} colours</span>}
+      {colors > 1 && <span className="text-[11.5px] text-[#64748b]">{colors} {word}</span>}
     </div>
   );
 }
@@ -469,7 +472,7 @@ export function Automations({ ctx }: { ctx: SCtx }) {
     const r = byKey.get(key);
     return r && { every: r.every, lastRun: r.lastRun };
   };
-  return <Rules client={FERNHOLLOW} run={run} now={ctx.now} loading={!rules} t={ctx.t} />;
+  return <Rules client={storeClient(ctx.cfg.slug)} run={run} now={ctx.now} loading={!rules} t={ctx.t} />;
 }
 
 /* ---------- systems in this build (the "connections" section) ---------- */
@@ -482,5 +485,5 @@ export function Connections({ ctx }: { ctx: SCtx }) {
     const last = (rules ?? []).filter((r) => r.tools.includes(slug)).reduce<string | null>((a, r) => (!a || r.lastRun > a ? r.lastRun : a), null);
     return last ? { last } : undefined;
   };
-  return <Systems client={FERNHOLLOW} health={health} now={ctx.now} connect={ctx.connect} />;
+  return <Systems client={storeClient(ctx.cfg.slug)} health={health} now={ctx.now} connect={ctx.connect} />;
 }

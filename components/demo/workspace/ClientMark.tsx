@@ -2,11 +2,11 @@
 
 // The client's mark in their workspace: a rounded tile with their monogram in their own colour (lib/demo/clients.ts).
 // The two demo clients letter it differently, so the demos read as two businesses' builds, not one product in two
-// skins: the sneaker reseller's is a tight bold sans, the boutique's a serif on a softer tile.
+// skins: the sneaker reseller's is a tight bold sans, the boutique's and the jewelry studio's a serif on a softer tile.
 import type { CSSProperties } from "react";
 import type { DemoClient } from "@/lib/demo/clients";
 
-const serif = (c: DemoClient) => c.id === "boutique";
+const serif = (c: DemoClient) => c.id === "boutique" || c.id === "jewellery";
 
 /** the client's lettering for their name and mark */
 export const clientFont = (c: DemoClient) => (serif(c) ? "font-serif tracking-[0.01em]" : "tracking-[-0.02em]");

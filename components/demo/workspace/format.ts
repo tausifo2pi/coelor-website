@@ -3,6 +3,7 @@
 // Dates in lib/demo/clients.ts are plain ISO days ("2026-10-05"): they are read as written, never through Date, so a
 // visitor's time zone can't move a release to the day before.
 import { FERNHOLLOW, type BuildEntry, type DemoClient } from "@/lib/demo/clients";
+import { LARKMOOR } from "@/lib/demo/larkmoor";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -59,7 +60,7 @@ export function buildSummary(c: DemoClient): string {
 
 // The store demos' clients by page slug (lib/storedemo/configs.ts). Kept here, next to the shell that shows them, so
 // the store configs stay as they are; the sneaker demo (/demo/multi-platform-sync) is always Northvale Kicks.
-const STORE_CLIENTS: Record<string, DemoClient> = { "womens-boutique": FERNHOLLOW };
+const STORE_CLIENTS: Record<string, DemoClient> = { "womens-boutique": FERNHOLLOW, "jewellery-shop": LARKMOOR };
 
 /** The demo client a store demo is shown as; the boutique for a slug it doesn't know (there is one store demo today). */
 export const storeClient = (slug: string): DemoClient => STORE_CLIENTS[slug] ?? FERNHOLLOW;

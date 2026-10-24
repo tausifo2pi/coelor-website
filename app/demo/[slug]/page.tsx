@@ -7,7 +7,8 @@ import { storeClient } from "@/components/demo/workspace/format";
 // The store demos (lib/storedemo/configs.ts), one static page each, built once: the browser builds the shop's
 // generated catalogue itself (components/storedemo/StoreDemoApp.tsx). Email-only, not indexed (robots.ts disallows
 // /demo). /demo/multi-platform-sync is its own page (the sneaker demo) and wins over this route. Each is shown as a demo
-// shop's custom build (components/demo/workspace/format.ts storeClient: the boutique demo is Fernhollow).
+// shop's custom build (components/demo/workspace/format.ts storeClient: the boutique demo is Fernhollow, the jewelry demo
+// /demo/jewellery-shop is Larkmoor).
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const c = storeClient(d?.slug ?? "");
   return {
     title: `Demo: ${c.name}, a custom build · Coelor`,
-    description: `${c.name}, a demo ${c.noticeWho.replace(/^an? /, "")}: the kind of custom build we make, with web store, social shop, marketplaces, stockroom and carriers on one stock count. Generated numbers, read-only. Yours is built for your own setup.`,
+    description: `${c.name}, a demo ${c.noticeWho.replace(/^an? /, "")}: the kind of custom build we make, with ${d?.pitch ?? "web store, social shop, marketplaces, stockroom and carriers"} on one stock count. Generated numbers, read-only. Yours is built for your own setup.`,
     robots: { index: false, follow: false },
     alternates: { canonical: `/demo/${d?.slug ?? ""}` },
   };

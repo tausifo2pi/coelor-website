@@ -49,8 +49,10 @@ plain US English, proof claims, what never goes on the site). The audit behind i
   `components/icons.tsx`).
 - **Demos (email-only):** `lib/demo/*` + `components/demo/*` (sneaker reseller "Northvale Kicks",
   `/demo/multi-platform-sync`), `lib/storedemo/*` + `components/storedemo/*` (women's boutique "Fernhollow",
-  `/demo/womens-boutique`). Invented demo shops, every number generated in the browser; no client data, no third-party
-  store's catalog, no "sample" badges. `instrumentation.ts` keeps the demo and case study warm on the small server.
+  `/demo/womens-boutique`; jewelry studio "Larkmoor", `/demo/jewellery-shop`: config `lib/storedemo/jewellery-config.ts`,
+  its own catalogue `jewellery.ts` + art `jewellery-art.ts`, client `lib/demo/larkmoor.ts`, tiles and fields
+  `components/storedemo/Larkmoor.tsx`). Invented demo shops, every number generated in the browser; no client data, no
+  third-party store's catalog, no "sample" badges. `instrumentation.ts` keeps the demo and case study warm on the small server.
 - **Case studies (email-only):** `components/CaseStudy.tsx`, `lib/case-*.ts`, `data/case-*.json`.
 
 ## Hard rules

@@ -153,7 +153,7 @@ export function storeAssistant(cfg: DemoConfig): Profile {
     [mod(cfg.returns.logo)]: cfg.returns.name,
   };
 
-  return {
+  const profile: Profile = {
     kinds,
     kindOf,
     greeting: `Hi! I'm in beta: I build routines that get data from your build and post it to your team, in Google Sheets, Excel, ${chat.name} or ${chat.name === "Slack" ? "Discord" : "Slack"}. Tell me what you need and when. I write the routine's script, test it without changing anything, and put it on a schedule. For example: a low-stock reorder list every morning${live ? `, tonight's ${live.name} LIVE lineup sheet` : ""}, or a daily sales summary to ${chat.name}.`,
@@ -187,4 +187,5 @@ export function storeAssistant(cfg: DemoConfig): Profile {
       { id: "instead-summary", text: `Daily sales summary to ${chat.name} at 18:00` },
     ],
   };
+  return cfg.assistant ? cfg.assistant(profile, cfg) : profile;
 }

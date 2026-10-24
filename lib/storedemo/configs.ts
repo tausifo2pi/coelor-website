@@ -5,6 +5,7 @@
 // Shopify, TikTok Shop, Amazon and Walmart send webhooks (orders in real time); Poshmark has no seller API (read every 10 min).
 // No "@/" imports: node --test loads it.
 import type { DemoConfig } from "./types.ts";
+import { JEWELLERY_SHOP } from "./jewellery-config.ts";
 
 export const WOMENS_BOUTIQUE: DemoConfig = {
   slug: "womens-boutique",
@@ -56,5 +57,5 @@ export const WOMENS_BOUTIQUE: DemoConfig = {
   contactHref: "/case-studies/womens-boutique#contact",
 };
 
-export const STORE_DEMOS: DemoConfig[] = [WOMENS_BOUTIQUE];
+export const STORE_DEMOS: DemoConfig[] = [WOMENS_BOUTIQUE, JEWELLERY_SHOP];
 export const demoBySlug = (slug: string): DemoConfig | null => STORE_DEMOS.find((d) => d.slug === slug) ?? null;

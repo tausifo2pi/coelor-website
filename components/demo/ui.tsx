@@ -5,6 +5,7 @@
 // know from their own business. Each demo client tints it with its own colour (components/demo/workspace).
 import type { CSSProperties, ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Puzzle, Search, Warehouse, X } from "lucide-react";
+import { Flame } from "lucide-react";
 import { SiAftership, SiAirtable, SiClaude, SiDhl, SiDiscord, SiFedex, SiGmail, SiGoogledrive, SiGooglegemini, SiHubspot, SiInstagram, SiMailchimp, SiNotion, SiQuickbooks, SiUps, SiUsps, SiWhatsapp, SiXero, SiZendesk } from "@icons-pack/react-simple-icons";
 import { PICQER, channel } from "@/lib/demo/channels";
 import { platformInfo } from "@/lib/platforms";
@@ -92,6 +93,8 @@ const MARKS: Record<string, { bg: string; fg?: string; ring?: boolean; scale?: n
   custom: { bg: "#F8FAFC", fg: "#475569", ring: true, scale: 0.55, glyph: (px) => <Puzzle size={px} strokeWidth={2} /> },
   // the shop's own stockroom (not a product): a warehouse glyph
   stockroom: { bg: "#EFF6FF", fg: "#1D4ED8", ring: true, scale: 0.55, glyph: (px) => <Warehouse size={px} strokeWidth={2} /> },
+  // a jewelry studio's casting house (a supplier, not a product): a flame glyph
+  casting: { bg: "#FFF7ED", fg: "#C2410C", ring: true, scale: 0.55, glyph: (px) => <Flame size={px} strokeWidth={2} /> },
   dhl: { bg: "#FFCC00", fg: "#D40511", scale: 0.8, glyph: (px) => <SiDhl size={px} color="currentColor" title="" /> },
   fedex: { bg: "#FFFFFF", fg: "#4D148C", ring: true, scale: 0.78, glyph: (px) => <SiFedex size={px} color="currentColor" title="" /> },
   instagram: {

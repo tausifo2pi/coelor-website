@@ -15,6 +15,7 @@ import { accentVars } from "@/components/demo/workspace/ClientMark";
 import { DemoFooter, PageTitle, TopBarText, WorkspaceFoot, WorkspaceHead, navItem, navPill, primaryBtn } from "@/components/demo/workspace/Shell";
 import { possessive, storeClient } from "@/components/demo/workspace/format";
 import { FernhollowFields } from "@/components/demo/workspace/Fields";
+import { LarkmoorFields } from "@/components/storedemo/Larkmoor";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { SheetAssistant } from "@/components/demo/SheetAssistant";
 import { storeAssistant } from "@/lib/storedemo/assistant";
@@ -31,8 +32,8 @@ const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; title: string;
   { id: "orders", label: "Orders", icon: Receipt, title: "Orders", sub: "Orders from every channel, and what the build did with them" },
   { id: "products", label: "Products", icon: Boxes, title: "Products", sub: "Every size on one count, the same on every channel" },
   { id: "shipping", label: "Shipping & returns", icon: Truck, title: "Shipping & returns", sub: "Labels, tracking and returns, back into stock" },
-  { id: "automations", label: "Custom rules", icon: FileCode2, title: "Custom rules", sub: "Fernhollow's own rules: asked for by the team, built into their code" },
-  { id: "connections", label: "Systems", icon: Network, title: "Systems in this build", sub: "The platforms Fernhollow runs on, and how each is wired into their build" },
+  { id: "automations", label: "Custom rules", icon: FileCode2, title: "Custom rules", sub: "{shop's} own rules: asked for by the team, built into their code" },
+  { id: "connections", label: "Systems", icon: Network, title: "Systems in this build", sub: "The platforms {shop} runs on, and how each is wired into their build" },
   { id: "build", label: "Build log", icon: History, title: "Build log", sub: "Every change to this build: what the team asked for, and when it went live" },
   { id: "pricing", label: "Your build & price", icon: BadgeDollarSign, title: "Your own build and its price", sub: "Scoped with you, $500 per connection, one-time. Try your first link free for 7 days." },
 ];
@@ -189,7 +190,7 @@ export default function StoreDemoApp({ slug }: { slug: string }) {
         <div className="min-w-0">
           <header className="sticky top-0 z-20 border-b border-[#e3e6eb] bg-white/95 backdrop-blur">
             <div className="flex h-[60px] items-center gap-2.5 px-4 sm:gap-3 md:h-[72px] md:px-6">
-              <PageTitle client={client} title={cur.title} sub={cur.sub} />
+              <PageTitle client={client} title={cur.title} sub={cur.sub.replace("{shop's}", possessive(client.name)).replace("{shop}", client.name)} />
               {live && <span className="hidden lg:inline-flex"><Badge tone="red" dot>{cfg.channels.find((c) => c.id === live)?.name} LIVE now</Badge></span>}
               {world && (
                 <Badge tone="green" dot>
@@ -327,7 +328,7 @@ function ProductDrawer({ id, ctx, onClose }: { id: string; ctx: SCtx; onClose: (
                 ))}
               </div>
             </section>
-            <FernhollowFields ctx={ctx} row={d.row} />
+            {storeClient(cfg.slug).id === "jewellery" ? <LarkmoorFields ctx={ctx} row={d.row} /> : <FernhollowFields ctx={ctx} row={d.row} />}
             <section>
               <h3 className="mb-2 text-[12.5px] font-semibold uppercase tracking-[0.05em] text-[#64748b]">Recent orders</h3>
               {d.orders.length ? (

@@ -1,6 +1,7 @@
 // The store demos (/demo/<slug>): a static page whose browser builds the shop's generated catalogue
 // (lib/storedemo/catalog.ts) and shows the sync around it (sales channels, warehouse, shipping, returns), told by
 // lib/storedemo/engine.ts. One config per demo (lib/storedemo/configs.ts). No "@/" imports here: node --test loads it.
+import type { Profile } from "../demo/schedule.ts";
 
 /** One size/colour of a product, as the store shows it today (available = the store can sell it now). */
 export type Variant = { id: string; color: string; size: string; available: boolean };
@@ -47,6 +48,10 @@ export type ChannelCfg = {
   pollMin?: number;
   /** the channel buys the label itself (Poshmark's prepaid label): its words and the carrier (index in shipping.carriers) */
   label?: { service: string; carrier: number };
+  /** wholesale (Faire): pieces in one order, and the price paid as a share of the retail price; unset = a retail order
+   * of 1 to 3 pieces at the retail price */
+  lines?: [number, number];
+  priceShare?: number;
 };
 
 export type Carrier = { name: string; service: string; logo: string; share: number; days: [number, number] };
@@ -65,7 +70,11 @@ export type DemoConfig = {
   items: string;
   /** the generated catalogue (lib/storedemo/catalog.ts): its seed, how many of the newest pieces it holds, how many best
    * sellers, the weekdays new pieces come out (0 = Sunday) and how many come out each time */
-  catalog: { seed: string; newest: number; best: number; dropDays: number[]; perDrop: [number, number] };
+  catalog: {
+    seed: string; newest: number; best: number; dropDays: number[]; perDrop: [number, number];
+    /** another generator than the boutique's (lib/storedemo/catalog.ts), for other goods (lib/storedemo/jewellery.ts) */
+    build?: (cfg: DemoConfig, t: number) => Catalog;
+  };
   /** the time zone the shop works in (orders follow its day) */
   tz: string;
   /** local date the sync started (Y, M 1-12, D) */
@@ -83,6 +92,10 @@ export type DemoConfig = {
   tools: { slug: string; name: string; role: string; detail?: string; on?: boolean }[];
   caseHref: string;
   contactHref: string;
+  /** the page description's list of what the build connects; unset = the boutique's words (app/demo/[slug]/page.tsx) */
+  pitch?: string;
+  /** the shop's own words and routines on top of the store assistant (lib/storedemo/assistant.ts) */
+  assistant?: (p: Profile, cfg: DemoConfig) => Profile;
 };
 
 export type StepKind = "stock" | "label" | "shipped" | "delivered" | "return" | "restock" | "cancel" | "pulled" | "listed";
