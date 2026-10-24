@@ -116,7 +116,8 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
   const byId = new Map(products.map((p) => [p.id, p]));
   const pub = new Map(products.map((p) => [p.id, Date.parse(p.publishedAt)]));
   const nBest = Math.max(1, products.filter((p) => p.best !== null).length);
-  const listed = (p: Product, ch: ChannelCfg) => ch.listShare >= 1 || U("list", ch.id, p.id) < ch.listShare;
+  const listed = (p: Product, ch: ChannelCfg) =>
+    !ch.never?.includes(p.category) && (ch.listShare >= 1 || !!ch.always?.includes(p.category) || U("list", ch.id, p.id) < ch.listShare);
   const listedOn = (p: Product) => cfg.channels.filter((c) => listed(p, c)).map((c) => c.id);
   const sellable = (p: Product) => p.variants.some((v) => v.available);
   const demand = (p: Product, t: number) => {
@@ -138,7 +139,8 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
     if (!e) {
       const end = at(d + 1, 0) - 2 * HOUR;
       const mid = at(d, 720);
-      const list = products.filter((p) => pub.get(p.id)! <= end && listed(p, ch) && sellable(p));
+      // a one-of-a-kind piece sells only once, by its own last-unit sale (below)
+      const list = products.filter((p) => !p.oneOff && pub.get(p.id)! <= end && listed(p, ch) && sellable(p));
       e = { list, weights: list.map((p) => demand(p, mid)) };
       if (eligible.size > 4000) eligible.clear();
       eligible.set(k, e);
@@ -148,13 +150,14 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
 
   /* ---------- orders ---------- */
 
-  function counts(ch: ChannelCfg, d: number): { base: number; show: number } {
+  function counts(ch: ChannelCfg, d: number): { base: number; show: number; burst: number } {
     const wd = dow(d);
     let base = between(ch.perDay[0], ch.perDay[1], U("n", ch.id, d));
     if (ch.rhythm === "store") base = Math.round(base * (wd === 0 || wd === 6 ? 1.15 : wd === 1 ? 0.92 : 1));
     base = Math.round(base * (0.78 + 0.22 * Math.min(1, d / 180))); // a shop that has grown since the sync started
     const show = ch.rhythm === "live" && ch.perShow && ch.showDays?.includes(wd) ? between(ch.perShow[0], ch.perShow[1], U("show", ch.id, d)) : 0;
-    return { base, show };
+    const burst = ch.burst && cfg.catalog.dropDays.includes(wd) ? between(ch.burst.orders[0], ch.burst.orders[1], U("burst", ch.id, d)) : 0;
+    return { base, show, burst };
   }
   const countMemo = new Map<string, number>();
   function ordersBefore(ch: ChannelCfg, d: number): number {
@@ -164,20 +167,24 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
     let n = 0;
     for (let x = 0; x < d; x++) {
       const c = counts(ch, x);
-      n += c.base + c.show;
+      n += c.base + c.show + c.burst;
     }
     countMemo.set(k, n);
     return n;
   }
 
-  function minuteOf(ch: ChannelCfg, d: number, i: number, show: boolean): number {
+  function minuteOf(ch: ChannelCfg, d: number, i: number, show: boolean, burst = false): number {
+    if (burst && ch.burst) return ch.burst.at + 0.3 + Math.pow(U("bm", ch.id, d, i), 2.2) * ch.burst.span; // the drop, most in its first minutes
     if (show) return 19 * 60 + Math.floor(Math.pow(U("sm", ch.id, d, i), 1.3) * 125); // the show, 19:00–21:05
     const h = pickIndex(ch.rhythm === "store" ? STORE_HOURS : STEADY_HOURS, U("h", ch.id, d, i));
     return h * 60 + U("m", ch.id, d, i) * 60;
   }
 
-  function lineOf(p: Product, seed: string): Line | null {
-    const vs = p.variants.filter((v) => v.available);
+  /** a variant whose last unit has sold by instant t (a catalogue that dates its sell-outs: Variant.soldAt) */
+  const goneBy = (v: Variant, t: number) => !v.available || (!!v.soldAt && Date.parse(v.soldAt) <= t);
+
+  function lineOf(p: Product, seed: string, t: number): Line | null {
+    const vs = p.variants.filter((v) => !goneBy(v, t));
     if (!vs.length) return null;
     const v = vs[pickIndex(vs.map(sizeWeight), U("v", seed))];
     return { productId: p.id, title: p.title, brand: p.brand, color: v.color, size: v.size, price: p.price, image: p.image };
@@ -236,17 +243,20 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
   // the last unit of each size the store shows as sold out: sold some days after the product came out, then pulled
   const lastUnits: { raw: Raw; happening: Happening }[] = [];
   for (const p of products) {
-    const gone = p.variants.filter((v) => !v.available);
+    // a dated sell-out (Variant.soldAt) may still be later today: its sale and pull show from that moment on
+    const gone = p.variants.filter((v) => !v.available || v.soldAt);
     if (!gone.length) continue;
     const on = cfg.channels.filter((c) => listed(p, c));
     const allGone = gone.length === p.variants.length;
-    for (const v of (allGone ? gone.slice(0, 1) : gone.slice(0, 2))) {
-      const t = pub.get(p.id)! + (1.5 + U("lu", v.id) * 18) * DAY;
+    const dated = gone.every((v) => v.soldAt);
+    const lastAt = dated ? Math.max(...gone.map((v) => Date.parse(v.soldAt!))) : 0;
+    for (const v of (dated ? gone : allGone ? gone.slice(0, 1) : gone.slice(0, 2))) {
+      const t = v.soldAt ? Date.parse(v.soldAt) : pub.get(p.id)! + (1.5 + U("lu", v.id) * 18) * DAY;
       const ch = on[pickIndex(on.map((c) => (c.rhythm === "store" ? 3 : 1)), U("luc", v.id))] ?? cfg.channels[0];
       const id = `l${v.id}`;
       const raw = makeOrder(ch, id, t, ch.refStart + 900_000 + (H("lur", v.id) % 90_000), [{ productId: p.id, title: p.title, brand: p.brand, color: v.color, size: v.size, price: p.price, image: p.image }]);
       const rest = on.filter((c) => c.id !== ch.id).map((c) => c.name);
-      const what = allGone ? `${p.title} sold out` : `Last ${v.size}${v.color ? ` in ${v.color}` : ""} sold`;
+      const what = p.oneOff ? `${p.title} sold` : allGone && (!dated || t === lastAt) ? `${p.title} sold out` : `Last ${v.size}${v.color ? ` in ${v.color}` : ""} sold`;
       raw.steps.push({ kind: "pulled", at: iso(t + (60 + U("lup", v.id) * 180) * 1000), text: rest.length ? `Last one · pulled from ${join(rest)}` : "Last one · marked sold out" });
       raw.steps.sort((a, b) => a.at.localeCompare(b.at));
       lastUnits.push({
@@ -264,18 +274,25 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
     for (const ch of cfg.channels) {
       const e = eligibleOn(ch, d);
       if (!e.list.length) continue;
-      const { base, show } = counts(ch, d);
+      const { base, show, burst } = counts(ch, d);
       const before = ordersBefore(ch, d);
+      // a drop's orders are for the pieces that dropped that day, from the moment they are out
+      const morning = at(d, 0);
+      const dropped = burst ? e.list.filter((p) => pub.get(p.id)! >= morning) : [];
+      const droppedW = dropped.map((p) => demand(p, morning));
       // the day's orders by time, so the channel's order numbers rise with the clock
-      const slots = Array.from({ length: base + show }, (_, i) => ({ i, t: at(d, minuteOf(ch, d, i, i >= base)) })).sort((a, b) => a.t - b.t);
+      const slots = Array.from({ length: base + show + burst }, (_, i) => ({ i, t: at(d, minuteOf(ch, d, i, i >= base && i < base + show, i >= base + show)) })).sort((a, b) => a.t - b.t);
       slots.forEach(({ i, t }, rank) => {
         const id = `${ch.id.slice(0, 2)}${d.toString(36)}${i.toString(36)}`;
-        const n = U("k", id) < 0.7 ? 1 : U("k2", id) < 0.83 ? 2 : 3;
+        const drop = i >= base + show;
+        const n = drop ? (U("k", id) < 0.8 ? 1 : 2) : U("k", id) < 0.7 ? 1 : U("k2", id) < 0.83 ? 2 : 3;
         const lines: Line[] = [];
         for (let j = 0; j < n; j++) {
-          const p = e.list[pickIndex(e.weights, U("p", id, j))];
-          if (pub.get(p.id)! > t - HOUR) continue;
-          const l = lineOf(p, `${id}|${j}`);
+          if (drop && !dropped.length) break;
+          const p = drop ? dropped[pickIndex(droppedW, U("p", id, j))] : e.list[pickIndex(e.weights, U("p", id, j))];
+          if (pub.get(p.id)! > t - (drop ? 0 : HOUR)) continue;
+          if (drop && lines.some((l) => l.productId === p.id)) continue;
+          const l = lineOf(p, `${id}|${j}`, t);
           if (l) lines.push(l);
         }
         if (lines.length) out.push(makeOrder(ch, id, t, ch.refStart + before + rank, lines));
@@ -336,17 +353,17 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
     return m;
   }
 
-  function rowOf(p: Product, sold: Map<string, number>): ProductRow {
+  function rowOf(p: Product, sold: Map<string, number>, now: number): ProductRow {
     const stock = p.variants.map((v) => {
       const soldToday = sold.get(`${p.id}|${v.color}|${v.size}`) ?? 0;
       const base = 3 + (H("stock", v.id) % 10) + (v.size === "M" || v.size === "S" ? 3 : 0);
-      return { ...v, soldToday, stock: v.available ? Math.max(1, base - soldToday) : 0 };
+      return { ...v, soldToday, stock: goneBy(v, now) ? 0 : p.oneOff ? 1 : Math.max(1, base - soldToday) };
     });
     return {
       ...p, stock, listedOn: listedOn(p),
       soldToday: stock.reduce((s, v) => s + v.soldToday, 0),
       inStock: stock.reduce((s, v) => s + v.stock, 0),
-      soldOut: !sellable(p),
+      soldOut: stock.every((v) => v.stock === 0),
     };
   }
 
@@ -365,14 +382,14 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
       if (!on.length) continue;
       out.push({ id: `n${p.id}`, kind: "listed", at: iso(t), title: p.title, image: p.image, text: `New in ${cfg.channels[0].name} → listed on ${join(on)} with sizes and photos` });
     }
-    const brands = [...new Set(products.map((p) => p.brand).filter(Boolean))];
+    const brands = cfg.restock.brands ?? [...new Set(products.map((p) => p.brand).filter(Boolean))];
     for (let d = dayOf(now); d >= Math.max(0, dayOf(from)); d--) {
       if (dow(d) !== cfg.restock.weekday || !brands.length) continue;
       const t = at(d, 10 * 60 + U("rs", d) * 150);
       if (t > now || t <= from) continue;
       const brand = brands[H("rsb", d) % brands.length];
       const units = between(12, 48, U("rsu", d));
-      out.push({ id: `r${d}`, kind: "restock", at: iso(t), title: `${cfg.restock.name} order received`, text: `${brand} · ${units} ${cfg.items} → stock up on ${everyChannel}` });
+      out.push({ id: `r${d}`, kind: "restock", at: iso(t), title: cfg.restock.title ?? `${cfg.restock.name} order received`, text: `${brand} · ${units} ${cfg.items} → stock up on ${everyChannel}` });
     }
     return out.sort((a, b) => b.at.localeCompare(a.at));
   }
@@ -386,7 +403,7 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
     { key: "labels", name: "Labels bought", when: "An order is paid on any channel", then: `Label in ${cfg.shipping.tool.name}: ${join(cfg.shipping.carriers.map((c) => c.name))}, by weight and speed${cfg.channels.some((c) => c.label) ? `; ${join(cfg.channels.filter((c) => c.label).map((c) => c.name))} orders on their own prepaid label` : ""}`, min: 10, every: "every 10 min", tools: [cfg.shipping.tool.logo, ...cfg.shipping.carriers.map((c) => c.logo)] },
     { key: "tracking", name: "Tracking to the buyer", when: "A parcel is scanned by the carrier", then: `Tracking page and emails by ${cfg.tracking.name}; the order marked shipped on its channel`, min: 15, every: "every 15 min", tools: [cfg.tracking.logo, ...cfg.channels.slice(1).map((c) => c.logo)] },
     { key: "returns", name: "Returns back into stock", when: `A return is checked in ${cfg.returns.name}`, then: "+1 on every channel, or the exchange size sent", min: 60, every: "every hour", tools: [cfg.returns.logo] },
-    { key: "restock", name: "Wholesale restocks", when: `A ${cfg.restock.name} order is received`, then: "New stock on every channel at once", min: 1440, every: "daily", tools: [cfg.restock.logo] },
+    { key: "restock", name: cfg.restock.rule ?? "Wholesale restocks", when: cfg.restock.when ?? `A ${cfg.restock.name} order is received`, then: "New stock on every channel at once", min: 1440, every: "daily", tools: [cfg.restock.logo] },
     { key: "low", name: "Low-stock list", when: "A best seller is down to 2 in a size", then: "On the morning reorder list", min: 1440, every: "daily at 7:00", tools: [cfg.stock.logo] },
   ];
 
@@ -497,7 +514,7 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
       const rows = products
         .filter((p) => pub.get(p.id)! <= q.now && (!q.category || p.category === q.category))
         .filter((p) => words.every((w) => `${p.title} ${p.brand} ${p.category}`.toLowerCase().includes(w)))
-        .map((p) => rowOf(p, sold))
+        .map((p) => rowOf(p, sold, q.now))
         .sort((a, b) => b.soldToday - a.soldToday || (a.best ?? 99) - (b.best ?? 99) || b.publishedAt.localeCompare(a.publishedAt));
       const categories = [...new Set(products.map((p) => p.category))].sort();
       return { ...pageOf(rows, Math.max(1, q.page ?? 1), q.per ?? 24), categories };
@@ -507,7 +524,7 @@ export function storeWorld(cfg: DemoConfig, cat: Catalog) {
       const p = byId.get(id);
       if (!p || pub.get(id)! > now) return null;
       const orders = ordersIn(now, now - 30 * DAY).filter((r) => r.lines.some((l) => l.productId === id)).slice(0, 8).map((r) => view(r, now));
-      return { row: rowOf(p, soldTodayMap(now)), orders };
+      return { row: rowOf(p, soldTodayMap(now), now), orders };
     },
 
     shipping(now: number): { today: Record<string, number>; rows: Order[]; returns: Order[] } {

@@ -8,12 +8,12 @@ import { Badge, BrandMark, Button, Card, CardHead, Empty, Pager, SearchInput, Sk
 import { RoutinesCard } from "@/components/demo/SheetAssistant";
 import { Rules, type RuleRun } from "@/components/demo/workspace/Rules";
 import { Systems, type SystemHealth } from "@/components/demo/workspace/Systems";
-import { FERNHOLLOW } from "@/lib/demo/clients";
 import { Running, StoreTiles } from "@/components/demo/workspace/Tiles";
+import { StreetwearTiles } from "@/components/demo/workspace/Streetwear";
 import { LatestBuild } from "@/components/demo/workspace/LatestBuild";
 import { storeClient } from "@/components/demo/workspace/format";
 import type { DemoTracker } from "@/lib/demo/track";
-import { storeAssistant } from "@/lib/storedemo/assistant";
+import { assistantFor } from "@/lib/storedemo/assistant-streetwear";
 import type { ProductRow, StoreWorld } from "@/lib/storedemo/engine";
 import type { ChannelCfg, DemoConfig, Happening, Order, Step } from "@/lib/storedemo/types";
 
@@ -166,7 +166,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
   const w = ctx.world;
   const ov = useMemo(() => (w ? w.overview(ctx.now) : null), [w, ctx.now]);
   const rules = useMemo(() => (w ? w.rules(ctx.now) : []), [w, ctx.now]);
-  const assistant = useMemo(() => storeAssistant(ctx.cfg), [ctx.cfg]);
+  const assistant = useMemo(() => assistantFor(ctx.cfg), [ctx.cfg]);
   if (!w || !ov) return <Loading />;
   const { cfg } = ctx;
   const k = ov.kpis;
@@ -178,7 +178,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
   // the owner's tiles first (what needs doing today), then the channels the build runs
   return (
     <div className="flex flex-col gap-5">
-      <StoreTiles ctx={ctx} />
+      {storeClient(cfg.slug).id === "streetwear" ? <StreetwearTiles ctx={ctx} /> : <StoreTiles ctx={ctx} />}
 
       <Card>
         <CardHead title="Channels in this build" sub="One stock count for every size: every channel, the stockroom and the parcels follow it." />
@@ -426,7 +426,7 @@ export function Shipping({ ctx }: { ctx: SCtx }) {
         <div className="flex flex-col gap-3 border-b border-[#f1f3f5] p-4 sm:flex-row sm:items-center sm:justify-between">
           <Tabs value={tab} options={[{ id: "parcels", label: "Parcels", logo: cfg.shipping.tool.logo }, { id: "returns", label: "Returns", logo: cfg.returns.logo }]} onChange={(v) => { setTab(v); ctx.t?.action("shipping_tab", v); }} />
           <span className="text-[12.5px] text-[#64748b]">
-            {tab === "parcels" ? `Labels bought in ${cfg.shipping.tool.name} before the ${String(cfg.shipping.cutoffHour).padStart(2, "0")}:00 cutoff, tracking sent by ${cfg.tracking.name}` : `Returns started in ${cfg.returns.name}; each is graded in the stockroom before it goes back on sale`}
+            {tab === "parcels" ? `Labels bought in ${cfg.shipping.tool.name} before the ${String(cfg.shipping.cutoffHour).padStart(2, "0")}:00 cutoff, tracking sent by ${cfg.tracking.name}` : `Returns started in ${cfg.returns.name}; each is ${storeClient(cfg.slug).id === "boutique" ? "graded" : "checked"} in the stockroom before it goes back on sale`}
           </span>
         </div>
         {rows.length ? (
@@ -469,7 +469,7 @@ export function Automations({ ctx }: { ctx: SCtx }) {
     const r = byKey.get(key);
     return r && { every: r.every, lastRun: r.lastRun };
   };
-  return <Rules client={FERNHOLLOW} run={run} now={ctx.now} loading={!rules} t={ctx.t} />;
+  return <Rules client={storeClient(ctx.cfg.slug)} run={run} now={ctx.now} loading={!rules} t={ctx.t} />;
 }
 
 /* ---------- systems in this build (the "connections" section) ---------- */
@@ -482,5 +482,5 @@ export function Connections({ ctx }: { ctx: SCtx }) {
     const last = (rules ?? []).filter((r) => r.tools.includes(slug)).reduce<string | null>((a, r) => (!a || r.lastRun > a ? r.lastRun : a), null);
     return last ? { last } : undefined;
   };
-  return <Systems client={FERNHOLLOW} health={health} now={ctx.now} connect={ctx.connect} />;
+  return <Systems client={storeClient(ctx.cfg.slug)} health={health} now={ctx.now} connect={ctx.connect} />;
 }

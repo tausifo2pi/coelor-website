@@ -12,6 +12,7 @@
 // No "@/" imports: node --test loads it.
 import { garmentArt, type Kind, type Shape } from "./art.ts";
 import type { Catalog, DemoConfig, Product, Variant } from "./types.ts";
+import { streetwearCatalogAt } from "./catalog-streetwear.ts";
 
 const MIN = 60_000;
 const HOUR = 3_600_000;
@@ -490,6 +491,8 @@ export function catalogStamp(cfg: DemoConfig, t: number): string {
 /** The catalogue on the shop's day at instant t: the newest pieces (this day's drop included, published later that
  * day) and this week's best sellers, newest first. */
 export function catalogAt(cfg: DemoConfig, t: number): Catalog {
+  // a streetwear shop's catalogue has its own generator (drops, pre-owned pieces): lib/storedemo/catalog-streetwear.ts
+  if (cfg.catalog.kind === "streetwear") return streetwearCatalogAt(cfg, t);
   const today = dayOf(cfg.tz, t);
   const best = bestSellers(cfg, today);
   const pieces = new Map<string, Piece>();
