@@ -8,7 +8,7 @@ import { storeClient } from "@/components/demo/workspace/format";
 // generated catalogue itself (components/storedemo/StoreDemoApp.tsx). Email-only, not indexed (robots.ts disallows
 // /demo). /demo/multi-platform-sync is its own page (the sneaker demo) and wins over this route. Each is shown as a demo
 // shop's custom build (components/demo/workspace/format.ts storeClient: the boutique demo is Fernhollow, the jewelry demo
-// /demo/jewellery-shop is Larkmoor).
+// /demo/jewellery-shop is Larkmoor, the streetwear demo /demo/streetwear-shop is Cinderlot).
 export const dynamicParams = false;
 
 export function generateStaticParams() {

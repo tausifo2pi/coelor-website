@@ -4,7 +4,15 @@
 import type { Profile } from "../demo/schedule.ts";
 
 /** One size/colour of a product, as the store shows it today (available = the store can sell it now). */
-export type Variant = { id: string; color: string; size: string; available: boolean };
+export type Variant = {
+  id: string;
+  color: string;
+  size: string;
+  available: boolean;
+  /** when its last unit sold, or sells later today (still available until then): set by a catalogue that dates its own
+   * sell-outs (the streetwear drops); the engine shows that sale and the pull at this moment */
+  soldAt?: string;
+};
 
 export type Product = {
   id: string;
@@ -18,6 +26,8 @@ export type Product = {
   publishedAt: string;
   /** place on the store's best-seller list (0 = first), null when not on it */
   best: number | null;
+  /** one of a kind (a pre-owned piece): one unit, sold once, and only by its own last-unit sale */
+  oneOff?: boolean;
   variants: Variant[];
 };
 
@@ -52,6 +62,12 @@ export type ChannelCfg = {
    * of 1 to 3 pieces at the retail price */
   lines?: [number, number];
   priceShare?: number;
+  /** categories always listed there, and never listed there (pre-owned pieces on the resale apps, not on a social shop) */
+  always?: string[];
+  never?: string[];
+  /** a web store's drop: on the catalogue's drop days, `orders` more orders from `at` (minute of the day) over `span`
+   * minutes, most in the first ones, for the pieces that dropped that day */
+  burst?: { at: number; span: number; orders: [number, number] };
 };
 
 export type Carrier = { name: string; service: string; logo: string; share: number; days: [number, number] };
@@ -72,7 +88,8 @@ export type DemoConfig = {
    * sellers, the weekdays new pieces come out (0 = Sunday) and how many come out each time */
   catalog: {
     seed: string; newest: number; best: number; dropDays: number[]; perDrop: [number, number];
-    /** another generator than the boutique's (lib/storedemo/catalog.ts), for other goods (lib/storedemo/jewellery.ts) */
+    /** another generator than the boutique's (lib/storedemo/catalog.ts), for other goods (lib/storedemo/jewellery.ts,
+     * lib/storedemo/catalog-streetwear.ts) */
     build?: (cfg: DemoConfig, t: number) => Catalog;
   };
   /** the time zone the shop works in (orders follow its day) */
@@ -84,7 +101,9 @@ export type DemoConfig = {
   shipping: { tool: Tool; carriers: Carrier[]; cutoffHour: number };
   tracking: Tool;
   returns: Tool & { rate: number; reasons: string[] };
-  restock: Tool & { weekday: number };
+  /** where new stock comes from; a shop that makes its own goods names the event and the rule (`title`, `rule`, `when`)
+   * and the labels it restocks (`brands`), else it is a wholesale order of any label in the catalogue */
+  restock: Tool & { weekday: number; title?: string; rule?: string; when?: string; brands?: string[] };
   sizes: Record<string, number>;
   /** other places a shop like this sells: the assistant refuses to post onto them (lib/storedemo/assistant.ts) */
   more: { slug: string; name: string; why: string }[];

@@ -16,6 +16,7 @@ import { DemoFooter, PageTitle, TopBarText, WorkspaceFoot, WorkspaceHead, navIte
 import { possessive, storeClient } from "@/components/demo/workspace/format";
 import { FernhollowFields } from "@/components/demo/workspace/Fields";
 import { LarkmoorFields } from "@/components/storedemo/Larkmoor";
+import { CinderlotFields } from "@/components/demo/workspace/Streetwear";
 import { startDemoTracker, type DemoTracker } from "@/lib/demo/track";
 import { SheetAssistant } from "@/components/demo/SheetAssistant";
 import { storeAssistant } from "@/lib/storedemo/assistant";
@@ -328,7 +329,13 @@ function ProductDrawer({ id, ctx, onClose }: { id: string; ctx: SCtx; onClose: (
                 ))}
               </div>
             </section>
-            {storeClient(cfg.slug).id === "jewellery" ? <LarkmoorFields ctx={ctx} row={d.row} /> : <FernhollowFields ctx={ctx} row={d.row} />}
+            {storeClient(cfg.slug).id === "jewellery" ? (
+              <LarkmoorFields ctx={ctx} row={d.row} />
+            ) : storeClient(cfg.slug).id === "streetwear" ? (
+              <CinderlotFields ctx={ctx} row={d.row} />
+            ) : (
+              <FernhollowFields ctx={ctx} row={d.row} />
+            )}
             <section>
               <h3 className="mb-2 text-[12.5px] font-semibold uppercase tracking-[0.05em] text-[#64748b]">Recent orders</h3>
               {d.orders.length ? (

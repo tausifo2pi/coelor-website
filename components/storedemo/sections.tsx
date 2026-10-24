@@ -9,6 +9,7 @@ import { RoutinesCard } from "@/components/demo/SheetAssistant";
 import { Rules, type RuleRun } from "@/components/demo/workspace/Rules";
 import { Systems, type SystemHealth } from "@/components/demo/workspace/Systems";
 import { Running, StoreTiles } from "@/components/demo/workspace/Tiles";
+import { StreetwearTiles } from "@/components/demo/workspace/Streetwear";
 import { LatestBuild } from "@/components/demo/workspace/LatestBuild";
 import { storeClient } from "@/components/demo/workspace/format";
 import { LarkmoorTiles } from "@/components/storedemo/Larkmoor";
@@ -178,7 +179,7 @@ export function Dashboard({ ctx }: { ctx: SCtx }) {
   // the owner's tiles first (what needs doing today), then the channels the build runs
   return (
     <div className="flex flex-col gap-5">
-      {storeClient(cfg.slug).id === "jewellery" ? <LarkmoorTiles ctx={ctx} /> : <StoreTiles ctx={ctx} />}
+      {storeClient(cfg.slug).id === "jewellery" ? <LarkmoorTiles ctx={ctx} /> : storeClient(cfg.slug).id === "streetwear" ? <StreetwearTiles ctx={ctx} /> : <StoreTiles ctx={ctx} />}
 
       <Card>
         <CardHead title="Channels in this build" sub="One stock count for every size: every channel, the stockroom and the parcels follow it." />
@@ -429,7 +430,7 @@ export function Shipping({ ctx }: { ctx: SCtx }) {
         <div className="flex flex-col gap-3 border-b border-[#f1f3f5] p-4 sm:flex-row sm:items-center sm:justify-between">
           <Tabs value={tab} options={[{ id: "parcels", label: "Parcels", logo: cfg.shipping.tool.logo }, { id: "returns", label: "Returns", logo: cfg.returns.logo }]} onChange={(v) => { setTab(v); ctx.t?.action("shipping_tab", v); }} />
           <span className="text-[12.5px] text-[#64748b]">
-            {tab === "parcels" ? `Labels bought in ${cfg.shipping.tool.name} before the ${String(cfg.shipping.cutoffHour).padStart(2, "0")}:00 cutoff, tracking sent by ${cfg.tracking.name}` : `Returns started in ${cfg.returns.name}; each is graded in the stockroom before it goes back on sale`}
+            {tab === "parcels" ? `Labels bought in ${cfg.shipping.tool.name} before the ${String(cfg.shipping.cutoffHour).padStart(2, "0")}:00 cutoff, tracking sent by ${cfg.tracking.name}` : `Returns started in ${cfg.returns.name}; each is ${storeClient(cfg.slug).id === "streetwear" ? "checked" : "graded"} in the stockroom before it goes back on sale`}
           </span>
         </div>
         {rows.length ? (

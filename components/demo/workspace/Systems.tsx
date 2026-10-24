@@ -39,6 +39,13 @@ const SETUP_CHIPS: Record<DemoClient["id"], Chip[]> = {
     { slug: "big-cartel", name: "Big Cartel" }, { slug: "wix", name: "Wix" }, { slug: "shipstation", name: "ShipStation" }, { slug: "quickbooks", name: "QuickBooks" },
     { slug: "google-sheets", name: "Google Sheets" }, { slug: "slack", name: "Slack" },
   ],
+  // a streetwear reader: the drop store, social and live selling, the resale apps (pre-owned and archive pieces)
+  streetwear: [
+    { slug: "shopify", name: "Shopify" }, { slug: "tiktok-shop", name: "TikTok Shop" }, { slug: "ebay", name: "eBay" }, { slug: "grailed", name: "Grailed" },
+    { slug: "depop", name: "Depop" }, { slug: "stockx", name: "StockX" }, { slug: "whatnot", name: "Whatnot" }, { slug: "poshmark", name: "Poshmark" },
+    { slug: "mercari", name: "Mercari" }, { slug: "etsy", name: "Etsy" }, { slug: "amazon", name: "Amazon" }, { slug: "shipstation", name: "ShipStation" },
+    { slug: "shipbob", name: "ShipBob" }, { slug: "quickbooks", name: "QuickBooks" }, { slug: "google-sheets", name: "Google Sheets" }, { slug: "discord", name: "Discord" },
+  ],
 };
 
 type Props = {

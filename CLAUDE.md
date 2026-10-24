@@ -51,8 +51,12 @@ plain US English, proof claims, what never goes on the site). The audit behind i
   `/demo/multi-platform-sync`), `lib/storedemo/*` + `components/storedemo/*` (women's boutique "Fernhollow",
   `/demo/womens-boutique`; jewelry studio "Larkmoor", `/demo/jewellery-shop`: config `lib/storedemo/jewellery-config.ts`,
   its own catalogue `jewellery.ts` + art `jewellery-art.ts`, client `lib/demo/larkmoor.ts`, tiles and fields
-  `components/storedemo/Larkmoor.tsx`). Invented demo shops, every number generated in the browser; no client data, no
-  third-party store's catalog, no "sample" badges. `instrumentation.ts` keeps the demo and case study warm on the small server.
+  `components/storedemo/Larkmoor.tsx`; streetwear shop "Cinderlot", `/demo/streetwear-shop`: config
+  `lib/storedemo/config-streetwear.ts`, its own catalogue `catalog-streetwear.ts` (weekly drops, dated sell-outs,
+  one-of-a-kind pre-owned pieces) + art `art-streetwear.ts` + assistant routines `assistant-streetwear.ts`, client
+  `lib/demo/client-streetwear.ts` + `lib/demo/streetwear.ts`, tiles and fields `components/demo/workspace/Streetwear.tsx`).
+  Invented demo shops, every number generated in the browser; no client data, no third-party store's catalog, no
+  "sample" badges. `instrumentation.ts` keeps the demo and case study warm on the small server.
 - **Case studies (email-only):** `components/CaseStudy.tsx`, `lib/case-*.ts`, `data/case-*.json`.
 
 ## Hard rules
